@@ -53,7 +53,7 @@ open class MapHex(val desc: MapHexDesc) {
     fun nonMatchingNeighborsIncludeRivers(predicate: (MapFeature) -> Boolean) : List<MapHex?> = nonMatchingNeighbors(false, predicate)
 
     fun neighbor(direction: Direction, riversBlock: Boolean = true) : MapHex? {
-        if(riversBlock && desc.mapFeature.find { it is RiverFeature? && it.direction == direction } != null) return null
+        if(riversBlock && desc.mapFeature.find { it is RiverFeature && it.direction == direction } != null) return null
 
         val index = when(direction) {
             Direction.NW -> desc.hexNeigbors.nw
