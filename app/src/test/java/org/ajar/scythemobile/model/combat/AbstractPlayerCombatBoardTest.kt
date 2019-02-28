@@ -4,9 +4,9 @@ import org.ajar.scythemobile.model.TestPlayer
 import org.ajar.scythemobile.model.TestPlayerCombatBoard
 import org.ajar.scythemobile.model.TestUnit
 import org.ajar.scythemobile.model.entity.UnitType
-import org.ajar.scythemobile.model.map.HexNeigbors
-import org.ajar.scythemobile.model.map.MapHex
-import org.ajar.scythemobile.model.map.MapHexDesc
+import org.ajar.scythemobile.model.map.*
+import org.ajar.scythemobile.model.production.Resource
+import org.ajar.scythemobile.model.production.ResourceType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -253,6 +253,25 @@ class AbstractPlayerCombatBoardTest {
 
     @Test
     fun testRetreatUnits() {
-        fail("NYI")
+        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
+        val worker = TestUnit(TestPlayer.player, UnitType.WORKER)
+
+        val homeBaseDesc = MapHexDesc(1, HexNeigbors(), HomeBase(TestPlayer.player))
+        val combatHexDesc = MapHexDesc(2, HexNeigbors())
+        val mapDesc = MapDesc(homeBaseDesc, combatHexDesc)
+        val map = GameMap(mapDesc)
+
+        val combatHex = map.findHexAtIndex(combatHexDesc.location)!!
+        val homeBase = map.findHexAtIndex(homeBaseDesc.location)!!
+
+        combatHex.unitsPresent.addAll(listOf(mech, worker))
+
+        val playerBoard = TestPlayerCombatBoard(TestPlayer.player, combatHex.unitsPresent)
+        assertEquals(2, combatHex.unitsPresent.size)
+        playerBoard.retreatUnits(combatHex)
+
+        assertEquals(0, combatHex.unitsPresent.size)
+        assertEquals(2, homeBase.unitsPresent.size)
+        assertTrue(homeBase.unitsPresent.containsAll(listOf(mech, worker)))
     }
 }
