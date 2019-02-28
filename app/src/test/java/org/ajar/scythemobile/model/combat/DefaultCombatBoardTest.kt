@@ -43,10 +43,12 @@ class DefaultCombatBoardTest {
 
         TestPlayer.player.power = 2
         TestPlayer.player.popularity = 3
+        TestPlayer.player.combatCards.clear()
         TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
 
         TestPlayer.enemy.power = 3
         TestPlayer.enemy.popularity = 2
+        TestPlayer.enemy.combatCards.clear()
         TestPlayer.enemy.combatCards.add(CombatCardDeck.currentDeck.drawCard())
 
         combatBoard = DefaultCombatBoard(combatHex, TestPlayer.player, TestPlayer.enemy)
