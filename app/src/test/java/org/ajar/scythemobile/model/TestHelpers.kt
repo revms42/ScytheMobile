@@ -39,13 +39,23 @@ class TestPlayer : Player {
     override val playerMat: PlayerMatModel = PlayerMat.MECHANICAL
     override var power: Int = 2
 
+    val stars: ArrayList<StarType> = ArrayList()
+
     companion object {
-        val player: Player = TestPlayer()
-        val enemy: Player = TestPlayer()
+        val player: TestPlayer = TestPlayer()
+        val enemy: TestPlayer = TestPlayer()
+    }
+
+    override fun addStar(starType: StarType) {
+        stars.add(starType)
+    }
+
+    override fun getStarCount(starType: StarType): Int {
+        return stars.filter { it == starType }.size
     }
 }
 
-data class TestUnit(override var controllingPlayer: Player, override val type: UnitType, override val heldResources: ArrayList<Resource>? = null) : GameUnit
+data class TestUnit(override var controllingPlayer: Player, override val type: UnitType, override val heldResources: ArrayList<Resource>? = ArrayList()) : GameUnit
 
 class TestPlayerCombatBoard(player: Player, unitsPresent: List<GameUnit>) : AbstractPlayerCombatBoard(player, unitsPresent) {
     override fun requestCombatDecision() {}

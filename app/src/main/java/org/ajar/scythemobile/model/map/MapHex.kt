@@ -34,6 +34,13 @@ open class MapHex(val desc: MapHexDesc) {
         if (unit.heldResources?.remove(resource) == true) resourcesPresent.add(resource)
     }
 
+    fun dropAll(unit: GameUnit) {
+        if(unit.heldResources != null){
+            resourcesPresent.addAll(unit.heldResources!!)
+            unit.heldResources!!.clear()
+        }
+    }
+
     fun loadResource(unit: GameUnit, resource: Resource) {
         if(unit.heldResources != null && resourcesPresent.remove(resource)) unit.heldResources?.add(resource)
     }

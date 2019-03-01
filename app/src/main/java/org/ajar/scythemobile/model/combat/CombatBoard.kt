@@ -1,6 +1,7 @@
 package org.ajar.scythemobile.model.combat
 
 import org.ajar.scythemobile.model.CombatChoice
+import org.ajar.scythemobile.model.StarType
 import org.ajar.scythemobile.model.entity.AbstractPlayer
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.Player
@@ -155,8 +156,10 @@ open class DefaultCombatBoard(final override val combatHex: MapHex, override val
 
             defendingPlayer.retreatUnits(combatHex)
 
+            attackingPlayer.player.addStar(StarType.COMBAT)
+
             defendingPlayer.unitsPresent
-        }.forEach { gameUnit -> gameUnit.heldResources?.forEach { resource -> combatHex.dropResource(gameUnit, resource) } }
+        }.forEach { gameUnit -> combatHex.dropAll(gameUnit)}
     }
 
     companion object {
