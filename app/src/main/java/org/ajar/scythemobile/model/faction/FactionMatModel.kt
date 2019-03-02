@@ -1,5 +1,6 @@
 package org.ajar.scythemobile.model.faction
 
+import android.support.annotation.VisibleForTesting
 import org.ajar.scythemobile.model.Mat
 
 enum class FactionMat(
@@ -63,7 +64,9 @@ enum class FactionMat(
 }
 
 class FactionMatInstance(val model: FactionMatModel) {
-    val unlockedMechAbility: List<FactionMechAbility> = ArrayList()
+    private val abilityMap = mapOf(*model.mechAbilities.map { Pair(it.abilityName, it) }.toTypedArray())
+
+    private val unlockedMechAbility: MutableList<FactionMechAbility> = ArrayList()
 
     fun getMovementAbilities() : List<MovementRule> {
         return unlockedMechAbility.filter { it is MovementRule }.map { it as MovementRule }
@@ -71,6 +74,10 @@ class FactionMatInstance(val model: FactionMatModel) {
 
     fun getCombatAbilities() : List<CombatRule> {
         return unlockedMechAbility.filter { it is CombatRule }.map { it as CombatRule }
+    }
+
+    fun unlockMechAbility(name: String) {
+        abilityMap[name]?.also { unlockedMechAbility.add(it) }
     }
 }
 

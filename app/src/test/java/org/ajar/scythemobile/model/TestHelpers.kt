@@ -29,21 +29,21 @@ class TestRequester : RequestsUserInput {
 
 class TestUser(override val human: Boolean = false, override val requester: RequestsUserInput? = TestRequester()) : User
 
-class TestPlayer : Player {
+class TestPlayer(faction: FactionMat = FactionMat.CRIMEA) : Player {
     override val user: User = TestUser()
     override val combatCards: MutableList<CombatCard> = ArrayList()
     override var popularity: Int = 5
     override var coins: Int = 0
     override val objectives: MutableList<Objective> = ArrayList()
-    override val factionMat: FactionMatInstance = FactionMatInstance(FactionMat.CRIMEA)
+    override val factionMat: FactionMatInstance = FactionMatInstance(faction)
     override val playerMat: PlayerMatModel = PlayerMat.MECHANICAL
     override var power: Int = 2
 
     val stars: ArrayList<StarType> = ArrayList()
 
     companion object {
-        val player: TestPlayer = TestPlayer()
-        val enemy: TestPlayer = TestPlayer()
+        var player: TestPlayer = TestPlayer()
+        var enemy: TestPlayer = TestPlayer()
     }
 
     override fun addStar(starType: StarType) {

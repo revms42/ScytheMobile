@@ -136,7 +136,7 @@ class Seaworthy : AbstractMovementRule("Seaworthy", true) {
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         return if (starting.desc.mapFeature.contains(SpecialFeature.LAKE)){
-            starting.matchingNeighborsNoRivers { _ -> true }
+            starting.matchingNeighborsNoRivers { true }
         } else {
             starting.matchingNeighborsNoRivers { mapFeature -> mapFeature == SpecialFeature.LAKE }
         }

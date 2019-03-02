@@ -70,6 +70,27 @@ enum class CombatChoice(private val defaultMessage: String, private val defaultI
         }
 }
 
+class RetreatChoice(private val defaultMessage: String = "Choose a hex to retreat to", private val defaultImage: Int = -1): Choice {
+
+    private var _image: Int? = null
+    override val image: Int
+        get() {
+            if (_image == null) {
+                _image = Choice.messageLoader?.loadImage(this)
+            }
+            return if(_image == null) defaultImage else _image!!
+        }
+
+    private var _message: String? = null
+    override val message: String
+        get() {
+            if (_message == null) {
+                _message = Choice.messageLoader?.loadMessage(this)
+            }
+            return if(_message == null) defaultMessage else _message!!
+        }
+}
+
 interface Choice {
     val message: String
     val image: Int
