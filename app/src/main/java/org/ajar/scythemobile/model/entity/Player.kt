@@ -1,5 +1,6 @@
 package org.ajar.scythemobile.model.entity
 
+import org.ajar.scythemobile.model.StarType
 import org.ajar.scythemobile.model.User
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.combat.CombatCardDeck
@@ -61,6 +62,14 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, overr
         }
     }
 
+    override fun addStar(starType: StarType) {
+        TODO("Need to make the star track")
+    }
+
+    override fun getStarCount(starType: StarType): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     companion object {
         fun selectObjective() : Objective {
             return ObjectiveCardDeck.currentDeck.drawCard()
@@ -82,4 +91,7 @@ interface Player {
     var popularity: Int
     var coins: Int
     val objectives: MutableList<Objective>
+
+    fun addStar(starType: StarType)
+    fun getStarCount(starType: StarType): Int
 }
