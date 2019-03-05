@@ -9,6 +9,7 @@ import org.ajar.scythemobile.model.faction.FactionMatInstance
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.playermat.PlayerMat
+import org.ajar.scythemobile.model.playermat.PlayerMatInstance
 import org.ajar.scythemobile.model.playermat.PlayerMatModel
 import org.ajar.scythemobile.model.production.Resource
 
@@ -29,30 +30,25 @@ class TestRequester : RequestsUserInput {
 
 class TestUser(override val human: Boolean = false, override val requester: RequestsUserInput? = TestRequester()) : User
 
-class TestPlayer(faction: FactionMat = FactionMat.CRIMEA) : Player {
+class TestPlayer(faction: FactionMat = FactionMat.CRIMEA, playerMatModel: PlayerMatModel = PlayerMat.MECHANICAL ) : Player {
     override val user: User = TestUser()
     override val combatCards: MutableList<CombatCard> = ArrayList()
     override var popularity: Int = 5
     override var coins: Int = 0
     override val objectives: MutableList<Objective> = ArrayList()
     override val factionMat: FactionMatInstance = FactionMatInstance(faction)
-    override val playerMat: PlayerMatModel = PlayerMat.MECHANICAL
+    override val playerMat: PlayerMatInstance = PlayerMatInstance(playerMatModel)
     override var power: Int = 2
 
-    val stars: ArrayList<StarType> = ArrayList()
+    override val stars: HashMap<StarModel, Int> = HashMap()
 
     companion object {
         var player: TestPlayer = TestPlayer()
         var enemy: TestPlayer = TestPlayer()
     }
 
-    override fun addStar(starType: StarType) {
-        stars.add(starType)
-    }
-
-    override fun getStarCount(starType: StarType): Int {
-        return stars.filter { it == starType }.size
-    }
+    override fun getStarCount(starType: StarModel): Int = stars[starType]?: 0
+    override fun addStar(starType: StarModel) = factionMat.model.addStar(starType, this)
 }
 
 data class TestUnit(override var controllingPlayer: Player, override val type: UnitType, override val heldResources: ArrayList<Resource>? = ArrayList()) : GameUnit

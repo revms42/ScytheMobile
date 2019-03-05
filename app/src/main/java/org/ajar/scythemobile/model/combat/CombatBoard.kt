@@ -2,6 +2,7 @@ package org.ajar.scythemobile.model.combat
 
 import org.ajar.scythemobile.model.CombatChoice
 import org.ajar.scythemobile.model.RetreatChoice
+import org.ajar.scythemobile.model.StarModel
 import org.ajar.scythemobile.model.StarType
 import org.ajar.scythemobile.model.entity.AbstractPlayer
 import org.ajar.scythemobile.model.entity.GameUnit
