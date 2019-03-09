@@ -6,11 +6,9 @@ import org.ajar.scythemobile.model.TestUnit
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.faction.FactionMat
-import org.ajar.scythemobile.model.faction.Seaworthy
 import org.ajar.scythemobile.model.map.*
 import org.ajar.scythemobile.model.production.Resource
 import org.ajar.scythemobile.model.production.ResourceType
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -142,7 +140,7 @@ class DefaultCombatBoardTest {
         assertEquals(2, TestPlayer.enemy.combatCards.size)
         assertEquals(0, TestPlayer.enemy.getStarCount(StarType.COMBAT))
 
-        assertEquals(1, combatHex.resourcesPresent.size)
+        assertEquals(1, combatHex.heldResources.size)
     }
 
     @Test
@@ -174,7 +172,7 @@ class DefaultCombatBoardTest {
         assertEquals(2, TestPlayer.enemy.combatCards.size)
         assertEquals(0, TestPlayer.enemy.getStarCount(StarType.COMBAT))
 
-        assertEquals(1, combatHex.resourcesPresent.size)
+        assertEquals(1, combatHex.heldResources.size)
     }
 
     @Test
@@ -204,7 +202,7 @@ class DefaultCombatBoardTest {
         assertEquals(0, TestPlayer.enemy.power)
         assertEquals(1, TestPlayer.enemy.getStarCount(StarType.COMBAT))
 
-        assertEquals(1, combatHex.resourcesPresent.size)
+        assertEquals(1, combatHex.heldResources.size)
     }
 
     @Test
@@ -236,6 +234,6 @@ class DefaultCombatBoardTest {
         assertEquals(0, TestPlayer.enemy.power)
         assertEquals(1, TestPlayer.enemy.getStarCount(StarType.COMBAT))
 
-        assertEquals(1, combatHex.resourcesPresent.size)
+        assertEquals(1, combatHex.heldResources.size)
     }
 }

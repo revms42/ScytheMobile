@@ -2,25 +2,37 @@ package org.ajar.scythemobile.model.map
 
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.Player
+import org.ajar.scythemobile.model.entity.ResourceHolder
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.production.Resource
 
 class FactionHomeHex(desc: MapHexDesc, val player: Player?) : MapHex(desc) {
 }
 
-open class MapHex(val desc: MapHexDesc) {
+open class MapHex(val desc: MapHexDesc) : ResourceHolder {
 
     var unitsPresent: ArrayList<GameUnit> = ArrayList()
-    var resourcesPresent: ArrayList<Resource> = ArrayList()
+    override var heldResources: ArrayList<Resource> = ArrayList()
+    var encounterCard: EncounterCard? = null
+
+    init {
+        if(desc.mapFeature.contains(SpecialFeature.ENCOUNTER)) {
+            encounterCard = EncounterDeck.currentDeck.drawCard()
+        }
+    }
 
     val playerInControl : Player?
         get() {
             return if(unitsPresent.isEmpty()) {
                 null
             } else {
-                unitsPresent.firstOrNull { it.type == UnitType.CHARACTER || it.type == UnitType.MECH || it.type == UnitType.WORKER }?.controllingPlayer
+                findControllingUnit()
             } //TODO: Flesh this out when airships come into play.
         }
+
+    private fun findControllingUnit() : Player? =
+            unitsPresent.firstOrNull { it.type == UnitType.CHARACTER || it.type == UnitType.MECH || it.type == UnitType.WORKER }?.controllingPlayer?:
+            unitsPresent.firstOrNull { it.type == UnitType.STRUCTURE}?.controllingPlayer
 
     fun canUnitOccupy(unit:GameUnit) : Boolean {
         return if(playerInControl != null) unit.controllingPlayer == playerInControl else true
@@ -31,18 +43,16 @@ open class MapHex(val desc: MapHexDesc) {
     }
 
     fun dropResource(unit: GameUnit, resource: Resource) {
-        if (unit.heldResources?.remove(resource) == true) resourcesPresent.add(resource)
+        if (unit.heldResources.remove(resource)) heldResources.add(resource)
     }
 
     fun dropAll(unit: GameUnit) {
-        if(unit.heldResources != null){
-            resourcesPresent.addAll(unit.heldResources!!)
-            unit.heldResources!!.clear()
-        }
+        heldResources.addAll(unit.heldResources)
+        unit.heldResources.clear()
     }
 
     fun loadResource(unit: GameUnit, resource: Resource) {
-        if(unit.heldResources != null && resourcesPresent.remove(resource)) unit.heldResources?.add(resource)
+        if(heldResources.remove(resource)) unit.heldResources.add(resource)
     }
 
     private fun matchingNeighbors(riversBlock: Boolean, predicate: (MapFeature) -> Boolean) : List<MapHex?> {

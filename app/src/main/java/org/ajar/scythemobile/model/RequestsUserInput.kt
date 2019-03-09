@@ -91,6 +91,69 @@ class RetreatChoice(private val defaultMessage: String = "Choose a hex to retrea
         }
 }
 
+class MaifukuChoice(private val defaultMessage: String = "Deploy a trap?", private val defaultImage: Int = -1) : Choice {
+
+    private var _image: Int? = null
+    override val image: Int
+        get() {
+            if (_image == null) {
+                _image = Choice.messageLoader?.loadImage(this)
+            }
+            return if(_image == null) defaultImage else _image!!
+        }
+
+    private var _message: String? = null
+    override val message: String
+        get() {
+            if (_message == null) {
+                _message = Choice.messageLoader?.loadMessage(this)
+            }
+            return if(_message == null) defaultMessage else _message!!
+        }
+}
+
+class ExaltChoice(private val defaultMessage: String = "Deploy a flag?", private val defaultImage: Int = -1) : Choice {
+
+    private var _image: Int? = null
+    override val image: Int
+        get() {
+            if (_image == null) {
+                _image = Choice.messageLoader?.loadImage(this)
+            }
+            return if(_image == null) defaultImage else _image!!
+        }
+
+    private var _message: String? = null
+    override val message: String
+        get() {
+            if (_message == null) {
+                _message = Choice.messageLoader?.loadMessage(this)
+            }
+            return if(_message == null) defaultMessage else _message!!
+        }
+}
+
+class EncounterChoice(private val defaultMessage: String = "Encounter", private val defaultImage: Int = -1) : Choice {
+
+    private var _image: Int? = null
+    override val image: Int
+        get() {
+            if (_image == null) {
+                _image = Choice.messageLoader?.loadImage(this)
+            }
+            return if(_image == null) defaultImage else _image!!
+        }
+
+    private var _message: String? = null
+    override val message: String
+        get() {
+            if (_message == null) {
+                _message = Choice.messageLoader?.loadMessage(this)
+            }
+            return if(_message == null) defaultMessage else _message!!
+        }
+}
+
 interface Choice {
     val message: String
     val image: Int
@@ -114,13 +177,15 @@ interface MessageLoader {
 
 interface RequestsUserInput {
 
-    fun <T> requestChoice(choice: Choice, choices: List<T> ) : T
-    fun <T> requestSelection(choice: Choice, choices: List<T>) : List<T>
+    fun <T> requestChoice(choice: Choice, choices: Collection<T> ) : T
+    fun <T> requestCancellableChoice(choice: Choice, choices: Collection<T>) : T?
+    fun <T> requestSelection(choice: Choice, choices: Collection<T>, limit: Int = choices.size) : Collection<T>
     fun requestBinaryChoice(binaryChoice: BinaryChoice) : Boolean
 
     companion object {
         var requestor: RequestsUserInput? = null
 
+        fun <T> requestCancellableChoice(choice: Choice, choices: Collection<T>) = requestor!!.requestCancellableChoice(choice, choices)
         fun <T> requestChoice(choice: Choice, choices: List<T>) = requestor!!.requestChoice(choice, choices)
         fun requestBinaryChoice(binaryChoice: BinaryChoice) = requestor!!.requestBinaryChoice(binaryChoice)
         fun <T> requestSelection(choice: Choice, choices: List<T>) = requestor!!.requestSelection(choice, choices)
