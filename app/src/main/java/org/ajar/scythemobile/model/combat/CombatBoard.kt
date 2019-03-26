@@ -8,6 +8,7 @@ import org.ajar.scythemobile.model.entity.AbstractPlayer
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.Player
 import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.faction.MovementRule
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 
@@ -73,7 +74,13 @@ abstract class AbstractPlayerCombatBoard(final override val player: Player, fina
     abstract fun requestCombatDecision()
 
     override fun retreatUnits(fromHex: MapHex) {
-        val ability = player.factionMat.getMovementAbilities().firstOrNull { it.allowsRetreat }
+        var ability: MovementRule? = null
+        for (unit in unitsPresent) {
+            ability = player.factionMat.getMovementAbilities(unit.type).firstOrNull { it.allowsRetreat }
+
+            if (ability != null) break
+        }
+
         if(ability != null ) {
             //TODO: Right now there is only one retreat specified ability. If anyone gains more than one this needs to be changed.
             val retreatList = ability.validEndingHexes(fromHex)?.filter { !(it?.willMoveProvokeFight()?: true) }?.toMutableList()?: ArrayList()

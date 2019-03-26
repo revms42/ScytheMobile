@@ -1,8 +1,6 @@
 package org.ajar.scythemobile.model.entity
 
-import org.ajar.scythemobile.model.StarModel
-import org.ajar.scythemobile.model.StarType
-import org.ajar.scythemobile.model.User
+import org.ajar.scythemobile.model.*
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.faction.FactionMatInstance
@@ -11,6 +9,7 @@ import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
 import org.ajar.scythemobile.model.playermat.PlayerMatInstance
 import org.ajar.scythemobile.model.playermat.PlayerMatModel
+import org.ajar.scythemobile.model.turn.Turn
 
 class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playerMatModel: PlayerMatModel) : Player {
 
@@ -31,7 +30,16 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
             }
         }
 
+    private var _turn: Turn? = null
+    override val turn: Turn
+        get() {
+            if(_turn == null) {
+                _turn = Turn(this)
+            }
+            return _turn!!
+        }
     override val combatCards: MutableList<CombatCard> = ArrayList()
+    override val deployedUnits: MutableList<GameUnit> = ArrayList()
 
     private var _popularity: Int = 0
     override var popularity: Int
@@ -75,6 +83,13 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
 
     override fun getStarCount(starType: StarModel): Int = stars[starType]?: 0
     override fun addStar(starType: StarModel) = factionMat.model.addStar(starType, this)
+    override fun newTurn() {
+        _turn = Turn(this)
+    }
+
+    override fun finalizeTurn(): List<String> {
+        return turn.finalizeTurn()
+    }
 
     companion object {
         fun selectObjective() : Objective {
@@ -93,6 +108,8 @@ interface Player {
     var power: Int
     val combatCards: MutableList<CombatCard>
 
+    val deployedUnits: MutableList<GameUnit>
+
     val playerMat: PlayerMatInstance
     var popularity: Int
     var coins: Int
@@ -100,6 +117,10 @@ interface Player {
 
     val stars: HashMap<StarModel, Int>
 
+    val turn: Turn
+
     fun getStarCount(starType: StarModel): Int
     fun addStar(starType: StarModel)
+    fun newTurn()
+    fun finalizeTurn(): List<String>
 }

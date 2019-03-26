@@ -150,7 +150,7 @@ class DefaultCombatBoardTest {
         combatBoard.getPlayerBoard(TestPlayer.player).powerSelected = 2
         combatBoard.getOpposingBoard(TestPlayer.player).powerSelected = 2
 
-        enemyWorker.heldResources?.add(Resource(ResourceType.FOOD))
+        enemyWorker.heldResources.add(Resource(ResourceType.FOOD))
 
         val combatResults = combatBoard.determineResults()
         assertEquals(2, combatResults.attackerResult)
@@ -161,7 +161,7 @@ class DefaultCombatBoardTest {
         assertEquals(2, combatHex.unitsPresent.size)
         assertTrue(combatHex.unitsPresent.containsAll(listOf(playerMech, playerWorker)))
         assertTrue(lakeHex.unitsPresent.containsAll(listOf(enemyMech, enemyWorker)))
-        assertEquals(0, enemyWorker.heldResources?.size)
+        assertEquals(0, enemyWorker.heldResources.size)
         assertEquals(1, TestPlayer.player.getStarCount(StarType.COMBAT))
 
         assertEquals(2, TestPlayer.player.popularity)
@@ -212,7 +212,7 @@ class DefaultCombatBoardTest {
         combatBoard.getPlayerBoard(TestPlayer.player).powerSelected = 2
         combatBoard.getOpposingBoard(TestPlayer.player).powerSelected = 3
 
-        playerWorker.heldResources?.add(Resource(ResourceType.FOOD))
+        playerWorker.heldResources.add(Resource(ResourceType.FOOD))
 
         val combatResults = combatBoard.determineResults()
         assertEquals(2, combatResults.attackerResult)
@@ -223,7 +223,7 @@ class DefaultCombatBoardTest {
         assertEquals(2, combatHex.unitsPresent.size)
         assertTrue(combatHex.unitsPresent.containsAll(listOf(enemyMech, enemyWorker)))
         assertTrue(lakeHex.unitsPresent.containsAll(listOf(playerMech, playerWorker)))
-        assertEquals(0, playerWorker.heldResources?.size)
+        assertEquals(0, playerWorker.heldResources.size)
         assertEquals(0, TestPlayer.player.getStarCount(StarType.COMBAT))
 
         assertEquals(3, TestPlayer.player.popularity)

@@ -2,7 +2,7 @@ package org.ajar.scythemobile.model.production
 
 import org.ajar.scythemobile.model.combat.CombatCard
 
-class CrimeaCardResource(type: ResourceType, val card: CombatCard) : Resource(type)
+class CrimeaCardResource(val card: CombatCard) : Resource(ResourceType.ANY)
 
 open class Resource(val type: ResourceType)
 
@@ -11,5 +11,6 @@ enum class ResourceType {
     FOOD,
     METAL,
     OIL,
-    WORKER
+    WORKER,
+    ANY
 }

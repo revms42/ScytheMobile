@@ -1,9 +1,6 @@
 package org.ajar.scythemobile.model.faction
 
-import org.ajar.scythemobile.model.EncounterChoice
-import org.ajar.scythemobile.model.Mat
-import org.ajar.scythemobile.model.StarModel
-import org.ajar.scythemobile.model.StarType
+import org.ajar.scythemobile.model.*
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.Player
 import org.ajar.scythemobile.model.entity.ResourceHolder
@@ -16,6 +13,7 @@ import org.ajar.scythemobile.model.playermat.SectionInstance
 import org.ajar.scythemobile.model.production.CrimeaCardResource
 import org.ajar.scythemobile.model.production.Resource
 import org.ajar.scythemobile.model.production.ResourceType
+import org.ajar.scythemobile.model.turn.CoercianTurnAction
 
 enum class FactionMat(
         override val matName: String,
@@ -45,8 +43,8 @@ enum class FactionMat(
             if (starType == StarType.COMBAT) {
                 when(player.getStarCount(starType)) {
                     0 -> player.stars[starType] = 1
-                    starType.limit -> return
-                    else -> player.stars[starType]!!.plus(1)
+                    8 -> return
+                    else -> player.stars[starType] = player.stars[starType]!!.plus(1)
                 }
             } else {
                 super.addStar(starType, player)
@@ -81,8 +79,25 @@ enum class FactionMat(
                 RiverWalk.FARM_TUNDRA, Wayfare(), Speed.singleton, Scout()
         )
 
-        override fun getFactionResourceBonus(resourceType: ResourceType, player: Player): Map<Resource, ResourceHolder?> {
-            return mapOf(*player.combatCards.map { Pair(CrimeaCardResource(resourceType, it), null) }.toTypedArray())
+        override fun promptForPaymentSelection(cost: List<ResourceType>, map: Map<Resource, MapHex>, player: Player) : Collection<Resource>? {
+            val selected = super.promptForPaymentSelection(cost, map, player)
+
+            //Here we preview whether or not payment will be accepted so we don't have to remove the action if it isn't.
+            if(selected?.firstOrNull { it::class == CrimeaCardResource::class } != null && super.paymentAccepted(selected, cost)) {
+                player.turn.performAction(CoercianTurnAction(player))
+            }
+
+            return selected
+        }
+
+        override fun selectResource(type: ResourceType, player: Player): MutableMap<in Resource, MapHex> {
+            val mapRes = super.selectResource(type, player)
+
+            if(!player.turn.checkIfActionTypePerformed(CoercianTurnAction::class.java)) {
+                player.combatCards.sortedBy { it.power }.firstOrNull { true }?.let {mapRes[CrimeaCardResource(it)] = GameMap.currentMap!!.findHomeBase(player) as MapHex }
+            }
+
+            return mapRes
         }
     },
     RUSVIET("Rusviet Union", CharacterDescription.OLGA, DefaultFactionAbility.RELENTLESS, 0x00FF0000, 3, 2, 0, 0) {
@@ -127,15 +142,68 @@ enum class FactionMat(
         return playerMat.sections.filter { it != playerMat.currentSection }.toSet()
     }
 
-    override fun getFactionResourceBonus(resourceType: ResourceType, player: Player) : Map<Resource, ResourceHolder?> {
-        return emptyMap()
-    }
-
     override fun doEncounter(encounter: EncounterCard, unit: GameUnit) {
         val encounterOutcome= unit.controllingPlayer.user.requester?.requestChoice(EncounterChoice(), encounter.outcomes)
 
         if(encounterOutcome != null && encounterOutcome.canMeetCost(unit.controllingPlayer)) {
             encounterOutcome.applyOutcome(unit)
+        }
+    }
+
+    override fun selectResource(type: ResourceType, player: Player) : MutableMap<in Resource, MapHex> {
+        val collection = HashMap<Resource, MapHex>()
+        var currentHex: MapHex?
+
+        player.deployedUnits.forEach { unit ->
+            currentHex = GameMap.currentMap!!.locateUnit(unit)
+            if (currentHex != null) {
+                unit.heldResources.filter { it.type == type }.forEach { collection[it] = currentHex!! }
+                currentHex?.heldResources?.filter { it.type == type }?.forEach { collection[it] = currentHex!! }
+            }
+        }
+
+        return collection
+    }
+
+    internal open fun promptForPaymentSelection(cost: List<ResourceType>, map: Map<Resource, MapHex>, player: Player) : Collection<Resource>? {
+        return player.user.requester?.requestPayment(PaymentChoice(), cost, map)
+    }
+
+    override fun collectPayment(cost: List<ResourceType>, player: Player) : Boolean {
+        val map = HashMap<Resource, MapHex>()
+        cost.flatMap { selectResource(it, player).entries }.toMutableSet().forEach { map[it.key as Resource] = it.value}
+
+        val selection = promptForPaymentSelection(cost, map, player)
+
+        return if(paymentAccepted(selection, cost)) {
+            selection?.firstOrNull {
+                when(it) {
+                    is CrimeaCardResource -> !player.combatCards.remove(it.card)
+                    else -> if(map[it]?.unitsPresent?.firstOrNull { unit -> unit.heldResources.remove(it) } == null) !map[it]?.heldResources?.remove(it)!! else true
+                }
+            } == null
+        } else false
+    }
+
+    private fun paymentAccepted(selection: Collection<Resource>?, cost: List<ResourceType>) : Boolean {
+        if(selection == null) return false
+
+        val takePayment = ArrayList(selection)
+        val uncounted = ArrayList<ResourceType>()
+        for(c in cost) {
+            val found = takePayment.firstOrNull { it.type == c }
+
+            if(found == null) {
+                uncounted.add(c)
+            } else {
+                takePayment.remove(found)
+            }
+        }
+
+        return when {
+            uncounted.size == 0 -> true
+            uncounted.size == 1 && takePayment.size == 1 && takePayment[0]::class.java == CrimeaCardResource::class.java -> true
+            else -> false
         }
     }
 }
@@ -166,24 +234,6 @@ class FactionMatInstance(val model: FactionMatModel) {
         abilityMap[name]?.also { unlockedMechAbility.add(it) }
     }
 
-    fun getResourcesAvailable(resourceType: ResourceType, player: Player) : Map<Resource, ResourceHolder?> {
-        val allResources = HashMap<Resource,ResourceHolder?>()
-
-        for (unit in unitsDeployed) {
-            val mapHex = GameMap.currentMap?.locateUnit(unit)
-
-            if(mapHex?.playerInControl == player) {
-                mapHex.heldResources.forEach { if (it.type == resourceType) allResources[it] = mapHex}
-            }
-
-            unit.heldResources.forEach { if (it.type == resourceType) allResources[it] = mapHex}
-        }
-
-        allResources.putAll(model.getFactionResourceBonus(resourceType, player))
-
-        return allResources
-    }
-
     fun doTokenPlacement(unit: GameUnit, hex: MapHex) {
         if(tokens == null) {
             tokens = HashMap()
@@ -209,6 +259,11 @@ class FactionMatInstance(val model: FactionMatModel) {
     fun doEncounter(encounter: EncounterCard, gameUnit: GameUnit) {
         model.doEncounter(encounter, gameUnit)
     }
+
+
+    fun collectPayment(cost: List<ResourceType>, player: Player) : Boolean {
+        return model.collectPayment(cost, player)
+    }
 }
 
 interface FactionMatModel : Mat {
@@ -225,7 +280,11 @@ interface FactionMatModel : Mat {
 
     fun addStar(starType: StarModel, player: Player)
     fun getAvailableMatSelections(playerMat: PlayerMatInstance) : Set<SectionInstance>
-    fun getFactionResourceBonus(resourceType: ResourceType, player: Player) : Map<Resource,ResourceHolder?>
+    /**
+     * I'm Really intending this to be a drag and drop manuever where you move the resources to the cost area of the screen.
+     */
+    fun selectResource(type: ResourceType, player: Player) : MutableMap<in Resource, MapHex>
+    fun collectPayment(cost: List<ResourceType>, player: Player) : Boolean
     fun getFactionMovementRules() : List<MovementRule>
     fun doEncounter(encounter: EncounterCard, unit: GameUnit)
 }

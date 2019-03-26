@@ -9,7 +9,7 @@ import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.map.SpecialFeature
 
-enum class DefaultFactionAbility(override val abilityName: String, override val description: String) : FactionAbility {
+enum class DefaultFactionAbility(override val abilityName: String, override val description: String, override val oneUsePerTurn: Boolean = false) : FactionAbility {
     MEANDER(
             "Meander",
             "Pick up to 2 options per encounter card."
@@ -20,7 +20,8 @@ enum class DefaultFactionAbility(override val abilityName: String, override val 
     ),
     COERCION(
             "Coercion NYI",
-            "Once per turn, you may spend 1 combat card as if it were any 1 resource token."
+            "Once per turn, you may spend 1 combat card as if it were any 1 resource token.",
+            true
     ),
     RELENTLESS(
             "Relentless",
@@ -152,7 +153,8 @@ class Maifuku : AbstractTokenPlacementAbility (
 
 abstract class AbstractTokenPlacementAbility(
         override val abilityName: String,
-        override val description: String
+        override val description: String,
+        override val oneUsePerTurn: Boolean = false
 ) : TokenPlacementAbility {
 
     abstract val choice: Choice
@@ -179,8 +181,10 @@ abstract class AbstractCombatRule(
         override val description: String,
         override val appliesForAttack: Boolean = true,
         override val appliesForDefense: Boolean = true,
-        override val appliesDuringUncontested: Boolean = false
+        override val appliesDuringUncontested: Boolean = false,
+        override val oneUsePerTurn: Boolean = false
 ) : CombatRule {
+
     override fun validCombatHex(player: Player, combatBoard: CombatBoard): Boolean = true
 }
 
@@ -193,7 +197,12 @@ interface CombatRule : FactionAbility {
     fun applyEffect(player: Player, combatBoard: CombatBoard)
 }
 
-abstract class AbstractMovementRule(override val abilityName: String, override val description: String, override val allowsRetreat: Boolean = false) : MovementRule {
+abstract class AbstractMovementRule(
+        override val abilityName: String,
+        override val description: String,
+        override val allowsRetreat: Boolean = false,
+        override val oneUsePerTurn: Boolean = false
+) : MovementRule {
 
     override fun validStartingHex(hex: MapHex): Boolean = true
     override fun validUnitType(unitType: UnitType): Boolean {
@@ -211,6 +220,7 @@ interface MovementRule : FactionAbility {
 class Speed : FactionAbility {
     override val abilityName = "Speed"
     override val description = "Your character and mechs may move one additional territory when moving."
+    override val oneUsePerTurn: Boolean = false
 
     companion object {
         val singleton = Speed()
@@ -220,4 +230,5 @@ class Speed : FactionAbility {
 interface FactionAbility {
     val abilityName: String
     val description: String
+    val oneUsePerTurn: Boolean
 }

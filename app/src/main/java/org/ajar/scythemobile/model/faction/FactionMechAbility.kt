@@ -1,7 +1,6 @@
 package org.ajar.scythemobile.model.faction
 
 import org.ajar.scythemobile.model.map.GameMap
-import org.ajar.scythemobile.model.LimitedUsePerTurn
 import org.ajar.scythemobile.model.PredefinedBinaryChoice
 import org.ajar.scythemobile.model.combat.CombatBoard
 import org.ajar.scythemobile.model.entity.Player
@@ -18,6 +17,7 @@ enum class RiverWalk(override val abilityName: String, override val description:
     FARM_TUNDRA("Riverwalk: Farm or Tundra", "Move across rivers to farms or tundra", ResourceFeature.FARM, ResourceFeature.TUNDRA);
 
     override val allowsRetreat = false
+    override val oneUsePerTurn = false
 
     override fun validStartingHex(hex: MapHex): Boolean {
         return true
@@ -55,25 +55,9 @@ class Burrow : AbstractMovementRule(
 class Toka : AbstractMovementRule(
         "Toka",
         "Once per turn when moving, either 1 character or " +
-                "1 mech may move across a river."
-), LimitedUsePerTurn {
-    override val usesPerTurn: Int = 1
-
-    private var usesThisTurn: Int = 0
-    override val usesRemaining: Int
-        get() = usesPerTurn - usesThisTurn
-
-    override fun incrimentUses() {
-        usesThisTurn++
-    }
-
-    override fun decrementUses() {
-        usesThisTurn--
-    }
-
-    override fun resetUses() {
-        usesThisTurn = 0
-    }
+                "1 mech may move across a river.",
+        oneUsePerTurn = true
+) {
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         return starting.nonMatchingNeighborsIncludeRivers { it == SpecialFeature.LAKE }
