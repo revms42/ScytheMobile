@@ -3,7 +3,6 @@ package org.ajar.scythemobile.model.faction
 import org.ajar.scythemobile.model.*
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.Player
-import org.ajar.scythemobile.model.entity.ResourceHolder
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.EncounterCard
 import org.ajar.scythemobile.model.map.GameMap

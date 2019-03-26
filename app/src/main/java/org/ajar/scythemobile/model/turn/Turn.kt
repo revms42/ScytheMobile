@@ -11,7 +11,7 @@ interface TurnAction {
 }
 
 class Turn(val player: Player) {
-    private val actionsThisTurn = ArrayList<TurnAction>()
+    val actionsThisTurn = ArrayList<TurnAction>()
 
     fun performAction(action: TurnAction) {
         actionsThisTurn.add(action)

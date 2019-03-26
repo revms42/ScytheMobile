@@ -9,6 +9,7 @@ import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.map.MapFeature
 import org.ajar.scythemobile.model.map.ResourceFeature
 import org.ajar.scythemobile.model.map.SpecialFeature
+import org.ajar.scythemobile.model.turn.MoveAction
 
 enum class RiverWalk(override val abilityName: String, override val description: String, private vararg val to: MapFeature) : MovementRule {
     VILLAGE_MOUNTAIN("Riverwalk: Village or Mountain", "Move across rivers to mountains or villages", ResourceFeature.MOUNTAIN, ResourceFeature.VILLAGE),
@@ -17,11 +18,10 @@ enum class RiverWalk(override val abilityName: String, override val description:
     FARM_TUNDRA("Riverwalk: Farm or Tundra", "Move across rivers to farms or tundra", ResourceFeature.FARM, ResourceFeature.TUNDRA);
 
     override val allowsRetreat = false
-    override val oneUsePerTurn = false
 
-    override fun validStartingHex(hex: MapHex): Boolean {
-        return true
-    }
+    override fun canUse(player: Player): Boolean = true
+
+    override fun validStartingHex(hex: MapHex): Boolean = true
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         return starting.matchingNeighborsIncludeRivers { to.contains(it) }
@@ -55,9 +55,12 @@ class Burrow : AbstractMovementRule(
 class Toka : AbstractMovementRule(
         "Toka",
         "Once per turn when moving, either 1 character or " +
-                "1 mech may move across a river.",
-        oneUsePerTurn = true
+                "1 mech may move across a river."
 ) {
+
+    override fun canUse(player: Player): Boolean {
+        return player.turn.actionsThisTurn.filter { it is MoveAction }.firstOrNull { (it as MoveAction).movementRule is Toka } == null
+    }
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         return starting.nonMatchingNeighborsIncludeRivers { it == SpecialFeature.LAKE }
@@ -218,6 +221,9 @@ class Suiton : AbstractCombatRule(
         "Your character and mechs can move to and from lakes. " +
                 "If combat occurs on a lake, you may play 1 additional combat card."
 ), MovementRule {
+
+    override fun canUse(player: Player): Boolean = true
+
     override fun validUnitType(unitType: UnitType): Boolean {
         return unitType == UnitType.CHARACTER || unitType == UnitType.MECH
     }
