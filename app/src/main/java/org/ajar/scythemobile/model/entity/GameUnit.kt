@@ -1,6 +1,6 @@
 package org.ajar.scythemobile.model.entity
 
-import org.ajar.scythemobile.model.production.Resource
+import org.ajar.scythemobile.model.production.MapResource
 
 enum class TrapType(val description: String, val sprungPicture: Int = -1) {
     MAIFUKU_LOSE_POP("Lose 2 popularity"){
@@ -37,7 +37,7 @@ enum class TrapType(val description: String, val sprungPicture: Int = -1) {
 class TrapUnit(override val controllingPlayer: Player, val trapType: TrapType) : GameUnit {
     override val type: UnitType = UnitType.FLAG
 
-    override val heldResources: MutableList<Resource> = ArrayList()
+    override val heldMapResources: MutableList<MapResource> = ArrayList()
 
     var _sprung: Boolean? = null
     val sprung: Boolean
@@ -56,7 +56,7 @@ class TrapUnit(override val controllingPlayer: Player, val trapType: TrapType) :
 
 class FlagUnit(override val controllingPlayer: Player) : GameUnit {
     override val type: UnitType = UnitType.FLAG
-    override val heldResources: MutableList<Resource> = ArrayList()
+    override val heldMapResources: MutableList<MapResource> = ArrayList()
 }
 
 enum class UnitType {

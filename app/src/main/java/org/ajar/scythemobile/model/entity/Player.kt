@@ -9,6 +9,8 @@ import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
 import org.ajar.scythemobile.model.playermat.PlayerMatInstance
 import org.ajar.scythemobile.model.playermat.PlayerMatModel
+import org.ajar.scythemobile.model.production.MapResourceType
+import org.ajar.scythemobile.model.production.ResourceType
 import org.ajar.scythemobile.model.turn.Turn
 
 class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playerMatModel: PlayerMatModel) : Player {
@@ -38,6 +40,11 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
             }
             return _turn!!
         }
+
+    private var _lastTurn: Turn? = null
+    override val lastTurn: Turn?
+        get() = _lastTurn
+
     override val combatCards: MutableList<CombatCard> = ArrayList()
     override val deployedUnits: MutableList<GameUnit> = ArrayList()
 
@@ -54,7 +61,6 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
                 else -> value
             }
         }
-
 
     private var _coins: Int = 0
     override var coins: Int
@@ -84,11 +90,16 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
     override fun getStarCount(starType: StarModel): Int = stars[starType]?: 0
     override fun addStar(starType: StarModel) = factionMat.model.addStar(starType, this)
     override fun newTurn() {
+        _lastTurn = turn
         _turn = Turn(this)
     }
 
     override fun finalizeTurn(): List<String> {
         return turn.finalizeTurn()
+    }
+
+    override fun payResources(cost: List<ResourceType>): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {
@@ -118,9 +129,13 @@ interface Player {
     val stars: HashMap<StarModel, Int>
 
     val turn: Turn
+    val lastTurn: Turn?
 
     fun getStarCount(starType: StarModel): Int
     fun addStar(starType: StarModel)
     fun newTurn()
     fun finalizeTurn(): List<String>
+
+    fun canPay(cost: List<ResourceType>): Boolean
+    fun payResources(cost: List<ResourceType>) : Boolean
 }

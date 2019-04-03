@@ -20,7 +20,7 @@ enum class DefaultFactionAbility(override val abilityName: String, override val 
     ),
     COERCION(
             "Coercion NYI",
-            "Once per turn, you may spend 1 combat card as if it were any 1 resource token."
+            "Once per turn, you may spend 1 combat card as if it were any 1 mapResource token."
     ),
     RELENTLESS(
             "Relentless",

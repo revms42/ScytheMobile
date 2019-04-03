@@ -11,7 +11,7 @@ interface TurnAction {
 }
 
 class Turn(val player: Player) {
-    val actionsThisTurn = ArrayList<TurnAction>()
+    private val actionsThisTurn = ArrayList<TurnAction>()
 
     fun performAction(action: TurnAction) {
         actionsThisTurn.add(action)
@@ -25,6 +25,10 @@ class Turn(val player: Player) {
         return actionsThisTurn.firstOrNull { it.javaClass == clazz } as T?
     }
 
+    fun hasAnyOfTupes(classes: Collection<Class<out TurnAction>>) : Boolean {
+        return actionsThisTurn.any { classes.contains(it::class.java) }
+    }
+
     fun checkIfActionTypePerformed(clazz: Class<out TurnAction>) : Boolean {
         return findFirstOfType<TurnAction>(clazz) != null
     }
@@ -33,7 +37,7 @@ class Turn(val player: Player) {
         actionsThisTurn.remove(action)
     }
 
-    fun removeLaseActionOfType(clazz: Class<out TurnAction>) {
+    fun removeLastActionOfType(clazz: Class<out TurnAction>) {
         val lastAction = findActionOfType(clazz)
 
         if(lastAction.isNotEmpty()) {

@@ -1,10 +1,9 @@
 package org.ajar.scythemobile.model.turn
 
 import org.ajar.scythemobile.model.entity.GameUnit
-import org.ajar.scythemobile.model.faction.MovementRule
-import org.ajar.scythemobile.model.map.MapHex
+import org.ajar.scythemobile.model.production.ResourceType
 
-class MoveAction(val unit: GameUnit, val from: MapHex, val to: MapHex, val movementRule: MovementRule) : TurnAction {
+class TradeTurnAction(val resourcesGained: List<ResourceType>, val workerUnit: GameUnit? = null) : TurnAction {
     override fun serialize(): String {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -16,5 +15,4 @@ class MoveAction(val unit: GameUnit, val from: MapHex, val to: MapHex, val movem
     override fun applyTurnAction() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
 }

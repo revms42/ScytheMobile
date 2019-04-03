@@ -2,15 +2,25 @@ package org.ajar.scythemobile.model.production
 
 import org.ajar.scythemobile.model.combat.CombatCard
 
-class CrimeaCardResource(val card: CombatCard) : Resource(ResourceType.ANY)
+class CrimeaCardResource(val card: CombatCard) : MapResource(MapResourceType.ANY)
 
-open class Resource(val type: ResourceType)
+open class MapResource(val typeMap: MapResourceType)
 
-enum class ResourceType {
+enum class MapResourceType : ResourceType {
     WOOD,
     FOOD,
     METAL,
     OIL,
     WORKER,
     ANY
+}
+
+enum class PlayerResourceType : ResourceType {
+    COMBAT_CARD,
+    POPULARITY,
+    COIN,
+    POWER
+}
+
+interface ResourceType {
 }

@@ -4,7 +4,7 @@ import org.ajar.scythemobile.model.StarType
 import org.ajar.scythemobile.model.TestPlayer
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.map.*
-import org.ajar.scythemobile.model.production.ResourceType
+import org.ajar.scythemobile.model.production.MapResourceType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -104,7 +104,7 @@ class FactionMatModelTest {
 
         val target = TestPlayer.player.combatCards.size - 1
 
-        assertTrue(TestPlayer.player.factionMat.collectPayment(listOf(ResourceType.METAL), TestPlayer.player))
+        assertTrue(TestPlayer.player.factionMat.collectPayment(listOf(MapResourceType.METAL), TestPlayer.player))
         assertEquals(target, TestPlayer.player.combatCards.size)
     }
 }

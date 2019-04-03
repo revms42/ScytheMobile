@@ -10,9 +10,10 @@ import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.playermat.PlayerMatInstance
 import org.ajar.scythemobile.model.playermat.SectionInstance
 import org.ajar.scythemobile.model.production.CrimeaCardResource
-import org.ajar.scythemobile.model.production.Resource
-import org.ajar.scythemobile.model.production.ResourceType
+import org.ajar.scythemobile.model.production.MapResource
+import org.ajar.scythemobile.model.production.MapResourceType
 import org.ajar.scythemobile.model.turn.CoercianTurnAction
+import org.ajar.scythemobile.model.turn.MoveTurnAction
 
 enum class FactionMat(
         override val matName: String,
@@ -78,7 +79,7 @@ enum class FactionMat(
                 RiverWalk.FARM_TUNDRA, Wayfare(), Speed.singleton, Scout()
         )
 
-        override fun promptForPaymentSelection(cost: List<ResourceType>, map: Map<Resource, MapHex>, player: Player) : Collection<Resource>? {
+        override fun promptForPaymentSelection(cost: List<MapResourceType>, map: Map<MapResource, MapHex>, player: Player) : Collection<MapResource>? {
             val selected = super.promptForPaymentSelection(cost, map, player)
 
             //Here we preview whether or not payment will be accepted so we don't have to remove the action if it isn't.
@@ -89,8 +90,8 @@ enum class FactionMat(
             return selected
         }
 
-        override fun selectResource(type: ResourceType, player: Player): MutableMap<in Resource, MapHex> {
-            val mapRes = super.selectResource(type, player)
+        override fun selectResource(typeMap: MapResourceType, player: Player): MutableMap<in MapResource, MapHex> {
+            val mapRes = super.selectResource(typeMap, player)
 
             if(!player.turn.checkIfActionTypePerformed(CoercianTurnAction::class.java)) {
                 player.combatCards.sortedBy { it.power }.firstOrNull { true }?.let {mapRes[CrimeaCardResource(it)] = GameMap.currentMap!!.findHomeBase(player) as MapHex }
@@ -149,28 +150,28 @@ enum class FactionMat(
         }
     }
 
-    override fun selectResource(type: ResourceType, player: Player) : MutableMap<in Resource, MapHex> {
-        val collection = HashMap<Resource, MapHex>()
+    override fun selectResource(typeMap: MapResourceType, player: Player) : MutableMap<in MapResource, MapHex> {
+        val collection = HashMap<MapResource, MapHex>()
         var currentHex: MapHex?
 
         player.deployedUnits.forEach { unit ->
             currentHex = GameMap.currentMap!!.locateUnit(unit)
             if (currentHex != null) {
-                unit.heldResources.filter { it.type == type }.forEach { collection[it] = currentHex!! }
-                currentHex?.heldResources?.filter { it.type == type }?.forEach { collection[it] = currentHex!! }
+                unit.heldMapResources.filter { it.typeMap == typeMap }.forEach { collection[it] = currentHex!! }
+                currentHex?.heldMapResources?.filter { it.typeMap == typeMap }?.forEach { collection[it] = currentHex!! }
             }
         }
 
         return collection
     }
 
-    internal open fun promptForPaymentSelection(cost: List<ResourceType>, map: Map<Resource, MapHex>, player: Player) : Collection<Resource>? {
+    internal open fun promptForPaymentSelection(cost: List<MapResourceType>, map: Map<MapResource, MapHex>, player: Player) : Collection<MapResource>? {
         return player.user.requester?.requestPayment(PaymentChoice(), cost, map)
     }
 
-    override fun collectPayment(cost: List<ResourceType>, player: Player) : Boolean {
-        val map = HashMap<Resource, MapHex>()
-        cost.flatMap { selectResource(it, player).entries }.toMutableSet().forEach { map[it.key as Resource] = it.value}
+    override fun collectPayment(cost: List<MapResourceType>, player: Player) : Boolean {
+        val map = HashMap<MapResource, MapHex>()
+        cost.flatMap { selectResource(it, player).entries }.toMutableSet().forEach { map[it.key as MapResource] = it.value}
 
         val selection = promptForPaymentSelection(cost, map, player)
 
@@ -178,19 +179,19 @@ enum class FactionMat(
             selection?.firstOrNull {
                 when(it) {
                     is CrimeaCardResource -> !player.combatCards.remove(it.card)
-                    else -> if(map[it]?.unitsPresent?.firstOrNull { unit -> unit.heldResources.remove(it) } == null) !map[it]?.heldResources?.remove(it)!! else true
+                    else -> if(map[it]?.unitsPresent?.firstOrNull { unit -> unit.heldMapResources.remove(it) } == null) !map[it]?.heldMapResources?.remove(it)!! else true
                 }
             } == null
         } else false
     }
 
-    private fun paymentAccepted(selection: Collection<Resource>?, cost: List<ResourceType>) : Boolean {
+    private fun paymentAccepted(selection: Collection<MapResource>?, cost: List<MapResourceType>) : Boolean {
         if(selection == null) return false
 
         val takePayment = ArrayList(selection)
-        val uncounted = ArrayList<ResourceType>()
+        val uncounted = ArrayList<MapResourceType>()
         for(c in cost) {
-            val found = takePayment.firstOrNull { it.type == c }
+            val found = takePayment.firstOrNull { it.typeMap == c }
 
             if(found == null) {
                 uncounted.add(c)
@@ -260,9 +261,137 @@ class FactionMatInstance(val model: FactionMatModel) {
     }
 
 
-    fun collectPayment(cost: List<ResourceType>, player: Player) : Boolean {
+    fun collectPayment(cost: List<MapResourceType>, player: Player) : Boolean {
         return model.collectPayment(cost, player)
     }
+
+    //TODO: Note that it's not dealing with airships.
+    fun performSingleMove(unit: GameUnit, player: Player) : DestinationSelection? {
+        val rules = getMovementAbilities(unit.type)
+        var ridingWorkers: MutableList<GameUnit> = mutableListOf()
+
+        if (unit.type == UnitType.MECH) {
+            val workers = GameMap.currentMap?.locateUnit(unit)!!.unitsPresent.filter { it.type == UnitType.WORKER }
+            player.user.requester?.requestSelection(MoveWorkersChoice(), workers)?.let { ridingWorkers.addAll(it) }
+        }
+
+        val starting = GameMap.currentMap?.locateUnit(unit)
+        val allResults = HashMap<MapHex, MovementRule>()
+        if (starting != null) {
+            rules.filter { it.canUse(player) }.forEach { mr ->
+                mr.validEndingHexes(starting)?.forEach { dest ->
+                    dest?.let {
+                        when {
+                            !allResults.containsKey(it) -> allResults[it] = mr
+                            allResults[it] !is StandardMove && mr is StandardMove -> allResults[it] = mr
+                        }
+                    }
+                }
+            }
+        }
+
+        return player.user.requester?.requestCancellableChoice(MovementChoice(), allResults.map { DestinationSelection(it.key, it.value, ridingWorkers) })
+    }
+
+    fun performMove(unitsAllowed: Int, maxDistance: Int, player: Player) : Boolean {
+        val movements = ArrayList<MoveTurnAction>()
+
+        var i = 0
+        unitSelection@ while(i < unitsAllowed) {
+            val choices = player.deployedUnits.filter { it.type != UnitType.STRUCTURE }.map { Pair(it, GameMap.currentMap?.locateUnit(it)) }
+
+            val selection = player.user.requester?.requestCancellableChoice(MoveUnitChoice(), choices)
+
+            if(selection != null) {
+                var j = 0
+                var previousDestination: DestinationSelection? = null
+
+                movementSelection@ while(j < maxDistance) {
+                    val nextDestination = performSingleMove(selection.first, player)
+
+                    if(nextDestination == null) {
+                        if(previousDestination == null) {
+                            break@unitSelection
+                        } else {
+                            if(player.user.requester?.requestBinaryChoice(PredefinedBinaryChoice.ABORT_DESTINATION) == true) {
+                                break@movementSelection
+                            } else {
+                                break@unitSelection
+                            }
+                        }
+                    } else {
+                        if(!nextDestination.mapHex.canUnitOccupy(selection.first)) {
+                            if(player.user.requester?.requestBinaryChoice(PredefinedBinaryChoice.END_DESTINATION) == true) {
+                                if(previousDestination == null){
+                                    movements.add(MoveTurnAction(selection.first, selection.second!!, nextDestination.mapHex, nextDestination.ridingUnits, nextDestination.movementRule))
+                                } else {
+                                    movements.add(MoveTurnAction(selection.first, previousDestination.mapHex, nextDestination.mapHex, nextDestination.ridingUnits, nextDestination.movementRule))
+                                }
+
+                                break@unitSelection
+                            } else {
+                                break@movementSelection
+                            }
+                        } else {
+                            if(previousDestination == null){
+                                movements.add(MoveTurnAction(selection.first, selection.second!!, nextDestination.mapHex, nextDestination.ridingUnits, nextDestination.movementRule))
+                            } else {
+                                movements.add(MoveTurnAction(selection.first, previousDestination.mapHex, nextDestination.mapHex, nextDestination.ridingUnits, nextDestination.movementRule))
+                            }
+
+                            previousDestination = nextDestination
+                            j++
+                        }
+                    }
+                }
+                i++
+            } else {
+                return if(i == 0) {
+                    false
+                } else {
+                    if (player.user.requester?.requestBinaryChoice(PredefinedBinaryChoice.ABORT_MOVEMENT) == true) {
+                        if(player.user.requester?.requestBinaryChoice(PredefinedBinaryChoice.END_MOVEMENT) == true) {
+                            false
+                        } else {
+                            break
+                        }
+                    } else {
+                        continue
+                    }
+                }
+            }
+        }
+
+        TODO("Execute movements")
+        return true
+    }
+//        if(selection != null) {
+//            val dest = selection.mapHex
+//
+//            if(dest.playerInControl != player && dest.willMoveProvokeFight()) {
+//                // There is an enemy fighter unit present in the location.
+//                TODO("FIGHT!!!!")
+//            } else {
+//                // There are no enemy fighter units.
+//                if(dest.canUnitOccupy(unit)) {
+//                    // There are no enemy units at all.
+//                    dest.unitsPresent.add(unit)
+//                    starting!!.unitsPresent.remove(unit)
+//
+//                    player.turn.performAction(MoveTurnAction(unit, starting, dest, ridingWorkers, selection.movementRule))
+//                } else {
+//                    // There are enemy workers there.
+//                    if(unit.typeMap == UnitType.CHARACTER || unit.typeMap == UnitType.MECH) {
+//                        // Drive them out!
+//                        TODO("Drive off Enemy workers!!!")
+//                    } else {
+//                        // You can't drive off workers with workers
+//                        TODO("You can't drive off workers with workers")
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
 
 interface FactionMatModel : Mat {
@@ -282,8 +411,8 @@ interface FactionMatModel : Mat {
     /**
      * I'm Really intending this to be a drag and drop manuever where you move the resources to the cost area of the screen.
      */
-    fun selectResource(type: ResourceType, player: Player) : MutableMap<in Resource, MapHex>
-    fun collectPayment(cost: List<ResourceType>, player: Player) : Boolean
+    fun selectResource(typeMap: MapResourceType, player: Player) : MutableMap<in MapResource, MapHex>
+    fun collectPayment(cost: List<MapResourceType>, player: Player) : Boolean
     fun getFactionMovementRules() : List<MovementRule>
     fun doEncounter(encounter: EncounterCard, unit: GameUnit)
 }

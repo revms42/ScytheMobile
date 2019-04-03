@@ -9,7 +9,7 @@ import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.map.MapFeature
 import org.ajar.scythemobile.model.map.ResourceFeature
 import org.ajar.scythemobile.model.map.SpecialFeature
-import org.ajar.scythemobile.model.turn.MoveAction
+import org.ajar.scythemobile.model.turn.MoveTurnAction
 
 enum class RiverWalk(override val abilityName: String, override val description: String, private vararg val to: MapFeature) : MovementRule {
     VILLAGE_MOUNTAIN("Riverwalk: Village or Mountain", "Move across rivers to mountains or villages", ResourceFeature.MOUNTAIN, ResourceFeature.VILLAGE),
@@ -59,7 +59,7 @@ class Toka : AbstractMovementRule(
 ) {
 
     override fun canUse(player: Player): Boolean {
-        return player.turn.actionsThisTurn.filter { it is MoveAction }.firstOrNull { (it as MoveAction).movementRule is Toka } == null
+        return player.turn.findActionOfType(MoveTurnAction::class.java).firstOrNull { it.rule is Toka } == null
     }
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {

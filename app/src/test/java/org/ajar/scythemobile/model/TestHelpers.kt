@@ -6,23 +6,22 @@ import org.ajar.scythemobile.model.entity.Player
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.faction.FactionMat
 import org.ajar.scythemobile.model.faction.FactionMatInstance
-import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.playermat.PlayerMat
 import org.ajar.scythemobile.model.playermat.PlayerMatInstance
 import org.ajar.scythemobile.model.playermat.PlayerMatModel
 import org.ajar.scythemobile.model.production.CrimeaCardResource
-import org.ajar.scythemobile.model.production.Resource
-import org.ajar.scythemobile.model.production.ResourceType
+import org.ajar.scythemobile.model.production.MapResource
+import org.ajar.scythemobile.model.production.MapResourceType
 import org.ajar.scythemobile.model.turn.Turn
 
 class TestRequester : RequestsUserInput {
-    override fun requestPayment(choice: Choice, cost: List<ResourceType>, choices: Map<Resource, MapHex>): Collection<Resource> {
-        val collection = ArrayList<Resource>()
+    override fun requestPayment(choice: Choice, cost: List<MapResourceType>, choices: Map<MapResource, MapHex>): Collection<MapResource> {
+        val collection = ArrayList<MapResource>()
 
         cost.forEach{
-            val chosen = choices.asSequence().firstOrNull { pair -> pair.key.type == it && !collection.contains(pair.key)}
+            val chosen = choices.asSequence().firstOrNull { pair -> pair.key.typeMap == it && !collection.contains(pair.key)}
             chosen?.let { collection.add(it.key) }
         }
 
@@ -99,7 +98,7 @@ class TestPlayer(faction: FactionMat = FactionMat.CRIMEA, playerMatModel: Player
     override fun addStar(starType: StarModel) = factionMat.model.addStar(starType, this)
 }
 
-data class TestUnit(override var controllingPlayer: Player, override val type: UnitType, override val heldResources: ArrayList<Resource> = ArrayList()) : GameUnit
+data class TestUnit(override var controllingPlayer: Player, override val type: UnitType, val heldMapResources: ArrayList<MapResource> = ArrayList()) : GameUnit
 
 class TestPlayerCombatBoard(player: Player, unitsPresent: List<GameUnit>) : AbstractPlayerCombatBoard(player, unitsPresent) {
     override fun requestCombatDecision() {}

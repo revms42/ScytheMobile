@@ -1,7 +1,7 @@
 package org.ajar.scythemobile.model.entity
 
-import org.ajar.scythemobile.model.production.Resource
+import org.ajar.scythemobile.model.production.MapResource
 
 interface ResourceHolder {
-    val heldResources: MutableList<Resource>
+    val heldMapResources: MutableList<MapResource>
 }
