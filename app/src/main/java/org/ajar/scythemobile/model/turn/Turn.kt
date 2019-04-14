@@ -25,7 +25,7 @@ class Turn(val player: Player) {
         return actionsThisTurn.firstOrNull { it.javaClass == clazz } as T?
     }
 
-    fun hasAnyOfTupes(classes: Collection<Class<out TurnAction>>) : Boolean {
+    fun hasAnyOfTypes(classes: Collection<Class<out TurnAction>>) : Boolean {
         return actionsThisTurn.any { classes.contains(it::class.java) }
     }
 

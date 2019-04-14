@@ -9,7 +9,6 @@ import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
 import org.ajar.scythemobile.model.playermat.PlayerMatInstance
 import org.ajar.scythemobile.model.playermat.PlayerMatModel
-import org.ajar.scythemobile.model.production.MapResourceType
 import org.ajar.scythemobile.model.production.ResourceType
 import org.ajar.scythemobile.model.turn.Turn
 
@@ -102,6 +101,14 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun canPay(cost: List<ResourceType>): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun selectUnits(type: UnitType) : List<GameUnit> {
+        return deployedUnits.filter { it.type == type }
+    }
+
     companion object {
         fun selectObjective() : Objective {
             return ObjectiveCardDeck.currentDeck.drawCard()
@@ -138,4 +145,6 @@ interface Player {
 
     fun canPay(cost: List<ResourceType>): Boolean
     fun payResources(cost: List<ResourceType>) : Boolean
+
+    fun selectUnits(type: UnitType) : List<GameUnit>
 }

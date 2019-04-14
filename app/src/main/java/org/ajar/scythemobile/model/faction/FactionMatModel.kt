@@ -212,7 +212,7 @@ class FactionMatInstance(val model: FactionMatModel) {
     private val abilityMap = mapOf(*model.mechAbilities.map { Pair(it.abilityName, it) }.toTypedArray())
     private val standardMovementRules : List<MovementRule> = listOf(StandardMove(), TunnelMove())
 
-    private val unlockedMechAbility: MutableList<FactionAbility> = ArrayList()
+    val unlockedMechAbility: MutableList<FactionAbility> = ArrayList()
     private var tokens: HashMap<TokenPlacementAbility,MutableList<GameUnit>>? = null
 
     //TODO: This will need to be populated with structures as well.
