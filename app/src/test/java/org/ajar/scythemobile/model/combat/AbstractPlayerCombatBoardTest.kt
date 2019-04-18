@@ -5,11 +5,8 @@ import org.ajar.scythemobile.model.TestPlayerCombatBoard
 import org.ajar.scythemobile.model.TestUnit
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.*
-import org.ajar.scythemobile.model.production.Resource
-import org.ajar.scythemobile.model.production.ResourceType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 

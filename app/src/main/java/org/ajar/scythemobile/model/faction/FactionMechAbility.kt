@@ -1,7 +1,6 @@
 package org.ajar.scythemobile.model.faction
 
 import org.ajar.scythemobile.model.map.GameMap
-import org.ajar.scythemobile.model.LimitedUsePerTurn
 import org.ajar.scythemobile.model.PredefinedBinaryChoice
 import org.ajar.scythemobile.model.combat.CombatBoard
 import org.ajar.scythemobile.model.entity.Player
@@ -10,25 +9,33 @@ import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.map.MapFeature
 import org.ajar.scythemobile.model.map.ResourceFeature
 import org.ajar.scythemobile.model.map.SpecialFeature
+import org.ajar.scythemobile.model.turn.MoveTurnAction
 
-enum class RiverWalk(override val abilityName: String, private vararg val to: MapFeature) : MovementRule {
-    VILLAGE_MOUNTAIN("Riverwalk: Village or Mountain", ResourceFeature.MOUNTAIN, ResourceFeature.VILLAGE),
-    FOREST_MOUNTAIN("Riverwalk: Forest or Mountain", ResourceFeature.FOREST, ResourceFeature.MOUNTAIN),
-    FARM_VILLAGE("Riverwalk: Farm or Village", ResourceFeature.FARM, ResourceFeature.VILLAGE),
-    FARM_TUNDRA("Riverwalk: Farm or Tundra", ResourceFeature.FARM, ResourceFeature.TUNDRA);
+enum class RiverWalk(override val abilityName: String, override val description: String, private vararg val to: MapFeature) : MovementRule {
+    VILLAGE_MOUNTAIN("Riverwalk: Village or Mountain", "Move across rivers to mountains or villages", ResourceFeature.MOUNTAIN, ResourceFeature.VILLAGE),
+    FOREST_MOUNTAIN("Riverwalk: Forest or Mountain", "Move across rivers to forests or mountains", ResourceFeature.FOREST, ResourceFeature.MOUNTAIN),
+    FARM_VILLAGE("Riverwalk: Farm or Village", "Move across rivers to farms or villages", ResourceFeature.FARM, ResourceFeature.VILLAGE),
+    FARM_TUNDRA("Riverwalk: Farm or Tundra", "Move across rivers to farms or tundra", ResourceFeature.FARM, ResourceFeature.TUNDRA);
 
     override val allowsRetreat = false
 
-    override fun validStartingHex(hex: MapHex): Boolean {
-        return true
-    }
+    override fun canUse(player: Player): Boolean = true
+
+    override fun validStartingHex(hex: MapHex): Boolean = true
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         return starting.matchingNeighborsIncludeRivers { to.contains(it) }
     }
+
+    override fun validUnitType(unitType: UnitType): Boolean {
+        return unitType == UnitType.CHARACTER || unitType == UnitType.MECH
+    }
 }
 
-class Burrow : AbstractMovementRule("Burrow") {
+class Burrow : AbstractMovementRule(
+        "Burrow",
+        "Your character and mechs may cross rivers into, or out of, any adjacent tunnel territory."
+) {
     override fun validStartingHex(hex: MapHex): Boolean {
         val tunnelNeighbor = hex.matchingNeighborsIncludeRivers { it == SpecialFeature.TUNNEL }.isNotEmpty()
         return hex.desc.mapFeature.contains(SpecialFeature.TUNNEL) || tunnelNeighbor
@@ -45,23 +52,14 @@ class Burrow : AbstractMovementRule("Burrow") {
 
 }
 
-class Toka : AbstractMovementRule("Toka"), LimitedUsePerTurn {
-    override val usesPerTurn: Int = 1
+class Toka : AbstractMovementRule(
+        "Toka",
+        "Once per turn when moving, either 1 character or " +
+                "1 mech may move across a river."
+) {
 
-    private var usesThisTurn: Int = 0
-    override val usesRemaining: Int
-        get() = usesPerTurn - usesThisTurn
-
-    override fun incrimentUses() {
-        usesThisTurn++
-    }
-
-    override fun decrementUses() {
-        usesThisTurn--
-    }
-
-    override fun resetUses() {
-        usesThisTurn = 0
+    override fun canUse(player: Player): Boolean {
+        return player.turn.findActionOfType(MoveTurnAction::class.java).firstOrNull { it.rule is Toka } == null
     }
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
@@ -70,7 +68,11 @@ class Toka : AbstractMovementRule("Toka"), LimitedUsePerTurn {
 
 }
 
-class Underpass : AbstractMovementRule("Underpass") {
+class Underpass : AbstractMovementRule(
+        "Underpass",
+        "For the purposes of Move actions for your character and mechs, mountains you " +
+                "control and all tunnels are considered to be adjacent to each other."
+) {
     override fun validStartingHex(hex: MapHex): Boolean {
         return hex.desc.mapFeature.firstOrNull { it == SpecialFeature.TUNNEL || it == ResourceFeature.MOUNTAIN } != null
     }
@@ -85,7 +87,11 @@ class Underpass : AbstractMovementRule("Underpass") {
 
 }
 
-class Township : AbstractMovementRule("Township") {
+class Township : AbstractMovementRule(
+        "Township",
+        "For the purposes of Move actions for your character and mechs, villages you " +
+                "control and the Factory are considered to be adjacent to each other."
+) {
     override fun validStartingHex(hex: MapHex): Boolean {
         return hex.desc.mapFeature.firstOrNull { mapFeature -> mapFeature == SpecialFeature.FACTORY || mapFeature == ResourceFeature.VILLAGE } != null
     }
@@ -100,7 +106,11 @@ class Township : AbstractMovementRule("Township") {
 
 }
 
-class Wayfare : AbstractMovementRule("Wayfare") {
+class Wayfare : AbstractMovementRule(
+        "Wayfare",
+        "Your character and mechs may move from a territory or home base to any inactive faction’s home " +
+                "base or your own regardless of the distance."
+) {
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         return GameMap.currentMap?.homeBases?.filter { factionHomeHex -> factionHomeHex.player == null || factionHomeHex.player == starting.playerInControl}
@@ -108,7 +118,11 @@ class Wayfare : AbstractMovementRule("Wayfare") {
 
 }
 
-class Rally : AbstractMovementRule("Rally") {
+class Rally : AbstractMovementRule(
+        "Rally",
+        "When taking a Move action, your character and mechs can move to any territory " +
+                "that contains at least one of your workers or a Flag token, regardless of the distance."
+) {
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         val list = ArrayList<MapHex?>()
@@ -124,7 +138,10 @@ class Rally : AbstractMovementRule("Rally") {
 }
 
 //TODO: Need to be able to arm a trap after move. Not done yet....
-class Shinobi : AbstractMovementRule("Shinobi") {
+class Shinobi : AbstractMovementRule(
+        "Shinobi",
+        "Your character and mechs can move to any territory with a Trap token, regardless of the distance."
+) {
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         return GameMap.currentMap?.findUnit(UnitType.TRAP, starting.playerInControl)?.map { gameUnit -> GameMap.currentMap?.locateUnit(gameUnit) }
@@ -132,7 +149,11 @@ class Shinobi : AbstractMovementRule("Shinobi") {
 
 }
 
-class Seaworthy : AbstractMovementRule("Seaworthy", true) {
+class Seaworthy : AbstractMovementRule(
+        "Seaworthy",
+        "Your character and mechs can move to and from lakes and retreat onto adjacent lakes.",
+        true
+) {
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         return if (starting.desc.mapFeature.contains(SpecialFeature.LAKE)){
@@ -144,7 +165,10 @@ class Seaworthy : AbstractMovementRule("Seaworthy", true) {
 
 }
 
-class Submerge : AbstractMovementRule("Submerge") {
+class Submerge : AbstractMovementRule(
+        "Submerge",
+        "Your character and mechs may move to and from lakes and move from any lake to another."
+) {
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
         return if (starting.desc.mapFeature.contains(SpecialFeature.LAKE)) {
@@ -157,29 +181,12 @@ class Submerge : AbstractMovementRule("Submerge") {
 
 }
 
-class StandardMove : AbstractMovementRule("Standard Move") {
-    override fun validStartingHex(hex: MapHex): Boolean {
-        return !hex.desc.mapFeature.contains(SpecialFeature.LAKE)
-    }
 
-    override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
-        return starting.nonMatchingNeighborsNoRivers { it == SpecialFeature.LAKE }
-    }
-
-}
-
-class TunnelMove : AbstractMovementRule("Tunnel") {
-    override fun validStartingHex(hex: MapHex): Boolean {
-        return hex.desc.mapFeature.contains(SpecialFeature.TUNNEL)
-    }
-
-    override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
-        return GameMap.currentMap?.findAllMatching { mapFeature -> mapFeature == SpecialFeature.TUNNEL}?.filter { mapHex -> mapHex != starting }
-    }
-
-}
-
-class Disarm : AbstractCombatRule("Disarm") {
+class Disarm : AbstractCombatRule(
+        "Disarm",
+        "Before you engage in combat on a territory with " +
+                "a tunnel or your Mine, the combating opponent loses 2 power."
+) {
 
     override fun validCombatHex(player: Player, combatBoard: CombatBoard): Boolean {
         return combatBoard.combatHex.desc.mapFeature.any { mapFeature -> mapFeature == SpecialFeature.TUNNEL }
@@ -190,7 +197,10 @@ class Disarm : AbstractCombatRule("Disarm") {
     }
 }
 
-class Artillery : AbstractCombatRule("Artillery") {
+class Artillery : AbstractCombatRule(
+        "Artillery",
+        "Before you engage in combat, you may pay 1 power to force the combating opponent to lose 2 power."
+) {
 
     override fun validCombatHex(player: Player, combatBoard: CombatBoard): Boolean {
         return combatBoard.getPlayerBoard(player).power > 0
@@ -206,7 +216,18 @@ class Artillery : AbstractCombatRule("Artillery") {
     }
 }
 
-class Suiton : AbstractCombatRule("Suiton"), MovementRule {
+class Suiton : AbstractCombatRule(
+        "Suiton",
+        "Your character and mechs can move to and from lakes. " +
+                "If combat occurs on a lake, you may play 1 additional combat card."
+), MovementRule {
+
+    override fun canUse(player: Player): Boolean = true
+
+    override fun validUnitType(unitType: UnitType): Boolean {
+        return unitType == UnitType.CHARACTER || unitType == UnitType.MECH
+    }
+
     override val allowsRetreat = false
 
     override fun validCombatHex(player: Player, combatBoard: CombatBoard): Boolean {
@@ -225,7 +246,10 @@ class Suiton : AbstractCombatRule("Suiton"), MovementRule {
 
 }
 
-class PeoplesArmy : AbstractCombatRule("People's Army") {
+class PeoplesArmy : AbstractCombatRule(
+        "People's Army",
+        "In combat where you have at least 1 worker, you may play one additional combat card."
+) {
 
     override fun validCombatHex(player: Player, combatBoard: CombatBoard): Boolean {
         return combatBoard.getPlayerBoard(player).unitsPresent.any { gameUnit -> gameUnit.type == UnitType.WORKER }
@@ -237,7 +261,11 @@ class PeoplesArmy : AbstractCombatRule("People's Army") {
 
 }
 
-class Scout : AbstractCombatRule("Scout") {
+class Scout : AbstractCombatRule(
+        "Scout",
+        "Before you engage in combat, steal one of the opponent’s combat cards at random and add it to your hand"
+) {
+
     override fun applyEffect(player: Player, combatBoard: CombatBoard) {
         val cards = combatBoard.getOpposingBoard(player).cardsAvailable
         val cardToSteal = cards.toList()[(Math.random() * cards.size).toInt()]
@@ -247,20 +275,34 @@ class Scout : AbstractCombatRule("Scout") {
 
 }
 
-class Sword : AbstractCombatRule("Sword", appliesForDefense = false) {
+class Sword : AbstractCombatRule(
+        "Sword",
+        "Before you engage in combat as the attacker, the defender loses 2 power.",
+        appliesForDefense = false
+) {
     override fun applyEffect(player: Player, combatBoard: CombatBoard) {
         combatBoard.getOpposingBoard(player).power -= 2
     }
 
 }
 
-class Shield : AbstractCombatRule("Shield", appliesForAttack = false) {
+class Shield : AbstractCombatRule(
+        "Shield",
+        "Before you engage in combat as the defender, " +
+        "gain 2 power.",
+        appliesForAttack = false
+) {
     override fun applyEffect(player: Player, combatBoard: CombatBoard) {
         combatBoard.getPlayerBoard(player).power += 2
     }
 }
 
-class Ronin : AbstractCombatRule("Ronin") {
+class Ronin : AbstractCombatRule(
+        "Ronin",
+        "Before combat where you have exactly 1 unit " +
+                "(0 workers and either 1 character or 1 mech), " +
+                "you may gain 2 power on the Power Track."
+) {
 
     override fun validCombatHex(player: Player, combatBoard: CombatBoard): Boolean {
         return combatBoard.getPlayerBoard(player).unitsPresent.size == 1
@@ -271,7 +313,10 @@ class Ronin : AbstractCombatRule("Ronin") {
     }
 }
 
-class Camaraderie : AbstractCombatRule("Camaraderie") {
+class Camaraderie : AbstractCombatRule(
+        "Camaraderie",
+        "You do not lose popularity when forcing an opponent’s workers to retreat after winning combat as the aggressor."
+) {
     override val appliesDuringUncontested: Boolean = true
     override val appliesForDefense: Boolean = false
 
@@ -279,45 +324,4 @@ class Camaraderie : AbstractCombatRule("Camaraderie") {
         combatBoard.getPlayerBoard(player).camaraderie = true
     }
 
-}
-
-abstract class AbstractCombatRule(
-        override val abilityName: String,
-        override val appliesForAttack: Boolean = true,
-        override val appliesForDefense: Boolean = true,
-        override val appliesDuringUncontested: Boolean = false
-) : CombatRule {
-    override fun validCombatHex(player: Player, combatBoard: CombatBoard): Boolean = true
-}
-
-interface CombatRule : FactionMechAbility {
-
-    val appliesForAttack: Boolean
-    val appliesForDefense : Boolean
-    val appliesDuringUncontested: Boolean
-    fun validCombatHex(player: Player, combatBoard: CombatBoard) : Boolean
-    fun applyEffect(player: Player, combatBoard: CombatBoard)
-}
-
-abstract class AbstractMovementRule(override val abilityName: String, override val allowsRetreat: Boolean = false) : MovementRule {
-
-    override fun validStartingHex(hex: MapHex): Boolean = true
-}
-
-interface MovementRule : FactionMechAbility {
-    fun validStartingHex(hex: MapHex) : Boolean
-    fun validEndingHexes(starting: MapHex) : List<MapHex?>?
-    val allowsRetreat : Boolean
-}
-
-class Speed : FactionMechAbility {
-    override val abilityName = "Speed"
-
-    companion object {
-        val singleton = Speed()
-    }
-}
-
-interface FactionMechAbility { //TODO: Subclass of 'Rule'?
-    val abilityName: String
 }

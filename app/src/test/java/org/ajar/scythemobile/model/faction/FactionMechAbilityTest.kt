@@ -447,6 +447,9 @@ class FactionMechAbilityTest {
         centerHex.unitsPresent.add(mech)
         centerHex.unitsPresent.add(enemyMech)
 
+        TestPlayer.player.combatCards.clear()
+        TestPlayer.enemy.combatCards.clear()
+
         TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
         TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
 
