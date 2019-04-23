@@ -1,8 +1,8 @@
 package org.ajar.scythemobile.model
 
 import org.ajar.scythemobile.model.map.MapHex
-import org.ajar.scythemobile.model.production.MapResource
-import org.ajar.scythemobile.model.production.MapResourceType
+import org.ajar.scythemobile.model.production.Resource
+import org.ajar.scythemobile.model.production.ResourceType
 
 enum class PredefinedBinaryChoice(
         private val defaultMessage: String,
@@ -15,7 +15,8 @@ enum class PredefinedBinaryChoice(
     END_MOVEMENT("Do you want to end your move actions or abort all completed moves this turn?", defaultAffirmative = "Abort All", defaultNegative = "End Move Actions"),
     ABORT_DESTINATION("Is this unit done moving, or do you want to abort this move?", defaultAffirmative = "Done", defaultNegative = "Abort"),
     END_DESTINATION("Moving here will end this unit's movement, continue?"),
-    BOLSTER_SELECTION("Bolster for cards or for power?", defaultAffirmative = "Cards", defaultNegative = "Power");
+    BOLSTER_SELECTION("Bolster for cards or for power?", defaultAffirmative = "Cards", defaultNegative = "Power"),
+    MOVE_OR_GAIN_SELECTION("Perform Move or Gain Coints?", defaultAffirmative = "Move", defaultNegative = "Gain");
 
     private var _negative: String? = null
     override val negative: String
@@ -274,7 +275,7 @@ interface MessageLoader {
 
 interface RequestsUserInput {
 
-    fun requestPayment(choice: Choice, cost: List<MapResourceType>, choices: Map<MapResource, MapHex>) : Collection<MapResource>
+    fun requestPayment(choice: Choice, cost: List<ResourceType>, choices: Map<Resource, MapHex>) : Collection<Resource>
     fun <T> requestChoice(choice: Choice, choices: Collection<T> ) : T
     fun <T> requestCancellableChoice(choice: Choice, choices: Collection<T>) : T?
     fun <T> requestSelection(choice: Choice, choices: Collection<T>, limit: Int = choices.size) : Collection<T>
@@ -287,6 +288,6 @@ interface RequestsUserInput {
         fun <T> requestChoice(choice: Choice, choices: List<T>) = requestor!!.requestChoice(choice, choices)
         fun requestBinaryChoice(binaryChoice: BinaryChoice) = requestor!!.requestBinaryChoice(binaryChoice)
         fun <T> requestSelection(choice: Choice, choices: List<T>) = requestor!!.requestSelection(choice, choices)
-        fun requestPayment(choice: Choice, cost: List<MapResourceType>, choices: Map<MapResource, MapHex>) = requestor!!.requestPayment(choice, cost, choices)
+        fun requestPayment(choice: Choice, cost: List<ResourceType>, choices: Map<Resource, MapHex>) = requestor!!.requestPayment(choice, cost, choices)
     }
 }

@@ -1,18 +1,18 @@
 package org.ajar.scythemobile.model.map
 
+import org.ajar.scythemobile.model.combat.DefaultCombatBoard
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.Player
 import org.ajar.scythemobile.model.entity.ResourceHolder
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.production.MapResource
 
-class FactionHomeHex(desc: MapHexDesc, val player: Player?) : MapHex(desc) {
-}
+class FactionHomeHex(desc: MapHexDesc, val player: Player?) : MapHex(desc)
 
 open class MapHex(val desc: MapHexDesc) : ResourceHolder {
 
     var unitsPresent: ArrayList<GameUnit> = ArrayList()
-    var heldMapResources: ArrayList<MapResource> = ArrayList()
+    override val heldMapResources: MutableList<MapResource> = ArrayList()
     var encounterCard: EncounterCard? = null
 
     init {
@@ -33,6 +33,38 @@ open class MapHex(val desc: MapHexDesc) : ResourceHolder {
     private fun findControllingUnit() : GameUnit? =
             unitsPresent.firstOrNull { it.type == UnitType.CHARACTER || it.type == UnitType.MECH || it.type == UnitType.WORKER }?:
             unitsPresent.firstOrNull { it.type == UnitType.STRUCTURE}
+
+    fun moveUnitsInto(units: List<GameUnit>) {
+        if(units.any { it.type == UnitType.CHARACTER || it.type == UnitType.MECH }) {
+            moveInCombatUnits(units)
+        } else {
+            moveInMobileUnits(units)
+        }
+    }
+
+    private fun doEncounterCheck(unit: GameUnit) {
+        if(encounterCard != null) {
+            unit.controllingPlayer.doEncounter(encounterCard!!, unit)
+            encounterCard = null
+        }
+    }
+
+    private fun moveInCombatUnits(units: List<GameUnit>) {
+        if(playerInControl != units[0].controllingPlayer && willMoveProvokeFight()) {
+            val combatBoard = DefaultCombatBoard(this, units[0].controllingPlayer, playerInControl!!)
+            units[0].controllingPlayer.queueCombat(combatBoard)
+        } else {
+            moveInMobileUnits(units)
+        }
+    }
+
+    private fun moveInMobileUnits(units: List<GameUnit>) {
+        if(canUnitOccupy(units[0])) {
+            unitsPresent.addAll(units)
+
+            units.firstOrNull { it.type == UnitType.CHARACTER }?.also { doEncounterCheck(it) }
+        }
+    }
 
     fun canUnitOccupy(unit:GameUnit) : Boolean {
         val controllingUnit = findControllingUnit()

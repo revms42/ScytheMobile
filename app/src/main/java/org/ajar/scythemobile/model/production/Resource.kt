@@ -2,17 +2,22 @@ package org.ajar.scythemobile.model.production
 
 import org.ajar.scythemobile.model.combat.CombatCard
 
-class CrimeaCardResource(val card: CombatCard) : MapResource(MapResourceType.ANY)
+class CrimeaCardResource(val card: CombatCard) : Resource {
+    override val type: ResourceType = PlayerResourceType.COMBAT_CARD
+}
 
-open class MapResource(val typeMap: MapResourceType)
+open class MapResource(override val type: MapResourceType) : Resource
+
+interface Resource {
+    val type: ResourceType
+}
 
 enum class MapResourceType : ResourceType {
     WOOD,
     FOOD,
     METAL,
     OIL,
-    WORKER,
-    ANY
+    WORKER
 }
 
 enum class PlayerResourceType : ResourceType {
