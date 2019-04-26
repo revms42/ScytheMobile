@@ -12,17 +12,18 @@ import org.junit.Test
 
 class AbstractPlayerCombatBoardTest {
 
+    private lateinit var player: TestPlayer
+    
     @Before
     fun setupPlayer() {
-        TestPlayer.player.power = 0
-        TestPlayer.player.combatCards.clear()
+        player = TestPlayer()
     }
 
     @Test
     fun testPowerSelectionBounds() {
-        TestPlayer.player.power = 16
+        player.power = 16
 
-        val playerBoard = TestPlayerCombatBoard(TestPlayer.player, ArrayList())
+        val playerBoard = TestPlayerCombatBoard(player, ArrayList())
         assertEquals(16, playerBoard.power)
 
         playerBoard.powerSelected = 16
@@ -36,48 +37,49 @@ class AbstractPlayerCombatBoardTest {
 
     @Test
     fun testCardLimitBounds() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val character = TestUnit(TestPlayer.player, UnitType.CHARACTER)
-        val worker = TestUnit(TestPlayer.player, UnitType.WORKER)
-        val trap = TestUnit(TestPlayer.player, UnitType.TRAP)
-        val flag = TestUnit(TestPlayer.player, UnitType.FLAG)
+        val mech = TestUnit(player, UnitType.MECH)
+        val character = TestUnit(player, UnitType.CHARACTER)
+        val worker = TestUnit(player, UnitType.WORKER)
+        val trap = TestUnit(player, UnitType.TRAP)
+        val flag = TestUnit(player, UnitType.FLAG)
 
-        var playerBoard = TestPlayerCombatBoard(TestPlayer.player, ArrayList())
+        var playerBoard = TestPlayerCombatBoard(player, ArrayList())
         assertEquals(0, playerBoard.cardLimit)
 
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, mutableListOf(flag))
+        playerBoard = TestPlayerCombatBoard(player, mutableListOf(flag))
         assertEquals(0, playerBoard.cardLimit)
 
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, mutableListOf(trap))
+        playerBoard = TestPlayerCombatBoard(player, mutableListOf(trap))
         assertEquals(0, playerBoard.cardLimit)
 
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, mutableListOf(worker))
+        playerBoard = TestPlayerCombatBoard(player, mutableListOf(worker))
         assertEquals(0, playerBoard.cardLimit)
 
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, mutableListOf(flag, trap, worker))
+        playerBoard = TestPlayerCombatBoard(player, mutableListOf(flag, trap, worker))
         assertEquals(0, playerBoard.cardLimit)
 
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, mutableListOf(mech))
+        playerBoard = TestPlayerCombatBoard(player, mutableListOf(mech))
         assertEquals(1, playerBoard.cardLimit)
 
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, mutableListOf(character))
+        playerBoard = TestPlayerCombatBoard(player, mutableListOf(character))
         assertEquals(1, playerBoard.cardLimit)
 
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, mutableListOf(character, mech))
+        playerBoard = TestPlayerCombatBoard(player, mutableListOf(character, mech))
         assertEquals(2, playerBoard.cardLimit)
 
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, mutableListOf(character, mech, worker))
+        playerBoard = TestPlayerCombatBoard(player, mutableListOf(character, mech, worker))
         assertEquals(2, playerBoard.cardLimit)
     }
 
     @Test
     fun testFinalPower() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val mech2 = TestUnit(TestPlayer.player, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val mech2 = TestUnit(player, UnitType.MECH)
 
-        TestPlayer.player.power = 2
+        player.power = 2
+        player.combatCards.clear()
 
-        var playerBoard = TestPlayerCombatBoard(TestPlayer.player, ArrayList())
+        var playerBoard = TestPlayerCombatBoard(player, ArrayList())
         assertEquals(0, playerBoard.finalPower())
 
         assertEquals(0, playerBoard.cardsAvailable.size)
@@ -88,9 +90,9 @@ class AbstractPlayerCombatBoardTest {
         playerBoard.powerSelected = 7
         assertEquals(2, playerBoard.finalPower())
 
-        TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, listOf(mech))
-        val card1 = TestPlayer.player.combatCards[0]
+        player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        playerBoard = TestPlayerCombatBoard(player, listOf(mech))
+        val card1 = player.combatCards[0]
 
         assertTrue(playerBoard.cardsAvailable.contains(card1))
         assertEquals(1, playerBoard.cardsAvailable.size)
@@ -106,9 +108,9 @@ class AbstractPlayerCombatBoardTest {
         playerBoard.powerSelected = 7
         assertEquals(card1.power + 2, playerBoard.finalPower())
 
-        TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, listOf(mech, mech2))
-        val card2 = TestPlayer.player.combatCards[1]
+        player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        playerBoard = TestPlayerCombatBoard(player, listOf(mech, mech2))
+        val card2 = player.combatCards[1]
 
         assertTrue(playerBoard.cardsAvailable.contains(card1))
         assertTrue(playerBoard.cardsAvailable.contains(card2))
@@ -137,7 +139,7 @@ class AbstractPlayerCombatBoardTest {
         playerBoard.powerSelected = 7
         assertEquals(card2.power + 2, playerBoard.finalPower())
 
-        playerBoard = TestPlayerCombatBoard(TestPlayer.player, listOf(mech))
+        playerBoard = TestPlayerCombatBoard(player, listOf(mech))
 
         playerBoard.selectCard(card1)
         playerBoard.selectCard(card2)
@@ -168,92 +170,94 @@ class AbstractPlayerCombatBoardTest {
 
     @Test
     fun testConcludeCombatPowerReduction() {
-        TestPlayer.player.power = 2
+        player.power = 2
 
-        val playerBoard = TestPlayerCombatBoard(TestPlayer.player, ArrayList())
+        val playerBoard = TestPlayerCombatBoard(player, ArrayList())
         playerBoard.powerSelected = 0
 
         playerBoard.concludeCombat(true, 0)
-        assertEquals(2, TestPlayer.player.power)
+        assertEquals(2, player.power)
 
         playerBoard.powerSelected = 2
         playerBoard.concludeCombat(true, 0)
-        assertEquals(0, TestPlayer.player.power)
+        assertEquals(0, player.power)
     }
 
     @Test
     fun testConcludeCombatCardsRemoved() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val mech2 = TestUnit(TestPlayer.player, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val mech2 = TestUnit(player, UnitType.MECH)
 
-        TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
-        TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        player.combatCards.clear()
 
-        val card1 = TestPlayer.player.combatCards[0]
-        val card2 = TestPlayer.player.combatCards[1]
+        player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
 
-        val playerBoard = TestPlayerCombatBoard(TestPlayer.player, listOf(mech, mech2))
+        val card1 = player.combatCards[0]
+        val card2 = player.combatCards[1]
+
+        val playerBoard = TestPlayerCombatBoard(player, listOf(mech, mech2))
 
         playerBoard.concludeCombat(true, 0)
-        assertEquals(2, TestPlayer.player.combatCards.size)
+        assertEquals(2, player.combatCards.size)
 
         playerBoard.selectCard(card1)
         playerBoard.selectCard(card2)
 
         playerBoard.concludeCombat(true, 0)
-        assertEquals(0, TestPlayer.player.combatCards.size)
+        assertEquals(0, player.combatCards.size)
     }
 
     @Test
     fun testConcludeCombatLossCardGained() {
-        TestPlayer.player.power = 1
+        player.power = 1
 
-        TestPlayer.player.combatCards.clear()
-        assertEquals(0, TestPlayer.player.combatCards.size)
+        player.combatCards.clear()
+        assertEquals(0, player.combatCards.size)
 
-        val playerBoard = TestPlayerCombatBoard(TestPlayer.player, ArrayList())
+        val playerBoard = TestPlayerCombatBoard(player, ArrayList())
         playerBoard.powerSelected = 1
 
         playerBoard.concludeCombat(false, 0)
 
-        assertEquals(0, TestPlayer.player.power)
-        assertEquals(1, TestPlayer.player.combatCards.size)
+        assertEquals(0, player.power)
+        assertEquals(1, player.combatCards.size)
     }
 
     @Test
     fun testConcludeCombatPopularityLoss() {
-        TestPlayer.player.popularity = 2
+        player.popularity = 2
 
-        val playerBoard = TestPlayerCombatBoard(TestPlayer.player, ArrayList())
+        val playerBoard = TestPlayerCombatBoard(player, ArrayList())
 
         playerBoard.concludeCombat(true, 0)
-        assertEquals(2, TestPlayer.player.popularity)
+        assertEquals(2, player.popularity)
 
         playerBoard.concludeCombat(false, 2)
-        assertEquals(2, TestPlayer.player.popularity)
+        assertEquals(2, player.popularity)
 
         playerBoard.concludeCombat(true, 2)
-        assertEquals(0, TestPlayer.player.popularity)
+        assertEquals(0, player.popularity)
     }
 
     @Test
     fun testConcludeCombatCamaraderie() {
-        TestPlayer.player.popularity = 2
+        player.popularity = 2
 
-        val playerBoard = TestPlayerCombatBoard(TestPlayer.player, ArrayList())
+        val playerBoard = TestPlayerCombatBoard(player, ArrayList())
 
         playerBoard.camaraderie = true
 
         playerBoard.concludeCombat(true, 2)
-        assertEquals(2, TestPlayer.player.popularity)
+        assertEquals(2, player.popularity)
     }
 
     @Test
     fun testRetreatUnits() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val worker = TestUnit(TestPlayer.player, UnitType.WORKER)
+        val mech = TestUnit(player, UnitType.MECH)
+        val worker = TestUnit(player, UnitType.WORKER)
 
-        val homeBaseDesc = MapHexDesc(1, HexNeigbors(), HomeBase(TestPlayer.player))
+        val homeBaseDesc = MapHexDesc(1, HexNeigbors(), HomeBase(player))
         val combatHexDesc = MapHexDesc(2, HexNeigbors())
         val mapDesc = MapDesc(homeBaseDesc, combatHexDesc)
         val map = GameMap(mapDesc)
@@ -263,7 +267,7 @@ class AbstractPlayerCombatBoardTest {
 
         combatHex.unitsPresent.addAll(listOf(mech, worker))
 
-        val playerBoard = TestPlayerCombatBoard(TestPlayer.player, combatHex.unitsPresent)
+        val playerBoard = TestPlayerCombatBoard(player, combatHex.unitsPresent)
         assertEquals(2, combatHex.unitsPresent.size)
         playerBoard.retreatUnits(combatHex)
 

@@ -252,6 +252,26 @@ class EncounterChoice(private val defaultMessage: String = "Encounter", private 
         }
 }
 
+class PayCombatCardChoice(private val defaultMessage: String = "Choose Combat Card to Discard", private val defaultImage: Int = -1) : Choice {
+    private var _image: Int? = null
+    override val image: Int
+        get() {
+            if (_image == null) {
+                _image = Choice.messageLoader?.loadImage(this)
+            }
+            return if(_image == null) defaultImage else _image!!
+        }
+
+    private var _message: String? = null
+    override val message: String
+        get() {
+            if (_message == null) {
+                _message = Choice.messageLoader?.loadMessage(this)
+            }
+            return if(_message == null) defaultMessage else _message!!
+        }
+}
+
 interface Choice {
     val message: String
     val image: Int

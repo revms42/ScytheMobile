@@ -69,7 +69,7 @@ enum class UnitType {
     STRUCTURE
 }
 
-interface GameUnit : ResourceHolder{
+interface GameUnit : ResourceHolder {
 
     val controllingPlayer: Player
     val type: UnitType

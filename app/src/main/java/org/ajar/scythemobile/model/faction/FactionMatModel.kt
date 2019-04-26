@@ -7,6 +7,7 @@ import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.production.CrimeaCardResource
+import org.ajar.scythemobile.model.production.Resource
 import org.ajar.scythemobile.model.production.ResourceType
 import org.ajar.scythemobile.model.turn.CoercianTurnAction
 
@@ -80,19 +81,15 @@ enum class FactionMat(
         )
 
         override fun initializePlayer(player: Player) {
-            val originalSelect = player.selectResources
+            val originalPrompt = player.promptForPayment
 
-            player.selectResources = {resourceType: ResourceType ->
-                val mapRes = originalSelect.invoke(resourceType)
-
+            player.promptForPayment = {cost: List<ResourceType>, map: MutableMap<Resource, MapHex> ->
                 if(!player.turn.checkIfActionTypePerformed(CoercianTurnAction::class.java)) {
-                    player.combatCards.sortedBy { it.power }.firstOrNull { true }?.let {mapRes[CrimeaCardResource(it)] = GameMap.currentMap!!.findHomeBase(player) as MapHex }
+                    player.combatCards.sortedBy { it.power }.firstOrNull { true }?.let {map[CrimeaCardResource(it)] = GameMap.currentMap!!.findHomeBase(player) as MapHex }
                 }
 
-                mapRes
+                originalPrompt.invoke(cost, map)
             }
-
-
         }
     },
     RUSVIET("Rusviet Union", CharacterDescription.OLGA, DefaultFactionAbility.RELENTLESS, 0x00FF0000, 3, 2, 0, 0) {

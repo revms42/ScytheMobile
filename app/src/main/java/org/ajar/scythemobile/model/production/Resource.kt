@@ -7,6 +7,7 @@ class CrimeaCardResource(val card: CombatCard) : Resource {
 }
 
 open class MapResource(override val type: MapResourceType) : Resource
+open class PlayerResource(override val type: PlayerResourceType) : Resource
 
 interface Resource {
     val type: ResourceType

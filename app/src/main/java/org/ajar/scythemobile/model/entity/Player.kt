@@ -4,6 +4,7 @@ import org.ajar.scythemobile.model.*
 import org.ajar.scythemobile.model.combat.CombatBoard
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.combat.CombatCardDeck
+import org.ajar.scythemobile.model.faction.FactionMat
 import org.ajar.scythemobile.model.faction.FactionMatInstance
 import org.ajar.scythemobile.model.faction.FactionMatModel
 import org.ajar.scythemobile.model.map.EncounterCard
@@ -18,7 +19,7 @@ import org.ajar.scythemobile.model.production.*
 import org.ajar.scythemobile.model.turn.CoercianTurnAction
 import org.ajar.scythemobile.model.turn.Turn
 
-class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playerMatModel: PlayerMatModel) : Player {
+open class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playerMatModel: PlayerMatModel) : Player {
 
     override val factionMat = FactionMatInstance(factionMat)
     override val playerMat = PlayerMatInstance(playerMatModel)
@@ -75,7 +76,11 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
         }
 
     override val stars: HashMap<StarModel, Int> = HashMap()
+
     override var addStar: (starType: StarModel) -> Unit = { starType: StarModel -> addNewStar(starType) }
+    override var promptForPayment: (cost: List<ResourceType>, map: MutableMap<Resource, MapHex>) -> Collection<Resource>? = { cost, map -> promptForPaymentSelection(cost, map) }
+    override var doEncounter: (encounter: EncounterCard, unit: GameUnit) -> Unit = { encounter: EncounterCard, unit: GameUnit -> resolveEncounter(encounter, unit) }
+    override var selectableSections: () -> List<SectionInstance> = { findSelectableSections() }
 
     override fun getStarCount(starType: StarModel): Int = stars[starType]?: 0
     override fun addStar(starType: StarModel) = addStar.invoke(starType)
@@ -102,6 +107,12 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
         for (i in 0..playerMatModel.initialObjectives) {
             objectives.add(selectObjective())
         }
+
+        initializeFaction()
+    }
+
+    private fun initializeFaction() {
+        factionMat.model.initializePlayer(this)
     }
 
     override fun newTurn() {
@@ -113,20 +124,30 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
         return turn.finalizeTurn()
     }
 
-
-    override var selectableSections: () -> List<SectionInstance> = { findSelectableSections() }
     override fun selectableSections() = selectableSections.invoke()
     private fun findSelectableSections() : List<SectionInstance> {
         return playerMat.sections.filter { sectionInstance -> sectionInstance.sectionDef.sectionSelectable(this) }
     }
 
+    private fun countResources(cost: ResourceType): Int {
+        return when(cost) {
+            is MapResourceType -> selectResource(cost).size
+            PlayerResourceType.COMBAT_CARD -> combatCards.size
+            PlayerResourceType.POPULARITY -> popularity
+            PlayerResourceType.COIN -> coins
+            PlayerResourceType.POWER -> power
+            else -> throw IllegalArgumentException("Unknown resource type '$cost'")
+        }
+    }
+
+    // You need to run canPay before this to ensure that you've got enough non-map resources to make it work.
     override fun payResources(cost: List<ResourceType>): Boolean {
         val map = HashMap<Resource, MapHex>()
-        cost.flatMap { selectResource(it).entries }.toMutableSet().forEach { map[it.key as MapResource] = it.value}
+        cost.filter { it is MapResourceType }.flatMap { selectResource(it).entries }.toMutableSet().forEach { map[it.key as MapResource] = it.value}
 
-        val selection = promptForPaymentSelection(cost, map)
+        val selection = promptForPayment.invoke(cost, map)
 
-        return if(paymentAccepted(selection, cost)) {
+        val resourcesPaid = if(paymentAccepted(selection, cost.filter { it is MapResourceType })) {
             selection?.firstOrNull {
                 when(it) {
                     is CrimeaCardResource -> !combatCards.remove(it.card)
@@ -134,17 +155,52 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
                 }
             } == null
         } else false
+
+        if (resourcesPaid) {
+            cost.filter { it is PlayerResourceType }.forEach {
+                when(it) {
+                    PlayerResourceType.POWER -> power--
+                    PlayerResourceType.COIN -> coins--
+                    PlayerResourceType.POPULARITY -> popularity--
+                    PlayerResourceType.COMBAT_CARD -> {
+                        combatCards.remove(user.requester?.requestChoice(PayCombatCardChoice(), combatCards))
+                    }
+                }
+            }
+        }
+
+        return resourcesPaid
     }
 
     override fun canPay(cost: List<ResourceType>): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val resourceRequestMap = HashMap<ResourceType, Int>()
+
+        cost.forEach {
+            if(!resourceRequestMap.containsKey(it)) {
+                resourceRequestMap[it] = 0
+            }
+            resourceRequestMap[it] = resourceRequestMap[it]!! + 1
+        }
+
+        var crimeaUsed = false
+        resourceRequestMap.forEach{ (resourceType: ResourceType, count: Int) ->
+            val available = countResources(resourceType)
+
+            if(available < count) {
+                if(factionMat.model == FactionMat.CRIMEA && !crimeaUsed && (available == count - 1)) {
+                    crimeaUsed = true
+                } else {
+                    return false
+                }
+            }
+        }
+        return true
     }
 
     override fun selectUnits(type: UnitType) : List<GameUnit> {
         return deployedUnits.filter { it.type == type }
     }
 
-    override var doEncounter: (encounter: EncounterCard, unit: GameUnit) -> Unit = { encounter: EncounterCard, unit: GameUnit -> resolveEncounter(encounter, unit) }
     override fun doEncounter(encounter: EncounterCard, unit: GameUnit) = doEncounter.invoke(encounter, unit)
     private fun resolveEncounter(encounter: EncounterCard, unit: GameUnit) {
         val encounterOutcome= user.requester?.requestChoice(EncounterChoice(), encounter.outcomes)
@@ -154,7 +210,6 @@ class AbstractPlayer(override val user: User, factionMat: FactionMatModel, playe
         }
     }
 
-    override var selectResources: (resourceType: ResourceType) -> MutableMap<in Resource, MapHex> = { resourceType:ResourceType -> selectResource(resourceType) }
     private fun selectResource(typeMap: ResourceType) : MutableMap<in Resource, MapHex> {
         val collection = HashMap<Resource, MapHex>()
         var currentHex: MapHex?
@@ -247,7 +302,7 @@ interface Player {
     var addStar: (starType: StarModel) -> Unit
     var doEncounter: (encounter: EncounterCard, unit: GameUnit) -> Unit
     var selectableSections: () -> List<SectionInstance>
-    var selectResources: (resourceType: ResourceType) -> MutableMap<in Resource, MapHex>
+    var promptForPayment: (cost: List<ResourceType>, map: MutableMap<Resource, MapHex>) -> Collection<Resource>?
 
     fun getStarCount(starType: StarModel): Int
     fun addStar(starType: StarModel)

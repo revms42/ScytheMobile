@@ -7,9 +7,17 @@ import org.ajar.scythemobile.model.map.*
 import org.ajar.scythemobile.model.production.MapResourceType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class FactionMatModelTest {
+    
+    private lateinit var player: TestPlayer
+    
+    @Before
+    fun setup() {
+        player = TestPlayer()
+    }
 
     @Test
     fun testHeroCharacter() {
@@ -28,63 +36,63 @@ class FactionMatModelTest {
 
         assertEquals(DefaultFactionAbility.DOMINATE, mat.factionAbility)
 
-        TestPlayer.player = TestPlayer(FactionMat.SAXONY)
+        player = TestPlayer(FactionMat.SAXONY)
 
-        mat.addStar(StarType.COMBAT, TestPlayer.player)
-        mat.addStar(StarType.COMBAT, TestPlayer.player)
-        mat.addStar(StarType.COMBAT, TestPlayer.player)
-        mat.addStar(StarType.COMBAT, TestPlayer.player)
-        mat.addStar(StarType.COMBAT, TestPlayer.player)
-        mat.addStar(StarType.COMBAT, TestPlayer.player)
-        mat.addStar(StarType.COMBAT, TestPlayer.player)
-        mat.addStar(StarType.COMBAT, TestPlayer.player)
-        mat.addStar(StarType.COMBAT, TestPlayer.player)
+        player.addStar(StarType.COMBAT)
+        player.addStar(StarType.COMBAT)
+        player.addStar(StarType.COMBAT)
+        player.addStar(StarType.COMBAT)
+        player.addStar(StarType.COMBAT)
+        player.addStar(StarType.COMBAT)
+        player.addStar(StarType.COMBAT)
+        player.addStar(StarType.COMBAT)
+        player.addStar(StarType.COMBAT)
 
-        assertEquals(8, TestPlayer.player.stars[StarType.COMBAT])
+        assertEquals(8, player.stars[StarType.COMBAT])
 
-        mat.addStar(StarType.POPULARITY, TestPlayer.player)
-        mat.addStar(StarType.POPULARITY, TestPlayer.player)
+        player.addStar(StarType.POPULARITY)
+        player.addStar(StarType.POPULARITY)
 
-        assertEquals(1, TestPlayer.player.stars[StarType.POPULARITY])
+        assertEquals(1, player.stars[StarType.POPULARITY])
 
-        mat.addStar(StarType.POWER, TestPlayer.player)
-        mat.addStar(StarType.POWER, TestPlayer.player)
+        player.addStar(StarType.POWER)
+        player.addStar(StarType.POWER)
 
-        assertEquals(1, TestPlayer.player.stars[StarType.POWER])
+        assertEquals(1, player.stars[StarType.POWER])
 
-        mat.addStar(StarType.BUILD, TestPlayer.player)
-        mat.addStar(StarType.BUILD, TestPlayer.player)
+        player.addStar(StarType.BUILD)
+        player.addStar(StarType.BUILD)
 
-        assertEquals(1, TestPlayer.player.stars[StarType.BUILD])
+        assertEquals(1, player.stars[StarType.BUILD])
 
-        mat.addStar(StarType.DEPLOY, TestPlayer.player)
-        mat.addStar(StarType.DEPLOY, TestPlayer.player)
+        player.addStar(StarType.DEPLOY)
+        player.addStar(StarType.DEPLOY)
 
-        assertEquals(1, TestPlayer.player.stars[StarType.DEPLOY])
+        assertEquals(1, player.stars[StarType.DEPLOY])
 
-        mat.addStar(StarType.ENLIST, TestPlayer.player)
-        mat.addStar(StarType.ENLIST, TestPlayer.player)
+        player.addStar(StarType.ENLIST)
+        player.addStar(StarType.ENLIST)
 
-        assertEquals(1, TestPlayer.player.stars[StarType.ENLIST])
+        assertEquals(1, player.stars[StarType.ENLIST])
 
-        mat.addStar(StarType.OBJECTIVE, TestPlayer.player)
-        mat.addStar(StarType.OBJECTIVE, TestPlayer.player)
+        player.addStar(StarType.OBJECTIVE)
+        player.addStar(StarType.OBJECTIVE)
 
-        assertEquals(1, TestPlayer.player.stars[StarType.OBJECTIVE])
+        assertEquals(1, player.stars[StarType.OBJECTIVE])
 
-        mat.addStar(StarType.UPGRADE, TestPlayer.player)
-        mat.addStar(StarType.UPGRADE, TestPlayer.player)
+        player.addStar(StarType.UPGRADE)
+        player.addStar(StarType.UPGRADE)
 
-        assertEquals(1, TestPlayer.player.stars[StarType.UPGRADE])
+        assertEquals(1, player.stars[StarType.UPGRADE])
 
-        mat.addStar(StarType.WORKERS, TestPlayer.player)
-        mat.addStar(StarType.WORKERS, TestPlayer.player)
+        player.addStar(StarType.WORKERS)
+        player.addStar(StarType.WORKERS)
 
-        assertEquals(1, TestPlayer.player.stars[StarType.WORKERS])
+        assertEquals(1, player.stars[StarType.WORKERS])
     }
 
     @Test
-    fun testNordicAbility() {
+    fun testAbilityNordic() {
         val movementRules = FactionMat.NORDIC.getFactionMovementRules()
 
         assertEquals(1, movementRules.size)
@@ -92,19 +100,20 @@ class FactionMatModelTest {
     }
 
     @Test
-    fun testCrimeaAbility() {
-        TestPlayer.player = TestPlayer(FactionMat.CRIMEA)
+    fun testAbilityCrimea() {
+        player = TestPlayer(FactionMat.CRIMEA)
 
-        TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
-        val playerBaseDesc = MapHexDesc(1, HexNeigbors(), HomeBase(TestPlayer.player))
+        player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        val playerBaseDesc = MapHexDesc(1, HexNeigbors(), HomeBase(player))
         val mapDesc = MapDesc(playerBaseDesc)
 
         val map = GameMap(mapDesc)
         GameMap.currentMap = map
 
-        val target = TestPlayer.player.combatCards.size - 1
+        val target = player.combatCards.size - 1
 
-        assertTrue(TestPlayer.player.factionMat.collectPayment(listOf(MapResourceType.METAL), TestPlayer.player))
-        assertEquals(target, TestPlayer.player.combatCards.size)
+        assertTrue(player.canPay(listOf(MapResourceType.METAL)))
+        assertTrue(player.payResources(listOf(MapResourceType.METAL)))
+        assertEquals(target, player.combatCards.size)
     }
 }
