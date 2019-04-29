@@ -4,9 +4,10 @@ import org.ajar.scythemobile.model.StarType
 import org.ajar.scythemobile.model.TestPlayer
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.map.*
+import org.ajar.scythemobile.model.playermat.MoveOrGainAction
 import org.ajar.scythemobile.model.production.MapResourceType
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.ajar.scythemobile.model.turn.GainTurnAction
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
@@ -115,5 +116,15 @@ class FactionMatModelTest {
         assertTrue(player.canPay(listOf(MapResourceType.METAL)))
         assertTrue(player.payResources(listOf(MapResourceType.METAL)))
         assertEquals(target, player.combatCards.size)
+    }
+
+    @Test
+    fun testAbilityRusviet() {
+        player = TestPlayer(FactionMat.RUSVIET)
+
+        player.turn.performAction(GainTurnAction(1))
+        player.newTurn()
+
+        assertNotNull(player.selectableSections().firstOrNull { it.sectionDef.topRowAction is MoveOrGainAction })
     }
 }
