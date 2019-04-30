@@ -1,8 +1,11 @@
 package org.ajar.scythemobile.model.faction
 
 import org.ajar.scythemobile.model.StarType
+import org.ajar.scythemobile.model.TestEncounterCard
 import org.ajar.scythemobile.model.TestPlayer
+import org.ajar.scythemobile.model.TestUnit
 import org.ajar.scythemobile.model.combat.CombatCardDeck
+import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.*
 import org.ajar.scythemobile.model.playermat.MoveOrGainAction
 import org.ajar.scythemobile.model.production.MapResourceType
@@ -29,6 +32,14 @@ class FactionMatModelTest {
         assertEquals(CharacterDescription.ANNA, FactionMat.POLONIA.heroCharacter)
         assertEquals(CharacterDescription.ZERHA, FactionMat.CRIMEA.heroCharacter)
         assertEquals(CharacterDescription.BJORN, FactionMat.NORDIC.heroCharacter)
+    }
+
+    @Test
+    fun testAbilityNordic() {
+        val movementRules = FactionMat.NORDIC.getFactionMovementRules()
+
+        assertEquals(1, movementRules.size)
+        assertTrue(movementRules[0]::class == Swim::class)
     }
 
     @Test
@@ -93,11 +104,16 @@ class FactionMatModelTest {
     }
 
     @Test
-    fun testAbilityNordic() {
-        val movementRules = FactionMat.NORDIC.getFactionMovementRules()
+    fun testAbilityPolonia() {
+        player = TestPlayer(FactionMat.POLONIA)
 
-        assertEquals(1, movementRules.size)
-        assertTrue(movementRules[0]::class == Swim::class)
+        val initCoins = player.coins
+        val initPopularity = player.popularity
+
+        player.doEncounter(TestEncounterCard(), TestUnit(player, UnitType.CHARACTER))
+
+        assertEquals(initCoins + 1, player.coins)
+        assertEquals(initPopularity + 1, player.popularity)
     }
 
     @Test

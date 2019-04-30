@@ -9,6 +9,7 @@ import org.ajar.scythemobile.model.faction.FactionMat
 import org.ajar.scythemobile.model.faction.FactionMatInstance
 import org.ajar.scythemobile.model.faction.FactionMatModel
 import org.ajar.scythemobile.model.map.EncounterCard
+import org.ajar.scythemobile.model.map.EncounterOutcome
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.playermat.PlayerMat
@@ -43,7 +44,7 @@ class TestRequester : RequestsUserInput {
     }
 
     override fun <T> requestSelection(choice: Choice, choices: Collection<T>, limit: Int): Collection<T> {
-        return choices.toMutableList().subList(0, limit-1)
+        return choices.toMutableList().subList(0, limit)
     }
 
     override fun requestBinaryChoice(binaryChoice: BinaryChoice): Boolean {
@@ -69,4 +70,40 @@ class TestCombatBoard(combatHex: MapHex, attackingPlayer: PlayerCombatBoard, def
                     TestPlayerCombatBoard(attacker, combatHex.unitsPresent.filter { gameUnit -> gameUnit.controllingPlayer == attacker }),
                     TestPlayerCombatBoard(defender, combatHex.unitsPresent.filter { gameUnit -> gameUnit.controllingPlayer == defender })
             )
+}
+
+class TestEncounterCard : EncounterCard {
+    override val outcomes: List<EncounterOutcome> = listOf(
+            object : EncounterOutcome {
+                override val title: String = "Outcome 1"
+                override val description: String = "Outcome 1"
+
+                override fun applyOutcome(unit: GameUnit) {
+                    unit.controllingPlayer.coins += 1
+                }
+
+                override fun canMeetCost(player: Player): Boolean = true
+            },
+            object : EncounterOutcome {
+                override val title: String = "Outcome 2"
+                override val description: String = "Outcome 2"
+
+                override fun applyOutcome(unit: GameUnit) {
+                    unit.controllingPlayer.popularity += 1
+                }
+
+                override fun canMeetCost(player: Player): Boolean = true
+            },
+            object : EncounterOutcome {
+                override val title: String = "Outcome 3"
+                override val description: String = "Outcome 3"
+
+                override fun applyOutcome(unit: GameUnit) {
+                    unit.controllingPlayer.power += 1
+                }
+
+                override fun canMeetCost(player: Player): Boolean = true
+            }
+    )
+
 }
