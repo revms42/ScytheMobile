@@ -11,7 +11,7 @@ class FactionHomeHex(desc: MapHexDesc, val player: Player?) : MapHex(desc)
 
 open class MapHex(val desc: MapHexDesc) : ResourceHolder {
 
-    var unitsPresent: ArrayList<GameUnit> = ArrayList()
+    val unitsPresent: ArrayList<GameUnit> = ArrayList()
     override val heldMapResources: MutableList<MapResource> = ArrayList()
     var encounterCard: EncounterCard? = null
 
@@ -51,6 +51,7 @@ open class MapHex(val desc: MapHexDesc) : ResourceHolder {
 
     private fun moveInCombatUnits(units: List<GameUnit>) {
         if(playerInControl != units[0].controllingPlayer && willMoveProvokeFight()) {
+            moveInForAttack(units)
             val combatBoard = DefaultCombatBoard(this, units[0].controllingPlayer, playerInControl!!)
             units[0].controllingPlayer.queueCombat(combatBoard)
         } else {
@@ -66,6 +67,12 @@ open class MapHex(val desc: MapHexDesc) : ResourceHolder {
         }
     }
 
+    private fun moveInForAttack(units: List<GameUnit>) {
+        unitsPresent.addAll(units)
+
+        //TODO: we would need to check for encounter *after* combat: units.firstOrNull { it.type == UnitType.CHARACTER }?.also { doEncounterCheck(it) }
+    }
+
     fun canUnitOccupy(unit:GameUnit) : Boolean {
         val controllingUnit = findControllingUnit()
         return if(controllingUnit != null && controllingUnit.type != UnitType.STRUCTURE) unit.controllingPlayer == playerInControl else true
@@ -75,6 +82,7 @@ open class MapHex(val desc: MapHexDesc) : ResourceHolder {
         return unitsPresent.firstOrNull { it.type == UnitType.CHARACTER || it.type == UnitType.MECH } != null
     }
 
+    @Deprecated("Currently no coverage")
     fun dropResource(unit: GameUnit, mapResource: MapResource) {
         if (unit.heldMapResources.remove(mapResource)) heldMapResources.add(mapResource)
     }
@@ -84,6 +92,7 @@ open class MapHex(val desc: MapHexDesc) : ResourceHolder {
         unit.heldMapResources.clear()
     }
 
+    @Deprecated("Currently no coverage")
     fun loadResource(unit: GameUnit, mapResource: MapResource) {
         if(heldMapResources.remove(mapResource)) unit.heldMapResources.add(mapResource)
     }
@@ -102,7 +111,7 @@ open class MapHex(val desc: MapHexDesc) : ResourceHolder {
     fun nonMatchingNeighborsNoRivers(predicate: (MapFeature) -> Boolean) : List<MapHex?> = nonMatchingNeighbors(true, predicate)
     fun nonMatchingNeighborsIncludeRivers(predicate: (MapFeature) -> Boolean) : List<MapHex?> = nonMatchingNeighbors(false, predicate)
 
-    fun neighbor(direction: Direction, riversBlock: Boolean = true) : MapHex? {
+    private fun neighbor(direction: Direction, riversBlock: Boolean = true) : MapHex? {
         if(riversBlock && desc.mapFeature.find { it is RiverFeature && it.direction == direction } != null) return null
 
         val index = when(direction) {

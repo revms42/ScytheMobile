@@ -56,6 +56,13 @@ class TestRequester : RequestsUserInput {
 class TestUser(override val human: Boolean = false, override val requester: RequestsUserInput? = TestRequester()) : User
 
 class TestPlayer(factionMatModel: FactionMatModel = FactionMat.CRIMEA, playerMatModel: PlayerMatModel = PlayerMat.MECHANICAL ) : AbstractPlayer(TestUser(), factionMatModel, playerMatModel) {
+
+    val queuedCombatCards: ArrayList<CombatBoard> = ArrayList()
+
+    override fun queueCombat(combatBoard: CombatBoard) {
+        queuedCombatCards.add(combatBoard)
+    }
+
 }
 
 data class TestUnit(override var controllingPlayer: Player, override val type: UnitType, override val heldMapResources: ArrayList<MapResource> = ArrayList()) : GameUnit
