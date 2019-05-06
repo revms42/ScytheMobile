@@ -115,12 +115,12 @@ open class MapHex(val desc: MapHexDesc) : ResourceHolder {
         if(riversBlock && desc.mapFeature.find { it is RiverFeature && it.direction == direction } != null) return null
 
         val index = when(direction) {
-            Direction.NW -> desc.hexNeigbors.nw
-            Direction.NE -> desc.hexNeigbors.ne
-            Direction.E -> desc.hexNeigbors.e
-            Direction.SE -> desc.hexNeigbors.se
-            Direction.SW -> desc.hexNeigbors.sw
-            Direction.W -> desc.hexNeigbors.w
+            Direction.NW -> desc.hexNeighbors.nw
+            Direction.NE -> desc.hexNeighbors.ne
+            Direction.E -> desc.hexNeighbors.e
+            Direction.SE -> desc.hexNeighbors.se
+            Direction.SW -> desc.hexNeighbors.sw
+            Direction.W -> desc.hexNeighbors.w
         }
 
         return GameMap.currentMap?.findHexAtIndex(index)

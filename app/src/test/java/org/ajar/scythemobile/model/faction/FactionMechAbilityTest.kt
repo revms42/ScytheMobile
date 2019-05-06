@@ -21,14 +21,14 @@ import org.junit.Test
  */
 class FactionMechAbilityTest {
 
-    private val villageDesc: MapHexDesc = MapHexDesc(1, HexNeigbors(e = 2, se = 4, sw = 3), ResourceFeature.VILLAGE, RiverFeature(direction = Direction.SE))
-    private val farmDesc: MapHexDesc = MapHexDesc(2, HexNeigbors(w = 1, se = 5, sw = 4), ResourceFeature.FARM, RiverFeature(direction = Direction.SW))
-    private val mountainDesc: MapHexDesc = MapHexDesc(3, HexNeigbors(e = 4, ne = 1, nw = 6), ResourceFeature.MOUNTAIN, RiverFeature(direction = Direction.E))
-    private val tundraDesc: MapHexDesc = MapHexDesc(5, HexNeigbors(w = 4, nw = 2, sw = 7), ResourceFeature.TUNDRA, RiverFeature(direction = Direction.W))
-    private val forestDesc: MapHexDesc = MapHexDesc(6, HexNeigbors(nw = 3, ne = 4, e = 7), ResourceFeature.FOREST, RiverFeature(direction = Direction.NE))
-    private val lakeDesc: MapHexDesc = MapHexDesc(7, HexNeigbors(w = 6, nw = 4, ne = 5), SpecialFeature.LAKE)
+    private val villageDesc: MapHexDesc = MapHexDesc(1, HexNeighbors(e = 2, se = 4, sw = 3), ResourceFeature.VILLAGE, RiverFeature(direction = Direction.SE))
+    private val farmDesc: MapHexDesc = MapHexDesc(2, HexNeighbors(w = 1, se = 5, sw = 4), ResourceFeature.FARM, RiverFeature(direction = Direction.SW))
+    private val mountainDesc: MapHexDesc = MapHexDesc(3, HexNeighbors(e = 4, ne = 1, nw = 6), ResourceFeature.MOUNTAIN, RiverFeature(direction = Direction.E))
+    private val tundraDesc: MapHexDesc = MapHexDesc(5, HexNeighbors(w = 4, nw = 2, sw = 7), ResourceFeature.TUNDRA, RiverFeature(direction = Direction.W))
+    private val forestDesc: MapHexDesc = MapHexDesc(6, HexNeighbors(nw = 3, ne = 4, e = 7), ResourceFeature.FOREST, RiverFeature(direction = Direction.NE))
+    private val lakeDesc: MapHexDesc = MapHexDesc(7, HexNeighbors(w = 6, nw = 4, ne = 5), SpecialFeature.LAKE)
 
-    private val tunnelDesc: MapHexDesc = MapHexDesc(4, HexNeigbors(1,2,5,7,6,3), SpecialFeature.TUNNEL,
+    private val tunnelDesc: MapHexDesc = MapHexDesc(4, HexNeighbors(1,2,5,7,6,3), SpecialFeature.TUNNEL,
             RiverFeature(direction = Direction.SW),
             RiverFeature(direction = Direction.W),
             RiverFeature(direction = Direction.NW),
@@ -36,9 +36,9 @@ class FactionMechAbilityTest {
             RiverFeature(direction = Direction.E)
     )
 
-    private val lakeDesc2: MapHexDesc = MapHexDesc(14, HexNeigbors(), SpecialFeature.LAKE)
-    private val factoryDesc: MapHexDesc = MapHexDesc(15, HexNeigbors(), SpecialFeature.FACTORY)
-    private val tunnelDesc2: MapHexDesc = MapHexDesc(16, HexNeigbors(), SpecialFeature.TUNNEL)
+    private val lakeDesc2: MapHexDesc = MapHexDesc(14, HexNeighbors(), SpecialFeature.LAKE)
+    private val factoryDesc: MapHexDesc = MapHexDesc(15, HexNeighbors(), SpecialFeature.FACTORY)
+    private val tunnelDesc2: MapHexDesc = MapHexDesc(16, HexNeighbors(), SpecialFeature.TUNNEL)
 
     private val mapDesc = MapDesc(villageDesc, farmDesc, mountainDesc, tundraDesc, forestDesc, lakeDesc, tunnelDesc, lakeDesc2, tunnelDesc2, factoryDesc)
 
@@ -210,9 +210,9 @@ class FactionMechAbilityTest {
 
     @Test
     fun testWayfare() {
-        testMap.addHomeBase(MapHexDesc(-42, HexNeigbors(sw = 1, se = 2), HomeBase(player)), player)
-        testMap.addHomeBase(MapHexDesc(-43, HexNeigbors(nw = 6, ne = 7), HomeBase(enemy)), enemy)
-        testMap.addHomeBase(MapHexDesc(-44, HexNeigbors(e = 1, se = 3), HomeBase(TestPlayer())))
+        testMap.addHomeBase(MapHexDesc(-42, HexNeighbors(sw = 1, se = 2), HomeBase(player)), player)
+        testMap.addHomeBase(MapHexDesc(-43, HexNeighbors(nw = 6, ne = 7), HomeBase(enemy)), enemy)
+        testMap.addHomeBase(MapHexDesc(-44, HexNeighbors(e = 1, se = 3), HomeBase(TestPlayer())))
 
         val wayfare = Wayfare()
         assertTrue(wayfare.validStartingHex(centerHex))

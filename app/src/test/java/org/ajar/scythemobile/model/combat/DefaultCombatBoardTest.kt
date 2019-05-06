@@ -38,13 +38,13 @@ class DefaultCombatBoardTest {
         player = TestPlayer(FactionMat.NORDIC)
         enemy = TestPlayer(FactionMat.NORDIC)
 
-        val lakeHexDesc = MapHexDesc(7, HexNeigbors(nw = 3, w = 8), SpecialFeature.LAKE)
-        val tunnelHexDesc = MapHexDesc(8, HexNeigbors(ne = 3, e = 7), SpecialFeature.TUNNEL)
-        val tundraHexDesc = MapHexDesc( 9, HexNeigbors(w = 3, sw = 7), ResourceFeature.TUNDRA)
+        val lakeHexDesc = MapHexDesc(7, HexNeighbors(nw = 3, w = 8), SpecialFeature.LAKE)
+        val tunnelHexDesc = MapHexDesc(8, HexNeighbors(ne = 3, e = 7), SpecialFeature.TUNNEL)
+        val tundraHexDesc = MapHexDesc( 9, HexNeighbors(w = 3, sw = 7), ResourceFeature.TUNDRA)
 
-        val playerBaseDesc = MapHexDesc(1, HexNeigbors(), HomeBase(player))
-        val enemyBaseDesc = MapHexDesc(2, HexNeigbors(), HomeBase(enemy))
-        val combatHexDesc = MapHexDesc(3, HexNeigbors(sw = 8, se = 7, e = 9))
+        val playerBaseDesc = MapHexDesc(1, HexNeighbors(), HomeBase(player))
+        val enemyBaseDesc = MapHexDesc(2, HexNeighbors(), HomeBase(enemy))
+        val combatHexDesc = MapHexDesc(3, HexNeighbors(sw = 8, se = 7, e = 9))
 
         val mapDesc = MapDesc(playerBaseDesc, enemyBaseDesc, combatHexDesc, lakeHexDesc, tundraHexDesc, tunnelHexDesc)
 

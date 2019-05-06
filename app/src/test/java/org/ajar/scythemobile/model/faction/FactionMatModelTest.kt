@@ -121,7 +121,7 @@ class FactionMatModelTest {
         player = TestPlayer(FactionMat.CRIMEA)
 
         player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
-        val playerBaseDesc = MapHexDesc(1, HexNeigbors(), HomeBase(player))
+        val playerBaseDesc = MapHexDesc(1, HexNeighbors(), HomeBase(player))
         val mapDesc = MapDesc(playerBaseDesc)
 
         val map = GameMap(mapDesc)

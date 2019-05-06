@@ -17,7 +17,7 @@ class MapHexTest {
     @Before
     fun setup() {
         player = TestPlayer()
-        hex = MapHex(MapHexDesc(0, HexNeigbors(), SpecialFeature.ANY))
+        hex = MapHex(MapHexDesc(0, HexNeighbors(), SpecialFeature.ANY))
     }
 
     @Test
@@ -83,7 +83,7 @@ class MapHexTest {
 
     @Test
     fun testEncounterTrigger() {
-        hex = MapHex(MapHexDesc(0, HexNeigbors(), SpecialFeature.ENCOUNTER))
+        hex = MapHex(MapHexDesc(0, HexNeighbors(), SpecialFeature.ENCOUNTER))
 
         var outcome = false
         hex.encounterCard = object : EncounterCard {

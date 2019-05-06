@@ -113,10 +113,10 @@ class PlayerMatModelTest(val mat: PlayerMat) {
         return MoveTurnAction(
                 TestUnit(player, UnitType.CHARACTER),
                 MapHex(
-                        MapHexDesc(1, HexNeigbors(), SpecialFeature.ANY)
+                        MapHexDesc(1, HexNeighbors(), SpecialFeature.ANY)
                 ),
                 MapHex(
-                        MapHexDesc(2, HexNeigbors(), SpecialFeature.ANY)
+                        MapHexDesc(2, HexNeighbors(), SpecialFeature.ANY)
                 ),
                 rule = RiverWalk.FARM_VILLAGE
         )
@@ -139,7 +139,7 @@ class PlayerMatModelTest(val mat: PlayerMat) {
     }
 
     private fun makeBuildAction() : BuildTurnAction {
-        return BuildTurnAction(emptyList(), TestUnit(player, UnitType.STRUCTURE), MapHex(MapHexDesc(1, HexNeigbors(), SpecialFeature.ANY)))
+        return BuildTurnAction(emptyList(), TestUnit(player, UnitType.STRUCTURE), MapHex(MapHexDesc(1, HexNeighbors(), SpecialFeature.ANY)))
     }
 
     private fun makeDeployAction() : DeployTurnAction {

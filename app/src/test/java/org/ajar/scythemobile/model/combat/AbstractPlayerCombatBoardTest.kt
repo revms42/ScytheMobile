@@ -257,8 +257,8 @@ class AbstractPlayerCombatBoardTest {
         val mech = TestUnit(player, UnitType.MECH)
         val worker = TestUnit(player, UnitType.WORKER)
 
-        val homeBaseDesc = MapHexDesc(1, HexNeigbors(), HomeBase(player))
-        val combatHexDesc = MapHexDesc(2, HexNeigbors())
+        val homeBaseDesc = MapHexDesc(1, HexNeighbors(), HomeBase(player))
+        val combatHexDesc = MapHexDesc(2, HexNeighbors())
         val mapDesc = MapDesc(homeBaseDesc, combatHexDesc)
         val map = GameMap(mapDesc)
 
