@@ -28,5 +28,4 @@ enum class PlayerResourceType : ResourceType {
     POWER
 }
 
-interface ResourceType {
-}
+interface ResourceType

@@ -39,7 +39,7 @@ class TrapUnit(override val controllingPlayer: Player, val trapType: TrapType) :
 
     override val heldMapResources: MutableList<MapResource> = ArrayList()
 
-    var _sprung: Boolean? = null
+    private var _sprung: Boolean? = null
     val sprung: Boolean
         get() {
             if(_sprung == null) {
@@ -51,6 +51,10 @@ class TrapUnit(override val controllingPlayer: Player, val trapType: TrapType) :
     fun springTrap(unit: GameUnit) {
         trapType.applyToPlayer(unit.controllingPlayer)
         _sprung = true
+    }
+
+    fun resetTrap() {
+        _sprung = false
     }
 }
 

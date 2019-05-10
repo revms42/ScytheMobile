@@ -6,7 +6,8 @@ buildscript {
             '**/R$*.class',
             '**/Manifest*.*',
             '**/com/google/**/*.class',
-            'org/ajar/scythemobile/model/map/HexNeighbors.class' // Data classes shouldn't count toward code-coverage.
+            'org/ajar/scythemobile/model/map/HexNeighbors.class', // Data classes shouldn't count toward code-coverage.
+            'org/ajar/scythemobile/model/faction/DestinationSelection.class'
     ]
 
     ext.kotlin_version = '1.3.20'

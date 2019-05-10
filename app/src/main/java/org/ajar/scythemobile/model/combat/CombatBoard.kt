@@ -158,7 +158,8 @@ open class DefaultCombatBoard(final override val combatHex: MapHex, override val
     }
 
     override fun resolveCombat() {
-        if (results!!.defenderResult > results!!.attackerResult) {
+        val defenseWon = results!!.defenderResult > results!!.attackerResult
+        if (defenseWon) {
             defendingPlayer.concludeCombat(true, 0)
             attackingPlayer.concludeCombat(false, 0)
 
@@ -177,6 +178,8 @@ open class DefaultCombatBoard(final override val combatHex: MapHex, override val
 
             defendingPlayer.unitsPresent
         }.forEach { gameUnit -> combatHex.dropAll(gameUnit)}
+
+        if(!defenseWon) combatHex.resolveMove(attackingPlayer.unitsPresent)
     }
 
     companion object {

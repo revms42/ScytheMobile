@@ -51,7 +51,7 @@ open class AbstractPlayer(override val user: User, factionMat: FactionMatModel, 
     override val lastTurn: Turn?
         get() = _lastTurn
 
-    override val combatCards: MutableList<CombatCard> = ArrayList()
+    final override val combatCards: MutableList<CombatCard> = ArrayList()
     override val deployedUnits: MutableList<GameUnit> = ArrayList()
 
     private var _popularity: Int = 0
@@ -93,7 +93,10 @@ open class AbstractPlayer(override val user: User, factionMat: FactionMatModel, 
         }
     }
 
-    override val objectives: MutableList<Objective> = ArrayList()
+    final override val objectives: MutableList<Objective> = ArrayList()
+
+    override var tokens: MutableList<out GameUnit>? = null
+    override var tokenPlacementChoice: Choice? = null
 
     init {
         _power = factionMat.initialPower
@@ -143,18 +146,27 @@ open class AbstractPlayer(override val user: User, factionMat: FactionMatModel, 
     // You need to run canPay before this to ensure that you've got enough non-map resources to make it work.
     override fun payResources(cost: List<ResourceType>): Boolean {
         val map = HashMap<Resource, MapHex>()
-        cost.filter { it is MapResourceType }.flatMap { selectResource(it).entries }.toMutableSet().forEach { map[it.key as MapResource] = it.value}
+        val mapResourceCost = cost.filter { it is MapResourceType }.map { it as MapResourceType }
+        mapResourceCost.flatMap { selectResource(it).entries }.toMutableSet().forEach { map[it.key as MapResource] = it.value}
 
-        val selection = promptForPayment.invoke(cost, map)
+        val resourcesPaid = if(mapResourceCost.isNotEmpty()) {
+            val selection = promptForPayment.invoke(cost, map)
 
-        val resourcesPaid = if(paymentAccepted(selection, cost.filter { it is MapResourceType })) {
-            selection?.firstOrNull {
-                when(it) {
-                    is CrimeaCardResource -> !combatCards.remove(it.card)
-                    else -> if(map[it]?.unitsPresent?.firstOrNull { unit -> unit.heldMapResources.remove(it) } == null) !map[it]?.heldMapResources?.remove(it)!! else true
-                }
-            } == null
-        } else false
+            if(paymentAccepted(selection, cost.filter { it is MapResourceType })) {
+                selection?.all {
+                    when(it) {
+                        is CrimeaCardResource -> combatCards.remove(it.card)
+                        else -> if(map[it]?.unitsPresent?.any { unit -> unit.heldMapResources.remove(it) } == false) {
+                            map[it]?.heldMapResources?.remove(it)!!
+                        } else {
+                            true
+                        }
+                    }
+                } == true
+            } else false
+        } else {
+            true
+        }
 
         if (resourcesPaid) {
             cost.filter { it is PlayerResourceType }.forEach {
@@ -293,6 +305,9 @@ interface Player {
     var popularity: Int
     var coins: Int
     val objectives: MutableList<Objective>
+
+    var tokens: MutableList<out GameUnit>?
+    var tokenPlacementChoice: Choice?
 
     val stars: HashMap<StarModel, Int>
 

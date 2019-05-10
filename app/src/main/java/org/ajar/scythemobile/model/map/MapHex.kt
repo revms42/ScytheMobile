@@ -1,11 +1,13 @@
 package org.ajar.scythemobile.model.map
 
+import org.ajar.scythemobile.model.PredefinedBinaryChoice
 import org.ajar.scythemobile.model.combat.DefaultCombatBoard
-import org.ajar.scythemobile.model.entity.GameUnit
-import org.ajar.scythemobile.model.entity.Player
-import org.ajar.scythemobile.model.entity.ResourceHolder
-import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.entity.*
+import org.ajar.scythemobile.model.faction.FactionMat
 import org.ajar.scythemobile.model.production.MapResource
+import org.ajar.scythemobile.model.turn.DeployTokenTurnAction
+import org.ajar.scythemobile.model.turn.ResetTrapAction
+import org.ajar.scythemobile.model.turn.TrapSprungAction
 
 class FactionHomeHex(desc: MapHexDesc, val player: Player?) : MapHex(desc)
 
@@ -51,26 +53,51 @@ open class MapHex(val desc: MapHexDesc) : ResourceHolder {
 
     private fun moveInCombatUnits(units: List<GameUnit>) {
         if(playerInControl != units[0].controllingPlayer && willMoveProvokeFight()) {
-            moveInForAttack(units)
+            moveInMobileUnits(units)
             val combatBoard = DefaultCombatBoard(this, units[0].controllingPlayer, playerInControl!!)
             units[0].controllingPlayer.queueCombat(combatBoard)
         } else {
             moveInMobileUnits(units)
+            resolveMove(units)
         }
     }
 
     private fun moveInMobileUnits(units: List<GameUnit>) {
-        if(canUnitOccupy(units[0])) {
-            unitsPresent.addAll(units)
-
-            units.firstOrNull { it.type == UnitType.CHARACTER }?.also { doEncounterCheck(it) }
-        }
-    }
-
-    private fun moveInForAttack(units: List<GameUnit>) {
         unitsPresent.addAll(units)
 
-        //TODO: we would need to check for encounter *after* combat: units.firstOrNull { it.type == UnitType.CHARACTER }?.also { doEncounterCheck(it) }
+        unitsPresent.firstOrNull { it is TrapUnit && !it.sprung && units[0].controllingPlayer != it.controllingPlayer}?.let { triggerTrap(it as TrapUnit, units[0]) }
+        // If there is combat going on it needs to happen before we resolve the move.
+    }
+
+    private fun triggerTrap(trap: TrapUnit, victim: GameUnit) {
+        trap.springTrap(victim)
+        victim.controllingPlayer.turn.performAction(TrapSprungAction(victim, trap))
+    }
+
+    fun resolveMove(units: List<GameUnit>) {
+        units.firstOrNull { it.type == UnitType.CHARACTER }?.also { doEncounterCheck(it) }
+
+        val player = units[0].controllingPlayer
+
+        val token = unitsPresent.firstOrNull { it.type == UnitType.TRAP || it.type == UnitType.FLAG }
+        if(token == null && player.tokens?.isNotEmpty() == true) {
+            if(player.user.requester?.requestBinaryChoice(PredefinedBinaryChoice.PLACE_TOKEN) == true) {
+                val selectedToken = player.user.requester?.requestCancellableChoice(player.tokenPlacementChoice!!, player.tokens!!)
+
+                if(selectedToken != null) {
+                    unitsPresent.add(selectedToken)
+                    player.deployedUnits.add(selectedToken)
+                    player.turn.performAction(DeployTokenTurnAction(selectedToken))
+                }
+            }
+        } else {
+            if(token is TrapUnit && token.controllingPlayer == player && token.sprung) {
+                if(player.user.requester?.requestBinaryChoice(PredefinedBinaryChoice.RESET_TRAP) == true) {
+                    token.resetTrap()
+                    player.turn.performAction(ResetTrapAction(token))
+                }
+            }
+        }
     }
 
     fun canUnitOccupy(unit:GameUnit) : Boolean {

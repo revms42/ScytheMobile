@@ -1,9 +1,7 @@
 package org.ajar.scythemobile.model.faction
 
 import org.ajar.scythemobile.model.*
-import org.ajar.scythemobile.model.entity.GameUnit
-import org.ajar.scythemobile.model.entity.Player
-import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.entity.*
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.production.CrimeaCardResource
@@ -106,17 +104,31 @@ enum class FactionMat(
                 Burrow(), Rally(), Sword(), Shield()
         )
 
-        override val tokenPlacementAbilities: Collection<TokenPlacementAbility> = listOf(Exalt())
+        override fun initializePlayer(player: Player) {
+            player.tokens = mutableListOf(
+                    FlagUnit(player),
+                    FlagUnit(player),
+                    FlagUnit(player),
+                    FlagUnit(player)
+            )
+            player.tokenPlacementChoice = ExaltChoice()
+        }
     },
     TOGAWA("Togawa Shogunate", CharacterDescription.AKIKO, DefaultFactionAbility.MAIFUKU, 0x00DD00DD, 0, 2, 0, 0) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 Toka(), Shinobi(), Ronin(), Suiton()
         )
 
-        override val tokenPlacementAbilities: Collection<TokenPlacementAbility> = listOf(Maifuku())
+        override fun initializePlayer(player: Player) {
+            player.tokens = mutableListOf(
+                    TrapUnit(player, TrapType.MAIFUKU_LOSE_CARDS),
+                    TrapUnit(player, TrapType.MAIFUKU_LOSE_MONEY),
+                    TrapUnit(player, TrapType.MAIFUKU_LOSE_POP),
+                    TrapUnit(player, TrapType.MAIFUKU_LOSE_POWER)
+            )
+            player.tokenPlacementChoice = MaifukuChoice()
+        }
     };
-
-    override val tokenPlacementAbilities: Collection<TokenPlacementAbility> = emptyList()
 
     override fun getFactionMovementRules(): List<MovementRule> {
         return emptyList()
@@ -131,7 +143,6 @@ class FactionMatInstance(val model: FactionMatModel) {
     private val standardMovementRules : List<MovementRule> = listOf(StandardMove(), TunnelMove())
 
     val unlockedMechAbility: MutableList<FactionAbility> = ArrayList()
-    private var tokens: HashMap<TokenPlacementAbility,MutableList<GameUnit>>? = null
 
     fun getMovementAbilities(unitType: UnitType) : List<MovementRule> {
         val rules = unlockedMechAbility.filter { it is MovementRule && it.validUnitType(unitType)}.map { it as MovementRule }.toMutableList()
@@ -148,28 +159,6 @@ class FactionMatInstance(val model: FactionMatModel) {
     fun unlockMechAbility(name: String) {
         abilityMap[name]?.also { unlockedMechAbility.add(it) }
     }
-
-    fun doTokenPlacement(unit: GameUnit, hex: MapHex) {
-        if(tokens == null) {
-            tokens = HashMap()
-
-            for(rule in model.tokenPlacementAbilities) {
-                tokens!![rule] = rule.createTokens(unit.controllingPlayer)
-            }
-        }
-
-        for(rule in model.tokenPlacementAbilities) {
-            val remainingTokens = tokens!![rule]
-
-            if(remainingTokens != null && remainingTokens.size > 0) {
-                val token = rule.selectToken(unit.controllingPlayer, remainingTokens)
-
-                if(token != null && tokens!![rule]?.remove(token)!!) {
-                    hex.unitsPresent.add(token)
-                }
-            }
-        }
-    }
 }
 
 interface FactionMatModel : Mat {
@@ -182,7 +171,6 @@ interface FactionMatModel : Mat {
 
     val mechAbilities: Collection<FactionAbility>
     val factionAbility: FactionAbility
-    val tokenPlacementAbilities: Collection<TokenPlacementAbility>
 
     /**
      * I'm Really intending this to be a drag and drop manuever where you move the resources to the cost area of the screen.

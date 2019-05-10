@@ -16,7 +16,9 @@ enum class PredefinedBinaryChoice(
     ABORT_DESTINATION("Is this unit done moving, or do you want to abort this move?", defaultAffirmative = "Done", defaultNegative = "Abort"),
     END_DESTINATION("Moving here will end this unit's movement, continue?"),
     BOLSTER_SELECTION("Bolster for cards or for power?", defaultAffirmative = "Cards", defaultNegative = "Power"),
-    MOVE_OR_GAIN_SELECTION("Perform Move or Gain Coints?", defaultAffirmative = "Move", defaultNegative = "Gain");
+    MOVE_OR_GAIN_SELECTION("Perform Move or Gain Coints?", defaultAffirmative = "Move", defaultNegative = "Gain"),
+    PLACE_TOKEN("Place a token?", defaultAffirmative = "Yes", defaultNegative = "No"),
+    RESET_TRAP("Reset the trap present in this hex?", defaultAffirmative = "Yes", defaultNegative = "No");
 
     private var _negative: String? = null
     override val negative: String

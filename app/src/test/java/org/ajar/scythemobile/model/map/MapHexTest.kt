@@ -4,7 +4,12 @@ import org.ajar.scythemobile.model.TestPlayer
 import org.ajar.scythemobile.model.TestUnit
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.Player
+import org.ajar.scythemobile.model.entity.TrapUnit
 import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.faction.FactionMat
+import org.ajar.scythemobile.model.turn.DeployTokenTurnAction
+import org.ajar.scythemobile.model.turn.ResetTrapAction
+import org.ajar.scythemobile.model.turn.TrapSprungAction
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -138,5 +143,66 @@ class MapHexTest {
         val mech = TestUnit(player, UnitType.MECH)
 
         assertFalse(hex.canUnitOccupy(mech))
+    }
+
+    @Test
+    fun testPlaceTrap() {
+        player = TestPlayer(FactionMat.TOGAWA)
+
+        val trap = player.tokens!![0]
+
+        val character = TestUnit(player, UnitType.CHARACTER)
+        hex.moveUnitsInto(listOf(character))
+
+        assertTrue(hex.unitsPresent.contains(trap))
+        assertNotNull(player.turn.findFirstOfType(DeployTokenTurnAction::class.java))
+    }
+
+    @Test
+    fun testTriggerTrap() {
+        val enemy = TestPlayer(FactionMat.TOGAWA)
+
+        hex.moveUnitsInto(listOf(enemy.tokens!![1]))
+        player.coins += 4
+        val initialCoins = player.coins
+
+        val character = TestUnit(player, UnitType.CHARACTER)
+        hex.moveUnitsInto(listOf(character))
+
+        assertEquals(initialCoins - 4, player.coins)
+        assertNotNull(player.turn.findFirstOfType(TrapSprungAction::class.java))
+    }
+
+    @Test
+    fun testResetTrap() {
+        player = TestPlayer(FactionMat.TOGAWA)
+
+        val trap = player.tokens!![1] as TrapUnit
+
+        val enemy = TestPlayer()
+        val enemyCharacter = TestUnit(enemy, UnitType.CHARACTER)
+
+        trap.springTrap(enemyCharacter)
+
+        hex.moveUnitsInto(listOf(trap))
+
+        val character = TestUnit(player, UnitType.CHARACTER)
+        hex.moveUnitsInto(listOf(character))
+
+        assertFalse(trap.sprung)
+        assertNotNull(player.turn.findFirstOfType(ResetTrapAction::class.java))
+    }
+
+    @Test
+    fun testPlaceFlag() {
+        player = TestPlayer(FactionMat.ALBION)
+
+        val flag = player.tokens!![0]
+
+        val character = TestUnit(player, UnitType.CHARACTER)
+        hex.moveUnitsInto(listOf(character))
+
+        assertTrue(hex.unitsPresent.contains(flag))
+        assertNotNull(player.turn.findFirstOfType(DeployTokenTurnAction::class.java))
     }
 }
