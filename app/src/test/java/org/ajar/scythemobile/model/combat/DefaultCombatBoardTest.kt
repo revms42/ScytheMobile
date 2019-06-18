@@ -100,6 +100,17 @@ class DefaultCombatBoardTest {
     }
 
     @Test
+    fun testRequestDecision() {
+        val initialCard = player.combatCards[0]
+        val playerBoard = combatBoard.getPlayerBoard(player)
+
+        playerBoard.requestCombatDecision()
+
+        assertEquals(0, playerBoard.powerSelected)
+        assertEquals(initialCard.power, playerBoard.finalPower())
+    }
+
+    @Test
     fun testDetermineResults() {
         combatBoard.getPlayerBoard(player).powerSelected = 2
         combatBoard.getOpposingBoard(player).powerSelected = 3

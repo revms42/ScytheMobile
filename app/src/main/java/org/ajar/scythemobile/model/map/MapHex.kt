@@ -152,4 +152,8 @@ open class MapHex(val desc: MapHexDesc) : ResourceHolder {
 
         return GameMap.currentMap?.findHexAtIndex(index)
     }
+
+    override fun toString(): String {
+        return "${desc.mapFeature[0]} ${desc.location}"
+    }
 }

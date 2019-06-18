@@ -71,9 +71,9 @@ class MapHexTest {
 
         hex.moveUnitsInto(listOf(character))
 
-        assertEquals(1, player.queuedCombatCards.size)
+        assertEquals(1, player.queuedCombatBoards.size)
 
-        val board = player.queuedCombatCards[0]
+        val board = player.queuedCombatBoards[0]
 
         assertEquals(hex, board.combatHex)
         assertEquals(player, board.attackingPlayer.player)
@@ -138,7 +138,7 @@ class MapHexTest {
         hex.moveUnitsInto(listOf(enemyMech))
 
         assertEquals(enemy, hex.playerInControl)
-        assertEquals(0, enemy.queuedCombatCards.size)
+        assertEquals(0, enemy.queuedCombatBoards.size)
 
         val mech = TestUnit(player, UnitType.MECH)
 

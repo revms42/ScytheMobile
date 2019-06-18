@@ -8,6 +8,8 @@ import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.*
+import org.ajar.scythemobile.model.playermat.MoveOrGainAction
+import org.ajar.scythemobile.model.turn.MoveTurnAction
 
 import org.junit.Assert.*
 import org.junit.Before
@@ -80,11 +82,12 @@ class FactionMechAbilityTest {
 
     @Test
     fun testTunnelMove() {
-        val tunnel2 = testMap.findHexAtIndex(16)!!
+        val tunnel2 = testMap.findHexAtIndex(tunnelDesc2.location)!!
 
         val tunnelMove = TunnelMove()
         assertTrue(tunnelMove.validStartingHex(centerHex))
         assertTrue(tunnelMove.validStartingHex(tunnel2))
+        assertFalse(tunnelMove.validStartingHex(testMap.findHexAtIndex(factoryDesc.location)!!))
 
         var validDest = tunnelMove.validEndingHexes(centerHex)
         assertEquals(1, validDest!!.size)
@@ -100,6 +103,11 @@ class FactionMechAbilityTest {
         val riverWalk = RiverWalk.FOREST_MOUNTAIN
         assertTrue(riverWalk.validStartingHex(centerHex))
 
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
+
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
         assertEquals(2, validDest.filter { it!!.desc.location == mountainDesc.location || it.desc.location == forestDesc.location }.size)
@@ -110,6 +118,11 @@ class FactionMechAbilityTest {
     fun testRiverWalkFarmTundra() {
         val riverWalk = RiverWalk.FARM_TUNDRA
         assertTrue(riverWalk.validStartingHex(centerHex))
+
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
 
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
@@ -122,6 +135,11 @@ class FactionMechAbilityTest {
         val riverWalk = RiverWalk.FARM_VILLAGE
         assertTrue(riverWalk.validStartingHex(centerHex))
 
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
+
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
         assertEquals(2,validDest.filter { it!!.desc.location == farmDesc.location || it.desc.location == villageDesc.location }.size)
@@ -133,6 +151,11 @@ class FactionMechAbilityTest {
         val riverWalk = RiverWalk.VILLAGE_MOUNTAIN
         assertTrue(riverWalk.validStartingHex(centerHex))
 
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
+
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
         assertEquals(2, validDest.filter { it!!.desc.location == mountainDesc.location || it.desc.location == villageDesc.location }.size)
@@ -141,10 +164,19 @@ class FactionMechAbilityTest {
 
     @Test
     fun testUnderpass() {
-        val mountain1 = testMap.findHexAtIndex(3)!!
+        val mountain1 = testMap.findHexAtIndex(mountainDesc.location)!!
+        val tunnel1 = testMap.findHexAtIndex(tunnelDesc.location)!!
+        val village1 = testMap.findHexAtIndex(villageDesc.location)!!
 
         val underpass = Underpass()
         assertTrue(underpass.validStartingHex(mountain1))
+        assertTrue(underpass.validStartingHex(tunnel1))
+        assertFalse(underpass.validStartingHex(village1))
+
+        assertTrue(underpass.validUnitType(UnitType.CHARACTER))
+        assertTrue(underpass.validUnitType(UnitType.MECH))
+        assertFalse(underpass.validUnitType(UnitType.WORKER))
+        assertFalse(underpass.validUnitType(UnitType.AIRSHIP))
 
         var validDest = underpass.validEndingHexes(mountain1)
         assertEquals(2, validDest!!.size)
@@ -169,9 +201,17 @@ class FactionMechAbilityTest {
     fun testTownship() {
         val village = testMap.findHexAtIndex(villageDesc.location)!!
         val factory = testMap.findHexAtIndex(factoryDesc.location)!!
+        val mountain = testMap.findHexAtIndex(mountainDesc.location)!!
 
         val township = Township()
         assertTrue(township.validStartingHex(village))
+        assertTrue(township.validStartingHex(factory))
+        assertFalse(township.validStartingHex(mountain))
+
+        assertTrue(township.validUnitType(UnitType.CHARACTER))
+        assertTrue(township.validUnitType(UnitType.MECH))
+        assertFalse(township.validUnitType(UnitType.WORKER))
+        assertFalse(township.validUnitType(UnitType.AIRSHIP))
 
         var validDest = township.validEndingHexes(village)
         assertEquals(1, validDest!!.size)
@@ -199,6 +239,11 @@ class FactionMechAbilityTest {
         val seaworthy = Seaworthy()
         assertTrue(seaworthy.validStartingHex(lake1))
 
+        assertTrue(seaworthy.validUnitType(UnitType.CHARACTER))
+        assertTrue(seaworthy.validUnitType(UnitType.MECH))
+        assertFalse(seaworthy.validUnitType(UnitType.WORKER))
+        assertFalse(seaworthy.validUnitType(UnitType.AIRSHIP))
+
         var validDest = seaworthy.validEndingHexes(lake1)
         assertEquals(3, validDest!!.size)
         assertTrue(validDest.filter { it!!.desc.location == tunnelDesc.location || it.desc.location == forestDesc.location || it.desc.location == tundraDesc.location}.size == 3)
@@ -217,6 +262,11 @@ class FactionMechAbilityTest {
         val wayfare = Wayfare()
         assertTrue(wayfare.validStartingHex(centerHex))
 
+        assertTrue(wayfare.validUnitType(UnitType.CHARACTER))
+        assertTrue(wayfare.validUnitType(UnitType.MECH))
+        assertFalse(wayfare.validUnitType(UnitType.WORKER))
+        assertFalse(wayfare.validUnitType(UnitType.AIRSHIP))
+
         val unit = TestUnit(player, UnitType.MECH)
         centerHex.unitsPresent.add(unit)
 
@@ -229,6 +279,11 @@ class FactionMechAbilityTest {
     fun testRally() {
         val rally = Rally()
         assertTrue(rally.validStartingHex(centerHex))
+
+        assertTrue(rally.validUnitType(UnitType.CHARACTER))
+        assertTrue(rally.validUnitType(UnitType.MECH))
+        assertFalse(rally.validUnitType(UnitType.WORKER))
+        assertFalse(rally.validUnitType(UnitType.AIRSHIP))
 
         val worker = TestUnit(player, UnitType.WORKER)
         val mech = TestUnit(player, UnitType.MECH)
@@ -252,6 +307,11 @@ class FactionMechAbilityTest {
         val shinobi = Shinobi()
         assertTrue(shinobi.validStartingHex(centerHex))
 
+        assertTrue(shinobi.validUnitType(UnitType.CHARACTER))
+        assertTrue(shinobi.validUnitType(UnitType.MECH))
+        assertFalse(shinobi.validUnitType(UnitType.WORKER))
+        assertFalse(shinobi.validUnitType(UnitType.AIRSHIP))
+
         val trap1 = TestUnit(player, UnitType.TRAP)
         val trap2 = TestUnit(player, UnitType.TRAP)
         val mech = TestUnit(player, UnitType.MECH)
@@ -274,6 +334,11 @@ class FactionMechAbilityTest {
         val submerge = Submerge()
         assertTrue(submerge.validStartingHex(lake1))
 
+        assertTrue(submerge.validUnitType(UnitType.CHARACTER))
+        assertTrue(submerge.validUnitType(UnitType.MECH))
+        assertFalse(submerge.validUnitType(UnitType.WORKER))
+        assertFalse(submerge.validUnitType(UnitType.AIRSHIP))
+
         var validDest = submerge.validEndingHexes(lake1)
         assertEquals(1, validDest!!.size)
         assertTrue(validDest.filter { it!!.desc.location == lakeDesc2.location }.size == 1)
@@ -287,6 +352,11 @@ class FactionMechAbilityTest {
     fun testBurrow() {
         val riverWalk = Burrow()
         assertTrue(riverWalk.validStartingHex(centerHex))
+
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
 
         var validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(5, validDest!!.size)
@@ -309,7 +379,15 @@ class FactionMechAbilityTest {
     @Test
     fun testToka() {
         val riverWalk = Toka()
+
+        assertTrue(riverWalk.canUse(player))
+
         assertTrue(riverWalk.validStartingHex(centerHex))
+
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
 
         var validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(5, validDest!!.size)
@@ -326,6 +404,10 @@ class FactionMechAbilityTest {
 
         validDest = riverWalk.validEndingHexes(otherHex)
         assertEquals(3, validDest!!.size)
+
+        player.turn.performAction(MoveTurnAction(TestUnit(player, UnitType.CHARACTER), centerHex, otherHex, rule = riverWalk))
+
+        assertFalse(riverWalk.canUse(player))
     }
 
     @Test
@@ -621,6 +703,14 @@ class FactionMechAbilityTest {
     @Test
     fun testSuiton() {
         val suiton = Suiton()
+
+        assertTrue(suiton.canUse(player))
+
+        assertTrue(suiton.validUnitType(UnitType.CHARACTER))
+        assertTrue(suiton.validUnitType(UnitType.MECH))
+        assertFalse(suiton.validUnitType(UnitType.WORKER))
+        assertFalse(suiton.validUnitType(UnitType.AIRSHIP))
+        assertFalse(suiton.allowsRetreat)
 
         assertTrue(suiton.validStartingHex(centerHex))
 

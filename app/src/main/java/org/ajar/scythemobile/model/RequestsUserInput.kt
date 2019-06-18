@@ -13,7 +13,7 @@ enum class PredefinedBinaryChoice(
     USE_ARTILLERY("Pay 1 power to give your opponent -2 power?"),
     ABORT_MOVEMENT("Do you want to abort this move action?"),
     END_MOVEMENT("Do you want to end your move actions or abort all completed moves this turn?", defaultAffirmative = "Abort All", defaultNegative = "End Move Actions"),
-    ABORT_DESTINATION("Is this unit done moving, or do you want to abort this move?", defaultAffirmative = "Done", defaultNegative = "Abort"),
+    ABORT_DESTINATION("Is this movement done moving?", defaultAffirmative = "Done", defaultNegative = "Reselect"),
     END_DESTINATION("Moving here will end this unit's movement, continue?"),
     BOLSTER_SELECTION("Bolster for cards or for power?", defaultAffirmative = "Cards", defaultNegative = "Power"),
     MOVE_OR_GAIN_SELECTION("Perform Move or Gain Coints?", defaultAffirmative = "Move", defaultNegative = "Gain"),
@@ -255,6 +255,46 @@ class EncounterChoice(private val defaultMessage: String = "Encounter", private 
 }
 
 class PayCombatCardChoice(private val defaultMessage: String = "Choose Combat Card to Discard", private val defaultImage: Int = -1) : Choice {
+    private var _image: Int? = null
+    override val image: Int
+        get() {
+            if (_image == null) {
+                _image = Choice.messageLoader?.loadImage(this)
+            }
+            return if(_image == null) defaultImage else _image!!
+        }
+
+    private var _message: String? = null
+    override val message: String
+        get() {
+            if (_message == null) {
+                _message = Choice.messageLoader?.loadMessage(this)
+            }
+            return if(_message == null) defaultMessage else _message!!
+        }
+}
+
+class LoadResourcesChoice(private val defaultMessage: String = "Choose Resources to Load", private val defaultImage: Int = -1) : Choice {
+    private var _image: Int? = null
+    override val image: Int
+        get() {
+            if (_image == null) {
+                _image = Choice.messageLoader?.loadImage(this)
+            }
+            return if(_image == null) defaultImage else _image!!
+        }
+
+    private var _message: String? = null
+    override val message: String
+        get() {
+            if (_message == null) {
+                _message = Choice.messageLoader?.loadMessage(this)
+            }
+            return if(_message == null) defaultMessage else _message!!
+        }
+}
+
+class UnloadResourcesChoice(private val defaultMessage: String = "Choose Resources to Unload", private val defaultImage: Int = -1) : Choice {
     private var _image: Int? = null
     override val image: Int
         get() {

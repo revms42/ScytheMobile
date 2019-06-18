@@ -6,18 +6,13 @@ import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.Player
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.faction.FactionMat
-import org.ajar.scythemobile.model.faction.FactionMatInstance
 import org.ajar.scythemobile.model.faction.FactionMatModel
 import org.ajar.scythemobile.model.map.EncounterCard
 import org.ajar.scythemobile.model.map.EncounterOutcome
 import org.ajar.scythemobile.model.map.MapHex
-import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.playermat.PlayerMat
-import org.ajar.scythemobile.model.playermat.PlayerMatInstance
 import org.ajar.scythemobile.model.playermat.PlayerMatModel
-import org.ajar.scythemobile.model.playermat.SectionInstance
 import org.ajar.scythemobile.model.production.*
-import org.ajar.scythemobile.model.turn.Turn
 
 class TestRequester : RequestsUserInput {
     override fun requestPayment(choice: Choice, cost: List<ResourceType>, choices: Map<Resource, MapHex>): Collection<Resource> {
@@ -57,15 +52,23 @@ class TestUser(override val human: Boolean = false, override val requester: Requ
 
 class TestPlayer(factionMatModel: FactionMatModel = FactionMat.CRIMEA, playerMatModel: PlayerMatModel = PlayerMat.MECHANICAL ) : AbstractPlayer(TestUser(), factionMatModel, playerMatModel) {
 
-    val queuedCombatCards: ArrayList<CombatBoard> = ArrayList()
+    val queuedCombatBoards: ArrayList<CombatBoard> = ArrayList()
 
     override fun queueCombat(combatBoard: CombatBoard) {
-        queuedCombatCards.add(combatBoard)
+        queuedCombatBoards.add(combatBoard)
+    }
+
+    override fun toString(): String {
+        return "${factionMat.model}/${playerMat.playerMatModel}"
     }
 
 }
 
-data class TestUnit(override var controllingPlayer: Player, override val type: UnitType, override val heldMapResources: ArrayList<MapResource> = ArrayList()) : GameUnit
+data class TestUnit(override var controllingPlayer: Player, override val type: UnitType, override val heldMapResources: ArrayList<MapResource> = ArrayList()) : GameUnit {
+    override fun toString(): String {
+        return "TestUnit $type of $controllingPlayer with ${heldMapResources.size} resources and id ${hashCode()}"
+    }
+}
 
 class TestPlayerCombatBoard(player: Player, unitsPresent: List<GameUnit>) : AbstractPlayerCombatBoard(player, unitsPresent) {
     override fun requestCombatDecision() {}

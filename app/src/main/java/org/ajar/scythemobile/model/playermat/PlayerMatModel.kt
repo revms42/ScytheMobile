@@ -2,7 +2,7 @@ package org.ajar.scythemobile.model.playermat
 
 import org.ajar.scythemobile.model.Mat
 
-class PlayerMatInstance(playerMatModel: PlayerMatModel) {
+class PlayerMatInstance(val playerMatModel: PlayerMatModel) {
     val sections: Set<SectionInstance> = playerMatModel.sections.map { SectionInstance(it) }.toSet()
 }
 
