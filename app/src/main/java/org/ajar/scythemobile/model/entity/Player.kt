@@ -47,6 +47,8 @@ open class AbstractPlayer(override val user: User, factionMat: FactionMatModel, 
             return _turn!!
         }
 
+    val queuedCombatBoards: ArrayList<CombatBoard> = ArrayList()
+
     private var _lastTurn: Turn? = null
     override val lastTurn: Turn?
         get() = _lastTurn
@@ -121,6 +123,8 @@ open class AbstractPlayer(override val user: User, factionMat: FactionMatModel, 
     override fun newTurn() {
         _lastTurn = turn
         _turn = Turn(this)
+        //TODO: Make sure combat is resolved by this point.
+        queuedCombatBoards.clear()
     }
 
     override fun finalizeTurn(): List<String> {
@@ -275,7 +279,8 @@ open class AbstractPlayer(override val user: User, factionMat: FactionMatModel, 
     }
 
     override fun queueCombat(combatBoard: CombatBoard) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        queuedCombatBoards.removeIf { board -> board.combatHex == combatBoard.combatHex }
+        queuedCombatBoards.add(combatBoard)
     }
 
     override fun doCombat() {

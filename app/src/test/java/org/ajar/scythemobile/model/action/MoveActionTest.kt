@@ -9,6 +9,7 @@ import org.ajar.scythemobile.model.faction.FactionMat
 import org.ajar.scythemobile.model.map.*
 import org.ajar.scythemobile.model.playermat.MoveOrGainAction
 import org.ajar.scythemobile.model.turn.MoveTurnAction
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -42,6 +43,13 @@ class MoveActionTest {
         hex0 = map.findHexAtIndex(0)!!
         hex1 = map.findHexAtIndex(1)!!
         hex2 = map.findHexAtIndex(2)!!
+    }
+
+    @After
+    fun tearDown() {
+        hex0.unitsPresent.clear()
+        hex1.unitsPresent.clear()
+        hex2.unitsPresent.clear()
     }
 
     private fun setupPlayer(faction: FactionMat) {
@@ -108,10 +116,95 @@ class MoveActionTest {
 
         assertTrue(moveAction.canPerform.invoke(player))
 
-        assertEquals("Not enough units at location $hex2",2, hex2.unitsPresent.size)
+        val turnActions = player.turn.findActionOfType(MoveTurnAction::class.java)
+        assertEquals("There should be 4 turn actions", 4, turnActions.size)
 
-        verifyLocation(mech1, hex2)
-        verifyLocation(mech2, hex2)
+        val mech1TurnActions = turnActions.filter { it.unit === mech1 }
+        assertEquals("$mech1 should have two turn actions", 2, mech1TurnActions.size)
+
+        val mech2TurnActions = turnActions.filter { it.unit === mech2 }
+        assertEquals("$mech2 should have two turn actions", 2, mech2TurnActions.size)
+
+        assertTrue("$mech1 did not move to $hex1", mech1TurnActions.firstOrNull { it.to === hex1} != null)
+        assertTrue("$mech2 did not move to $hex1", mech2TurnActions.firstOrNull { it.to === hex1} != null)
+
+        assertTrue("$mech1 did not move to $hex2 or $hex0", mech1TurnActions.firstOrNull { it.to === hex2 || it.to === hex0 } != null)
+        assertTrue("$mech2 did not move to $hex2 or $hex0", mech2TurnActions.firstOrNull { it.to === hex2 || it.to === hex0 } != null)
     }
 
+    @Test
+    fun testMoveSpeedCombat() {
+        setupPlayer(FactionMat.CRIMEA)
+        deployUnits(hex0, mech1, mech2)
+
+        val enemy = TestPlayer(FactionMat.POLONIA)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
+
+        hex1.moveUnitsInto(listOf(enemyMech))
+
+        player.factionMat.unlockMechAbility("Speed")
+
+        // Need to change how selections are made because it will choose the first hex, then go back to the original hex.
+        moveAction.performAction(player)
+
+        assertTrue(moveAction.canPerform.invoke(player))
+
+        assertEquals("Too many units at location $hex2",0, hex2.unitsPresent.size)
+        assertEquals("Incorrect units at $hex1: ${hex1.unitsPresent}",3, hex1.unitsPresent.size)
+
+        verifyLocation(mech1, hex1)
+        verifyLocation(mech2, hex1)
+
+        assertEquals("An incorrect number of combat boards are queued",1, player.queuedCombatBoards.size)
+        assertEquals("Incorrect number of units in the combat board for the player", 2, player.queuedCombatBoards[0].attackingPlayer.unitsPresent.size)
+    }
+
+    @Test
+    fun testMoveWorkers() {
+        setupPlayer(FactionMat.CRIMEA)
+        deployUnits(hex1, worker1, worker2)
+
+        val enemy = TestPlayer(FactionMat.POLONIA)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
+
+        hex0.moveUnitsInto(listOf(enemyMech))
+
+        // Need to change how selections are made because it will choose the first hex, then go back to the original hex.
+        moveAction.performAction(player)
+
+        assertTrue(moveAction.canPerform.invoke(player))
+
+        assertEquals("Too many units at location $hex0: ${hex0.unitsPresent}",1, hex0.unitsPresent.size)
+        assertEquals("Incorrect units at $hex2: ${hex2.unitsPresent}",2, hex2.unitsPresent.size)
+
+        verifyLocation(worker1, hex2)
+        verifyLocation(worker2, hex2)
+
+        assertEquals("An incorrect number of combat boards are queued",0, player.queuedCombatBoards.size)
+    }
+
+    // We need both of these to make sure there is no inherent bias for choosing one direction over the other which would invalidate the result of the previous test.
+    @Test
+    fun testMoveWorkers2() {
+        setupPlayer(FactionMat.CRIMEA)
+        deployUnits(hex1, worker1, worker2)
+
+        val enemy = TestPlayer(FactionMat.POLONIA)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
+
+        hex2.moveUnitsInto(listOf(enemyMech))
+
+        // Need to change how selections are made because it will choose the first hex, then go back to the original hex.
+        moveAction.performAction(player)
+
+        assertTrue(moveAction.canPerform.invoke(player))
+
+        assertEquals("Too many units at location $hex2: ${hex2.unitsPresent}",1, hex2.unitsPresent.size)
+        assertEquals("Incorrect units at $hex0: ${hex0.unitsPresent}",2, hex0.unitsPresent.size)
+
+        verifyLocation(worker1, hex0)
+        verifyLocation(worker2, hex0)
+
+        assertEquals("An incorrect number of combat boards are queued",0, player.queuedCombatBoards.size)
+    }
 }

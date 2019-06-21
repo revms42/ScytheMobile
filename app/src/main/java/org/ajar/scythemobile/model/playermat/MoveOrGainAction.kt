@@ -131,7 +131,7 @@ class MoveOrGainAction(
             rules.filter { it.canUse(unit.controllingPlayer) }.forEach { mr ->
                 mr.validEndingHexes(starting)?.forEach { dest ->
                     dest?.let {
-                        if(unit.type != UnitType.WORKER || it.willMoveProvokeFight()) { // Prefilter for workers.
+                        if(unit.type != UnitType.WORKER || !it.willMoveProvokeFight()) { // Prefilter for workers.
                             when {
                                 !allResults.containsKey(it) -> allResults[it] = mr
                                 allResults[it] !is StandardMove && mr is StandardMove -> allResults[it] = mr
@@ -151,12 +151,19 @@ class MoveOrGainAction(
             var movementEnds = to?.willMoveProvokeFight()
             if(to != null) {
                 var transported: Collection<GameUnit> = listOf()
-                if(unit.type == UnitType.MECH) {
-                    val workers = from.unitsPresent.filter { it.type == UnitType.WORKER }
 
-                    if(workers.isNotEmpty()) {
-                        transported = requester.requestSelection(MoveWorkersChoice(), workers)
+                when(unit.type) {
+                    UnitType.MECH -> {
+                        val workers = from.unitsPresent.filter { it.type == UnitType.WORKER }
+
+                        if(workers.isNotEmpty()) {
+                            transported = requester.requestSelection(MoveWorkersChoice(), workers)
+                        }
                     }
+                    UnitType.WORKER -> {
+                        movementEnds = true //workers never move more than one on their own.
+                    }
+                    else -> {}
                 }
 
                 val resources = from.heldMapResources

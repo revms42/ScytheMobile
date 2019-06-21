@@ -52,19 +52,13 @@ class TestUser(override val human: Boolean = false, override val requester: Requ
 
 class TestPlayer(factionMatModel: FactionMatModel = FactionMat.CRIMEA, playerMatModel: PlayerMatModel = PlayerMat.MECHANICAL ) : AbstractPlayer(TestUser(), factionMatModel, playerMatModel) {
 
-    val queuedCombatBoards: ArrayList<CombatBoard> = ArrayList()
-
-    override fun queueCombat(combatBoard: CombatBoard) {
-        queuedCombatBoards.add(combatBoard)
-    }
-
     override fun toString(): String {
         return "${factionMat.model}/${playerMat.playerMatModel}"
     }
 
 }
 
-data class TestUnit(override var controllingPlayer: Player, override val type: UnitType, override val heldMapResources: ArrayList<MapResource> = ArrayList()) : GameUnit {
+class TestUnit(override var controllingPlayer: Player, override val type: UnitType, override val heldMapResources: ArrayList<MapResource> = ArrayList()) : GameUnit {
     override fun toString(): String {
         return "TestUnit $type of $controllingPlayer with ${heldMapResources.size} resources and id ${hashCode()}"
     }
