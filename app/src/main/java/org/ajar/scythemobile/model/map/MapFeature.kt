@@ -2,6 +2,7 @@ package org.ajar.scythemobile.model.map
 
 import org.ajar.scythemobile.model.production.MapResourceType
 import org.ajar.scythemobile.model.entity.Player
+import org.ajar.scythemobile.model.faction.FactionMatModel
 
 enum class SpecialFeature(override val featureName: String) : MapFeature {
     LAKE("Lake"),
@@ -13,8 +14,27 @@ enum class SpecialFeature(override val featureName: String) : MapFeature {
 
 class RiverFeature(override val featureName: String = "River", val direction: Direction) : MapFeature
 
-class HomeBase(val player: Player) : MapFeature {
-    override val featureName: String = "${player.factionMat.model.matName} Home Base"
+class HomeBase(var player: Player? = null) : MapFeature {
+
+    private var model: FactionMatModel? = null
+
+    constructor(model: FactionMatModel): this(null) {
+        this.model = model
+    }
+
+    private val ownerName: String
+        get() {
+            return if(player != null) {
+                player!!.factionMat.model.matName
+            } else {
+                model!!.matName
+            }
+        }
+
+    override val featureName: String
+        get() {
+            return "$ownerName Home Base"
+        }
 }
 
 enum class ResourceFeature(override val featureName: String, val mapResource: MapResourceType) : MapFeature {
