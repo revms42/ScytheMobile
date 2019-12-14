@@ -1,6 +1,10 @@
 package org.ajar.scythemobile.model.playermat
 
+import org.ajar.scythemobile.model.DeployLocationChoice
+import org.ajar.scythemobile.model.DeployMechChoice
+import org.ajar.scythemobile.model.entity.MechUnit
 import org.ajar.scythemobile.model.entity.Player
+import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.production.MapResourceType
 import org.ajar.scythemobile.model.production.PlayerResourceType
 import org.ajar.scythemobile.model.turn.DeployTurnAction
@@ -20,11 +24,19 @@ class DeployAction(
         get() = listOf(UpgradeDef("Improve Deploy", canUpgrade, upgrade))
 
     private fun canPerformDeploy(player: Player) : Boolean {
-        return player.canPay(cost) && player.factionMat.unlockedMechAbility.size < 4
+        return player.canPay(cost) && player.factionMat.unlockedMechAbility.size < 4 && player.selectInteractableWorkers().isNotEmpty()
     }
 
     private fun performDeploy(player: Player) {
-        TODO("PERFORM DEPLOY")
+        val workers = player.selectInteractableWorkers()
+        val abilities = player.factionMat.lockedMechAbilities
+
+        val ability = player.user.requester!!.requestChoice(DeployMechChoice(), abilities)
+        val choice = player.user.requester!!.requestChoice(DeployLocationChoice(), workers)
+
+        player.factionMat.unlockMechAbility(ability)
+
+        GameMap.currentMap!!.locateUnit(choice)!!.moveUnitsInto(listOf(MechUnit(player)))
     }
 
     override var canPerform: (player: Player) -> Boolean = { player: Player -> canPerformDeploy(player) }

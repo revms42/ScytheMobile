@@ -18,7 +18,8 @@ enum class PredefinedBinaryChoice(
     BOLSTER_SELECTION("Bolster for cards or for power?", defaultAffirmative = "Cards", defaultNegative = "Power"),
     MOVE_OR_GAIN_SELECTION("Perform Move or Gain Coints?", defaultAffirmative = "Move", defaultNegative = "Gain"),
     PLACE_TOKEN("Place a token?", defaultAffirmative = "Yes", defaultNegative = "No"),
-    RESET_TRAP("Reset the trap present in this hex?", defaultAffirmative = "Yes", defaultNegative = "No");
+    RESET_TRAP("Reset the trap present in this hex?", defaultAffirmative = "Yes", defaultNegative = "No"),
+    ACQUIRE_POPULARITY("Trade for popularity?", defaultAffirmative = "Yes", defaultNegative = "No");
 
     private var _negative: String? = null
     override val negative: String
@@ -59,7 +60,7 @@ enum class PredefinedBinaryChoice(
 
 }
 
-class MoveUnitChoice(private val defaultMessage: String = "Select a unit to move", private val defaultImage: Int = -1): Choice {
+abstract class AbstractChoice(open val defaultMessage: String, open val defaultImage: Int = -1) : Choice {
 
     private var _image: Int? = null
     override val image: Int
@@ -78,52 +79,13 @@ class MoveUnitChoice(private val defaultMessage: String = "Select a unit to move
             }
             return if(_message == null) defaultMessage else _message!!
         }
-
 }
 
-class MovementChoice(private val defaultMessage: String = "Select a destination", private val defaultImage: Int = -1): Choice {
+class MoveUnitChoice(defaultMessage: String = "Select a unit to move"): AbstractChoice(defaultMessage)
 
-    private var _image: Int? = null
-    override val image: Int
-        get() {
-            if (_image == null) {
-                _image = Choice.messageLoader?.loadImage(this)
-            }
-            return if(_image == null) defaultImage else _image!!
-        }
+class MovementChoice(defaultMessage: String = "Select a destination"): AbstractChoice(defaultMessage)
 
-    private var _message: String? = null
-    override val message: String
-        get() {
-            if (_message == null) {
-                _message = Choice.messageLoader?.loadMessage(this)
-            }
-            return if(_message == null) defaultMessage else _message!!
-        }
-
-}
-
-class MoveWorkersChoice(private val defaultMessage: String = "Select workers to ride", private val defaultImage: Int = -1): Choice {
-
-    private var _image: Int? = null
-    override val image: Int
-        get() {
-            if (_image == null) {
-                _image = Choice.messageLoader?.loadImage(this)
-            }
-            return if(_image == null) defaultImage else _image!!
-        }
-
-    private var _message: String? = null
-    override val message: String
-        get() {
-            if (_message == null) {
-                _message = Choice.messageLoader?.loadMessage(this)
-            }
-            return if(_message == null) defaultMessage else _message!!
-        }
-
-}
+class MoveWorkersChoice(defaultMessage: String = "Select workers to ride"): AbstractChoice(defaultMessage)
 
 enum class CombatChoice(private val defaultMessage: String, private val defaultImage: Int = -1) : Choice {
     CHOOSE_POWER("Choose Power to spend"),
@@ -148,50 +110,25 @@ enum class CombatChoice(private val defaultMessage: String, private val defaultI
         }
 }
 
-class PaymentChoice(private val defaultMessage: String = "Select payment", private val defaultImage: Int = -1): Choice {
+class PaymentChoice(defaultMessage: String = "Select payment"): AbstractChoice(defaultMessage)
 
-    private var _image: Int? = null
-    override val image: Int
-        get() {
-            if (_image == null) {
-                _image = Choice.messageLoader?.loadImage(this)
-            }
-            return if(_image == null) defaultImage else _image!!
-        }
+class RetreatChoice(defaultMessage: String = "Choose a hex to retreat to"): AbstractChoice(defaultMessage)
 
-    private var _message: String? = null
-    override val message: String
-        get() {
-            if (_message == null) {
-                _message = Choice.messageLoader?.loadMessage(this)
-            }
-            return if(_message == null) defaultMessage else _message!!
-        }
+class MaifukuChoice(defaultMessage: String = "Deploy a trap?"): AbstractChoice(defaultMessage)
 
-}
+class ExaltChoice(defaultMessage: String = "Deploy a flag?"): AbstractChoice(defaultMessage)
 
-class RetreatChoice(private val defaultMessage: String = "Choose a hex to retreat to", private val defaultImage: Int = -1): Choice {
+class EncounterChoice(defaultMessage: String = "Encounter"): AbstractChoice(defaultMessage)
 
-    private var _image: Int? = null
-    override val image: Int
-        get() {
-            if (_image == null) {
-                _image = Choice.messageLoader?.loadImage(this)
-            }
-            return if(_image == null) defaultImage else _image!!
-        }
+class PayCombatCardChoice(defaultMessage: String = "Choose Combat Card to Discard"): AbstractChoice(defaultMessage)
 
-    private var _message: String? = null
-    override val message: String
-        get() {
-            if (_message == null) {
-                _message = Choice.messageLoader?.loadMessage(this)
-            }
-            return if(_message == null) defaultMessage else _message!!
-        }
-}
+class LoadResourcesChoice(defaultMessage: String = "Choose Resources to Load"): AbstractChoice(defaultMessage)
 
-class MaifukuChoice(private val defaultMessage: String = "Deploy a trap?", private val defaultImage: Int = -1) : Choice {
+class UnloadResourcesChoice(defaultMessage: String = "Choose Resources to Unload"): AbstractChoice(defaultMessage)
+
+enum class TradeResourceChoice (private val defaultMessage: String, private val defaultImage: Int = -1) : Choice {
+    FIRST_CHOICE("Select first resource"),
+    SECOND_CHOICE("Select second resource");
 
     private var _image: Int? = null
     override val image: Int
@@ -212,107 +149,10 @@ class MaifukuChoice(private val defaultMessage: String = "Deploy a trap?", priva
         }
 }
 
-class ExaltChoice(private val defaultMessage: String = "Deploy a flag?", private val defaultImage: Int = -1) : Choice {
+class TradeLocationChoice (defaultMessage: String = "Select worker for resource"): AbstractChoice(defaultMessage)
 
-    private var _image: Int? = null
-    override val image: Int
-        get() {
-            if (_image == null) {
-                _image = Choice.messageLoader?.loadImage(this)
-            }
-            return if(_image == null) defaultImage else _image!!
-        }
-
-    private var _message: String? = null
-    override val message: String
-        get() {
-            if (_message == null) {
-                _message = Choice.messageLoader?.loadMessage(this)
-            }
-            return if(_message == null) defaultMessage else _message!!
-        }
-}
-
-class EncounterChoice(private val defaultMessage: String = "Encounter", private val defaultImage: Int = -1) : Choice {
-
-    private var _image: Int? = null
-    override val image: Int
-        get() {
-            if (_image == null) {
-                _image = Choice.messageLoader?.loadImage(this)
-            }
-            return if(_image == null) defaultImage else _image!!
-        }
-
-    private var _message: String? = null
-    override val message: String
-        get() {
-            if (_message == null) {
-                _message = Choice.messageLoader?.loadMessage(this)
-            }
-            return if(_message == null) defaultMessage else _message!!
-        }
-}
-
-class PayCombatCardChoice(private val defaultMessage: String = "Choose Combat Card to Discard", private val defaultImage: Int = -1) : Choice {
-    private var _image: Int? = null
-    override val image: Int
-        get() {
-            if (_image == null) {
-                _image = Choice.messageLoader?.loadImage(this)
-            }
-            return if(_image == null) defaultImage else _image!!
-        }
-
-    private var _message: String? = null
-    override val message: String
-        get() {
-            if (_message == null) {
-                _message = Choice.messageLoader?.loadMessage(this)
-            }
-            return if(_message == null) defaultMessage else _message!!
-        }
-}
-
-class LoadResourcesChoice(private val defaultMessage: String = "Choose Resources to Load", private val defaultImage: Int = -1) : Choice {
-    private var _image: Int? = null
-    override val image: Int
-        get() {
-            if (_image == null) {
-                _image = Choice.messageLoader?.loadImage(this)
-            }
-            return if(_image == null) defaultImage else _image!!
-        }
-
-    private var _message: String? = null
-    override val message: String
-        get() {
-            if (_message == null) {
-                _message = Choice.messageLoader?.loadMessage(this)
-            }
-            return if(_message == null) defaultMessage else _message!!
-        }
-}
-
-class UnloadResourcesChoice(private val defaultMessage: String = "Choose Resources to Unload", private val defaultImage: Int = -1) : Choice {
-    private var _image: Int? = null
-    override val image: Int
-        get() {
-            if (_image == null) {
-                _image = Choice.messageLoader?.loadImage(this)
-            }
-            return if(_image == null) defaultImage else _image!!
-        }
-
-    private var _message: String? = null
-    override val message: String
-        get() {
-            if (_message == null) {
-                _message = Choice.messageLoader?.loadMessage(this)
-            }
-            return if(_message == null) defaultMessage else _message!!
-        }
-}
+class DeployMechChoice (defaultMessage: String = "Select ability you wish to unlock"): AbstractChoice(defaultMessage)
+class DeployLocationChoice (defaultMessage: String = "Select worker to deploy mech"): AbstractChoice(defaultMessage)
 
 interface Choice {
     val message: String

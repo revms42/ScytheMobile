@@ -63,6 +63,11 @@ class FlagUnit(override val controllingPlayer: Player) : GameUnit {
     override val heldMapResources: MutableList<MapResource> = ArrayList()
 }
 
+class MechUnit(override val controllingPlayer: Player) : GameUnit {
+    override val type: UnitType = UnitType.MECH
+    override val heldMapResources: MutableList<MapResource> = ArrayList()
+}
+
 enum class UnitType {
     CHARACTER,
     MECH,

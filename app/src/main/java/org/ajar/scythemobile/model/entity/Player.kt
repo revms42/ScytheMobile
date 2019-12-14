@@ -9,6 +9,7 @@ import org.ajar.scythemobile.model.faction.FactionMatInstance
 import org.ajar.scythemobile.model.faction.FactionMatModel
 import org.ajar.scythemobile.model.map.EncounterCard
 import org.ajar.scythemobile.model.map.GameMap
+import org.ajar.scythemobile.model.map.HomeBase
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
@@ -217,6 +218,10 @@ open class AbstractPlayer(override val user: User, factionMat: FactionMatModel, 
         return deployedUnits.filter { it.type == type }
     }
 
+    override fun selectInteractableWorkers(): List<GameUnit> {
+        return selectUnits(UnitType.WORKER).filter { GameMap.currentMap!!.locateUnit(it)!!.desc.mapFeature.none { mapFeature -> mapFeature is HomeBase }}
+    }
+
     override fun doEncounter(encounter: EncounterCard, unit: GameUnit) = doEncounter.invoke(encounter, unit)
     private fun resolveEncounter(encounter: EncounterCard, unit: GameUnit) {
         val encounterOutcome= user.requester?.requestChoice(EncounterChoice(), encounter.outcomes)
@@ -335,6 +340,7 @@ interface Player {
     fun payResources(cost: List<ResourceType>) : Boolean
 
     fun selectUnits(type: UnitType) : List<GameUnit>
+    fun selectInteractableWorkers() : List<GameUnit>
 
     fun doEncounter(encounter: EncounterCard, unit: GameUnit)
     fun queueCombat(combatBoard: CombatBoard)

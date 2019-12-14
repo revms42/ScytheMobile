@@ -143,6 +143,10 @@ class FactionMatInstance(val model: FactionMatModel) {
     private val standardMovementRules : List<MovementRule> = listOf(StandardMove(), TunnelMove())
 
     val unlockedMechAbility: MutableList<FactionAbility> = ArrayList()
+    val lockedMechAbilities: List<String>
+        get() {
+            return abilityMap.filter { pair -> !unlockedMechAbility.contains(pair.value) }.map { pair -> pair.key }
+        }
 
     fun getMovementAbilities(unitType: UnitType) : List<MovementRule> {
         val rules = unlockedMechAbility.filter { it is MovementRule && it.validUnitType(unitType)}.map { it as MovementRule }.toMutableList()

@@ -1,6 +1,12 @@
 package org.ajar.scythemobile.model.playermat
 
+import org.ajar.scythemobile.model.PredefinedBinaryChoice
+import org.ajar.scythemobile.model.TradeLocationChoice
+import org.ajar.scythemobile.model.TradeResourceChoice
 import org.ajar.scythemobile.model.entity.Player
+import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.production.MapResource
+import org.ajar.scythemobile.model.production.MapResourceType
 import org.ajar.scythemobile.model.production.PlayerResourceType
 import org.ajar.scythemobile.model.production.ResourceType
 import org.ajar.scythemobile.model.turn.TradeTurnAction
@@ -38,11 +44,24 @@ class TradeAction (
     private val upgradePopularity: () -> Unit = {_popularityGain++}
 
     private fun canPerformTrade(player: Player) : Boolean {
-        return player.canPay(cost)
+        return player.canPay(cost) && player.selectInteractableWorkers().isNotEmpty()
     }
 
     private fun performTrade(player: Player) {
-        TODO("TRADE")
+        if(player.user.requester!!.requestBinaryChoice(PredefinedBinaryChoice.ACQUIRE_POPULARITY)) {
+            player.popularity++
+        } else {
+            val workers = player.selectInteractableWorkers()
+
+            val first = player.user.requester!!.requestSelection(TradeResourceChoice.FIRST_CHOICE, MapResourceType.values().toList(), 1)
+            val firstWorker = player.user.requester!!.requestSelection(TradeLocationChoice(), workers, 1)
+
+            val second = player.user.requester!!.requestSelection(TradeResourceChoice.SECOND_CHOICE, MapResourceType.values().toList(), 1)
+            val secondWorker = player.user.requester!!.requestSelection(TradeLocationChoice(), workers, 1)
+
+            firstWorker.first().heldMapResources.add(MapResource(first.first()))
+            secondWorker.first().heldMapResources.add(MapResource(second.first()))
+        }
     }
 
     override var canPerform: (player: Player) -> Boolean = { player: Player ->  canPerformTrade(player)}
