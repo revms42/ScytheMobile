@@ -1,8 +1,6 @@
 package org.ajar.scythemobile.model.combat
 
-import kotlin.math.roundToInt
-
-class CombatCardDeck(twos: Int = 16, threes: Int = 12, fours: Int = 8, fives: Int = 6, private val regenerative: Boolean = false) {
+class CombatCardDeck(twos: Int = 16, threes: Int = 12, fours: Int = 8, fives: Int = 6, private val regenerative: Boolean = true) {
 
     private val cardList: MutableList<CombatCard> = ArrayList()
 

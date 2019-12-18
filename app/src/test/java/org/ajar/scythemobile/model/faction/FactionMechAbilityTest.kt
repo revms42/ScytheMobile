@@ -8,6 +8,8 @@ import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.*
+import org.ajar.scythemobile.model.playermat.MoveOrGainAction
+import org.ajar.scythemobile.model.turn.MoveTurnAction
 
 import org.junit.Assert.*
 import org.junit.Before
@@ -21,14 +23,14 @@ import org.junit.Test
  */
 class FactionMechAbilityTest {
 
-    private val villageDesc: MapHexDesc = MapHexDesc(1, HexNeigbors(e = 2, se = 4, sw = 3), ResourceFeature.VILLAGE, RiverFeature(direction = Direction.SE))
-    private val farmDesc: MapHexDesc = MapHexDesc(2, HexNeigbors(w = 1, se = 5, sw = 4), ResourceFeature.FARM, RiverFeature(direction = Direction.SW))
-    private val mountainDesc: MapHexDesc = MapHexDesc(3, HexNeigbors(e = 4, ne = 1, nw = 6), ResourceFeature.MOUNTAIN, RiverFeature(direction = Direction.E))
-    private val tundraDesc: MapHexDesc = MapHexDesc(5, HexNeigbors(w = 4, nw = 2, sw = 7), ResourceFeature.TUNDRA, RiverFeature(direction = Direction.W))
-    private val forestDesc: MapHexDesc = MapHexDesc(6, HexNeigbors(nw = 3, ne = 4, e = 7), ResourceFeature.FOREST, RiverFeature(direction = Direction.NE))
-    private val lakeDesc: MapHexDesc = MapHexDesc(7, HexNeigbors(w = 6, nw = 4, ne = 5), SpecialFeature.LAKE)
+    private val villageDesc: MapHexDesc = MapHexDesc(1, HexNeighbors(e = 2, se = 4, sw = 3), ResourceFeature.VILLAGE, RiverFeature(direction = Direction.SE))
+    private val farmDesc: MapHexDesc = MapHexDesc(2, HexNeighbors(w = 1, se = 5, sw = 4), ResourceFeature.FARM, RiverFeature(direction = Direction.SW))
+    private val mountainDesc: MapHexDesc = MapHexDesc(3, HexNeighbors(e = 4, ne = 1, nw = 6), ResourceFeature.MOUNTAIN, RiverFeature(direction = Direction.E))
+    private val tundraDesc: MapHexDesc = MapHexDesc(5, HexNeighbors(w = 4, nw = 2, sw = 7), ResourceFeature.TUNDRA, RiverFeature(direction = Direction.W))
+    private val forestDesc: MapHexDesc = MapHexDesc(6, HexNeighbors(nw = 3, ne = 4, e = 7), ResourceFeature.FOREST, RiverFeature(direction = Direction.NE))
+    private val lakeDesc: MapHexDesc = MapHexDesc(7, HexNeighbors(w = 6, nw = 4, ne = 5), SpecialFeature.LAKE)
 
-    private val tunnelDesc: MapHexDesc = MapHexDesc(4, HexNeigbors(1,2,5,7,6,3), SpecialFeature.TUNNEL,
+    private val tunnelDesc: MapHexDesc = MapHexDesc(4, HexNeighbors(1,2,5,7,6,3), SpecialFeature.TUNNEL,
             RiverFeature(direction = Direction.SW),
             RiverFeature(direction = Direction.W),
             RiverFeature(direction = Direction.NW),
@@ -36,19 +38,25 @@ class FactionMechAbilityTest {
             RiverFeature(direction = Direction.E)
     )
 
-    private val lakeDesc2: MapHexDesc = MapHexDesc(14, HexNeigbors(), SpecialFeature.LAKE)
-    private val factoryDesc: MapHexDesc = MapHexDesc(15, HexNeigbors(), SpecialFeature.FACTORY)
-    private val tunnelDesc2: MapHexDesc = MapHexDesc(16, HexNeigbors(), SpecialFeature.TUNNEL)
+    private val lakeDesc2: MapHexDesc = MapHexDesc(14, HexNeighbors(), SpecialFeature.LAKE)
+    private val factoryDesc: MapHexDesc = MapHexDesc(15, HexNeighbors(), SpecialFeature.FACTORY)
+    private val tunnelDesc2: MapHexDesc = MapHexDesc(16, HexNeighbors(), SpecialFeature.TUNNEL)
 
     private val mapDesc = MapDesc(villageDesc, farmDesc, mountainDesc, tundraDesc, forestDesc, lakeDesc, tunnelDesc, lakeDesc2, tunnelDesc2, factoryDesc)
 
     private lateinit var testMap: GameMap
     private lateinit var centerHex: MapHex
 
+    private lateinit var player: TestPlayer
+    private lateinit var enemy: TestPlayer
+
     @Before
     fun setup() {
         testMap = GameMap(mapDesc)
         centerHex = testMap.findHexAtIndex(4)!!
+
+        player = TestPlayer()
+        enemy = TestPlayer()
     }
 
     @Test
@@ -74,11 +82,12 @@ class FactionMechAbilityTest {
 
     @Test
     fun testTunnelMove() {
-        val tunnel2 = testMap.findHexAtIndex(16)!!
+        val tunnel2 = testMap.findHexAtIndex(tunnelDesc2.location)!!
 
         val tunnelMove = TunnelMove()
         assertTrue(tunnelMove.validStartingHex(centerHex))
         assertTrue(tunnelMove.validStartingHex(tunnel2))
+        assertFalse(tunnelMove.validStartingHex(testMap.findHexAtIndex(factoryDesc.location)!!))
 
         var validDest = tunnelMove.validEndingHexes(centerHex)
         assertEquals(1, validDest!!.size)
@@ -94,6 +103,11 @@ class FactionMechAbilityTest {
         val riverWalk = RiverWalk.FOREST_MOUNTAIN
         assertTrue(riverWalk.validStartingHex(centerHex))
 
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
+
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
         assertEquals(2, validDest.filter { it!!.desc.location == mountainDesc.location || it.desc.location == forestDesc.location }.size)
@@ -104,6 +118,11 @@ class FactionMechAbilityTest {
     fun testRiverWalkFarmTundra() {
         val riverWalk = RiverWalk.FARM_TUNDRA
         assertTrue(riverWalk.validStartingHex(centerHex))
+
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
 
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
@@ -116,6 +135,11 @@ class FactionMechAbilityTest {
         val riverWalk = RiverWalk.FARM_VILLAGE
         assertTrue(riverWalk.validStartingHex(centerHex))
 
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
+
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
         assertEquals(2,validDest.filter { it!!.desc.location == farmDesc.location || it.desc.location == villageDesc.location }.size)
@@ -127,6 +151,11 @@ class FactionMechAbilityTest {
         val riverWalk = RiverWalk.VILLAGE_MOUNTAIN
         assertTrue(riverWalk.validStartingHex(centerHex))
 
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
+
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
         assertEquals(2, validDest.filter { it!!.desc.location == mountainDesc.location || it.desc.location == villageDesc.location }.size)
@@ -135,17 +164,26 @@ class FactionMechAbilityTest {
 
     @Test
     fun testUnderpass() {
-        val mountain1 = testMap.findHexAtIndex(3)!!
+        val mountain1 = testMap.findHexAtIndex(mountainDesc.location)!!
+        val tunnel1 = testMap.findHexAtIndex(tunnelDesc.location)!!
+        val village1 = testMap.findHexAtIndex(villageDesc.location)!!
 
         val underpass = Underpass()
         assertTrue(underpass.validStartingHex(mountain1))
+        assertTrue(underpass.validStartingHex(tunnel1))
+        assertFalse(underpass.validStartingHex(village1))
+
+        assertTrue(underpass.validUnitType(UnitType.CHARACTER))
+        assertTrue(underpass.validUnitType(UnitType.MECH))
+        assertFalse(underpass.validUnitType(UnitType.WORKER))
+        assertFalse(underpass.validUnitType(UnitType.AIRSHIP))
 
         var validDest = underpass.validEndingHexes(mountain1)
         assertEquals(2, validDest!!.size)
         assertTrue(validDest.filter { it!!.desc.location == tunnelDesc.location || it.desc.location == tunnelDesc2.location}.size == 2)
 
-        val startingUnit = TestUnit(TestPlayer.player, UnitType.MECH)
-        val endingUnit = TestUnit(TestPlayer.player, UnitType.WORKER)
+        val startingUnit = TestUnit(player, UnitType.MECH)
+        val endingUnit = TestUnit(player, UnitType.WORKER)
 
         centerHex.unitsPresent.add(startingUnit)
 
@@ -163,16 +201,24 @@ class FactionMechAbilityTest {
     fun testTownship() {
         val village = testMap.findHexAtIndex(villageDesc.location)!!
         val factory = testMap.findHexAtIndex(factoryDesc.location)!!
+        val mountain = testMap.findHexAtIndex(mountainDesc.location)!!
 
         val township = Township()
         assertTrue(township.validStartingHex(village))
+        assertTrue(township.validStartingHex(factory))
+        assertFalse(township.validStartingHex(mountain))
+
+        assertTrue(township.validUnitType(UnitType.CHARACTER))
+        assertTrue(township.validUnitType(UnitType.MECH))
+        assertFalse(township.validUnitType(UnitType.WORKER))
+        assertFalse(township.validUnitType(UnitType.AIRSHIP))
 
         var validDest = township.validEndingHexes(village)
         assertEquals(1, validDest!!.size)
         assertTrue(validDest.filter { it!!.desc.location == factoryDesc.location }.size == 1)
 
-        val startingUnit = TestUnit(TestPlayer.player, UnitType.MECH)
-        val endingUnit = TestUnit(TestPlayer.player, UnitType.WORKER)
+        val startingUnit = TestUnit(player, UnitType.MECH)
+        val endingUnit = TestUnit(player, UnitType.WORKER)
 
         factory.unitsPresent.add(startingUnit)
 
@@ -193,6 +239,11 @@ class FactionMechAbilityTest {
         val seaworthy = Seaworthy()
         assertTrue(seaworthy.validStartingHex(lake1))
 
+        assertTrue(seaworthy.validUnitType(UnitType.CHARACTER))
+        assertTrue(seaworthy.validUnitType(UnitType.MECH))
+        assertFalse(seaworthy.validUnitType(UnitType.WORKER))
+        assertFalse(seaworthy.validUnitType(UnitType.AIRSHIP))
+
         var validDest = seaworthy.validEndingHexes(lake1)
         assertEquals(3, validDest!!.size)
         assertTrue(validDest.filter { it!!.desc.location == tunnelDesc.location || it.desc.location == forestDesc.location || it.desc.location == tundraDesc.location}.size == 3)
@@ -204,14 +255,19 @@ class FactionMechAbilityTest {
 
     @Test
     fun testWayfare() {
-        testMap.addHomeBase(MapHexDesc(-42, HexNeigbors(sw = 1, se = 2), HomeBase(TestPlayer.player)), TestPlayer.player)
-        testMap.addHomeBase(MapHexDesc(-43, HexNeigbors(nw = 6, ne = 7), HomeBase(TestPlayer.enemy)), TestPlayer.enemy)
-        testMap.addHomeBase(MapHexDesc(-44, HexNeigbors(e = 1, se = 3), HomeBase(TestPlayer())))
+        testMap.addHomeBase(MapHexDesc(-42, HexNeighbors(sw = 1, se = 2), HomeBase(player)), player)
+        testMap.addHomeBase(MapHexDesc(-43, HexNeighbors(nw = 6, ne = 7), HomeBase(enemy)), enemy)
+        testMap.addHomeBase(MapHexDesc(-44, HexNeighbors(e = 1, se = 3), HomeBase(TestPlayer())))
 
         val wayfare = Wayfare()
         assertTrue(wayfare.validStartingHex(centerHex))
 
-        val unit = TestUnit(TestPlayer.player, UnitType.MECH)
+        assertTrue(wayfare.validUnitType(UnitType.CHARACTER))
+        assertTrue(wayfare.validUnitType(UnitType.MECH))
+        assertFalse(wayfare.validUnitType(UnitType.WORKER))
+        assertFalse(wayfare.validUnitType(UnitType.AIRSHIP))
+
+        val unit = TestUnit(player, UnitType.MECH)
         centerHex.unitsPresent.add(unit)
 
         val validDest = wayfare.validEndingHexes(centerHex)
@@ -224,11 +280,16 @@ class FactionMechAbilityTest {
         val rally = Rally()
         assertTrue(rally.validStartingHex(centerHex))
 
-        val worker = TestUnit(TestPlayer.player, UnitType.WORKER)
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val flag = TestUnit(TestPlayer.player, UnitType.FLAG)
-        val enemyWorker = TestUnit(TestPlayer.enemy, UnitType.WORKER)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        assertTrue(rally.validUnitType(UnitType.CHARACTER))
+        assertTrue(rally.validUnitType(UnitType.MECH))
+        assertFalse(rally.validUnitType(UnitType.WORKER))
+        assertFalse(rally.validUnitType(UnitType.AIRSHIP))
+
+        val worker = TestUnit(player, UnitType.WORKER)
+        val mech = TestUnit(player, UnitType.MECH)
+        val flag = TestUnit(player, UnitType.FLAG)
+        val enemyWorker = TestUnit(enemy, UnitType.WORKER)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         testMap.findHexAtIndex(villageDesc.location)!!.unitsPresent.add(worker)
@@ -246,10 +307,15 @@ class FactionMechAbilityTest {
         val shinobi = Shinobi()
         assertTrue(shinobi.validStartingHex(centerHex))
 
-        val trap1 = TestUnit(TestPlayer.player, UnitType.TRAP)
-        val trap2 = TestUnit(TestPlayer.player, UnitType.TRAP)
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        assertTrue(shinobi.validUnitType(UnitType.CHARACTER))
+        assertTrue(shinobi.validUnitType(UnitType.MECH))
+        assertFalse(shinobi.validUnitType(UnitType.WORKER))
+        assertFalse(shinobi.validUnitType(UnitType.AIRSHIP))
+
+        val trap1 = TestUnit(player, UnitType.TRAP)
+        val trap2 = TestUnit(player, UnitType.TRAP)
+        val mech = TestUnit(player, UnitType.MECH)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         testMap.findHexAtIndex(villageDesc.location)!!.unitsPresent.add(trap1)
@@ -268,6 +334,11 @@ class FactionMechAbilityTest {
         val submerge = Submerge()
         assertTrue(submerge.validStartingHex(lake1))
 
+        assertTrue(submerge.validUnitType(UnitType.CHARACTER))
+        assertTrue(submerge.validUnitType(UnitType.MECH))
+        assertFalse(submerge.validUnitType(UnitType.WORKER))
+        assertFalse(submerge.validUnitType(UnitType.AIRSHIP))
+
         var validDest = submerge.validEndingHexes(lake1)
         assertEquals(1, validDest!!.size)
         assertTrue(validDest.filter { it!!.desc.location == lakeDesc2.location }.size == 1)
@@ -281,6 +352,11 @@ class FactionMechAbilityTest {
     fun testBurrow() {
         val riverWalk = Burrow()
         assertTrue(riverWalk.validStartingHex(centerHex))
+
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
 
         var validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(5, validDest!!.size)
@@ -303,7 +379,15 @@ class FactionMechAbilityTest {
     @Test
     fun testToka() {
         val riverWalk = Toka()
+
+        assertTrue(riverWalk.canUse(player))
+
         assertTrue(riverWalk.validStartingHex(centerHex))
+
+        assertTrue(riverWalk.validUnitType(UnitType.CHARACTER))
+        assertTrue(riverWalk.validUnitType(UnitType.MECH))
+        assertFalse(riverWalk.validUnitType(UnitType.WORKER))
+        assertFalse(riverWalk.validUnitType(UnitType.AIRSHIP))
 
         var validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(5, validDest!!.size)
@@ -320,41 +404,45 @@ class FactionMechAbilityTest {
 
         validDest = riverWalk.validEndingHexes(otherHex)
         assertEquals(3, validDest!!.size)
+
+        player.turn.performAction(MoveTurnAction(TestUnit(player, UnitType.CHARACTER), centerHex, otherHex, rule = riverWalk))
+
+        assertFalse(riverWalk.canUse(player))
     }
 
     @Test
     fun testDisarm() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         centerHex.unitsPresent.add(enemyMech)
 
-        TestPlayer.player.power = 2
-        TestPlayer.enemy.power = 2
+        player.power = 2
+        enemy.power = 2
 
         val disarm = Disarm()
 
         assertTrue(disarm.appliesForAttack)
-        var testCombatBoard = TestCombatBoard(centerHex, TestPlayer.player, TestPlayer.enemy)
+        var testCombatBoard = TestCombatBoard(centerHex, player, enemy)
 
-        assertTrue(disarm.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(disarm.validCombatHex(player, testCombatBoard))
         assertEquals(2, testCombatBoard.defendingPlayer.power)
 
-        disarm.applyEffect(TestPlayer.player, testCombatBoard)
+        disarm.applyEffect(player, testCombatBoard)
 
         assertEquals(0, testCombatBoard.defendingPlayer.power)
 
-        TestPlayer.player.power = 2
-        TestPlayer.enemy.power = 2
+        player.power = 2
+        enemy.power = 2
 
         assertTrue(disarm.appliesForDefense)
-        testCombatBoard = TestCombatBoard(centerHex, TestPlayer.enemy, TestPlayer.player)
+        testCombatBoard = TestCombatBoard(centerHex, enemy, player)
 
-        assertTrue(disarm.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(disarm.validCombatHex(player, testCombatBoard))
         assertEquals(2, testCombatBoard.attackingPlayer.power)
 
-        disarm.applyEffect(TestPlayer.player, testCombatBoard)
+        disarm.applyEffect(player, testCombatBoard)
 
         assertEquals(0, testCombatBoard.attackingPlayer.power)
 
@@ -363,40 +451,40 @@ class FactionMechAbilityTest {
 
     @Test
     fun testArtillery() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         centerHex.unitsPresent.add(enemyMech)
 
         val artillery = Artillery()
 
-        TestPlayer.player.power = 2
-        TestPlayer.enemy.power = 2
+        player.power = 2
+        enemy.power = 2
 
         assertTrue(artillery.appliesForAttack)
-        var testCombatBoard = TestCombatBoard(centerHex, TestPlayer.player, TestPlayer.enemy)
+        var testCombatBoard = TestCombatBoard(centerHex, player, enemy)
 
-        assertTrue(artillery.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(artillery.validCombatHex(player, testCombatBoard))
         assertEquals(2, testCombatBoard.defendingPlayer.power)
         assertEquals(2, testCombatBoard.attackingPlayer.power)
 
-        artillery.applyEffect(TestPlayer.player, testCombatBoard)
+        artillery.applyEffect(player, testCombatBoard)
 
         assertEquals(1, testCombatBoard.attackingPlayer.power)
         assertEquals(0, testCombatBoard.defendingPlayer.power)
 
-        TestPlayer.player.power = 2
-        TestPlayer.enemy.power = 2
+        player.power = 2
+        enemy.power = 2
 
         assertTrue(artillery.appliesForDefense)
-        testCombatBoard = TestCombatBoard(centerHex, TestPlayer.enemy, TestPlayer.player)
+        testCombatBoard = TestCombatBoard(centerHex, enemy, player)
 
-        assertTrue(artillery.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(artillery.validCombatHex(player, testCombatBoard))
         assertEquals(2, testCombatBoard.defendingPlayer.power)
         assertEquals(2, testCombatBoard.attackingPlayer.power)
 
-        artillery.applyEffect(TestPlayer.player, testCombatBoard)
+        artillery.applyEffect(player, testCombatBoard)
 
         assertEquals(0, testCombatBoard.attackingPlayer.power)
         assertEquals(1, testCombatBoard.defendingPlayer.power)
@@ -406,9 +494,9 @@ class FactionMechAbilityTest {
 
     @Test
     fun testPeoplesArmy() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val worker = TestUnit(TestPlayer.player, UnitType.WORKER)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val worker = TestUnit(player, UnitType.WORKER)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         centerHex.unitsPresent.add(worker)
@@ -417,22 +505,22 @@ class FactionMechAbilityTest {
         val peoplesArmy = PeoplesArmy()
 
         assertTrue(peoplesArmy.appliesForAttack)
-        var testCombatBoard = TestCombatBoard(centerHex, TestPlayer.player, TestPlayer.enemy)
+        var testCombatBoard = TestCombatBoard(centerHex, player, enemy)
 
-        assertTrue(peoplesArmy.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(peoplesArmy.validCombatHex(player, testCombatBoard))
         assertEquals(1, testCombatBoard.attackingPlayer.cardLimit)
 
-        peoplesArmy.applyEffect(TestPlayer.player, testCombatBoard)
+        peoplesArmy.applyEffect(player, testCombatBoard)
 
         assertEquals(2, testCombatBoard.attackingPlayer.cardLimit)
 
         assertTrue(peoplesArmy.appliesForDefense)
-        testCombatBoard = TestCombatBoard(centerHex, TestPlayer.enemy, TestPlayer.player)
+        testCombatBoard = TestCombatBoard(centerHex, enemy, player)
 
-        assertTrue(peoplesArmy.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(peoplesArmy.validCombatHex(player, testCombatBoard))
         assertEquals(1, testCombatBoard.defendingPlayer.cardLimit)
 
-        peoplesArmy.applyEffect(TestPlayer.player, testCombatBoard)
+        peoplesArmy.applyEffect(player, testCombatBoard)
 
         assertEquals(2, testCombatBoard.defendingPlayer.cardLimit)
 
@@ -441,42 +529,42 @@ class FactionMechAbilityTest {
 
     @Test
     fun testScout() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         centerHex.unitsPresent.add(enemyMech)
 
-        TestPlayer.player.combatCards.clear()
-        TestPlayer.enemy.combatCards.clear()
+        player.combatCards.clear()
+        enemy.combatCards.clear()
 
-        TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
-        TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
 
-        TestPlayer.enemy.combatCards.add(CombatCardDeck.currentDeck.drawCard())
-        TestPlayer.enemy.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        enemy.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        enemy.combatCards.add(CombatCardDeck.currentDeck.drawCard())
 
         val scout = Scout()
 
         assertTrue(scout.appliesForAttack)
-        var testCombatBoard = TestCombatBoard(centerHex, TestPlayer.player, TestPlayer.enemy)
+        var testCombatBoard = TestCombatBoard(centerHex, player, enemy)
 
-        assertTrue(scout.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(scout.validCombatHex(player, testCombatBoard))
         assertEquals(2, testCombatBoard.attackingPlayer.cardsAvailable.size)
         assertEquals(2, testCombatBoard.defendingPlayer.cardsAvailable.size)
 
-        scout.applyEffect(TestPlayer.player, testCombatBoard)
+        scout.applyEffect(player, testCombatBoard)
 
         assertEquals(3, testCombatBoard.attackingPlayer.cardsAvailable.size)
         assertEquals(1, testCombatBoard.defendingPlayer.cardsAvailable.size)
 
         assertTrue(scout.appliesForDefense)
-        testCombatBoard = TestCombatBoard(centerHex, TestPlayer.enemy, TestPlayer.player)
+        testCombatBoard = TestCombatBoard(centerHex, enemy, player)
 
         assertEquals(2, testCombatBoard.attackingPlayer.cardsAvailable.size)
         assertEquals(2, testCombatBoard.defendingPlayer.cardsAvailable.size)
 
-        scout.applyEffect(TestPlayer.player, testCombatBoard)
+        scout.applyEffect(player, testCombatBoard)
 
         assertEquals(1, testCombatBoard.attackingPlayer.cardsAvailable.size)
         assertEquals(3, testCombatBoard.defendingPlayer.cardsAvailable.size)
@@ -486,24 +574,24 @@ class FactionMechAbilityTest {
 
     @Test
     fun testSword() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         centerHex.unitsPresent.add(enemyMech)
 
-        TestPlayer.player.power = 2
-        TestPlayer.enemy.power = 2
+        player.power = 2
+        enemy.power = 2
 
         val sword = Sword()
 
         assertTrue(sword.appliesForAttack)
-        val testCombatBoard = TestCombatBoard(centerHex, TestPlayer.player, TestPlayer.enemy)
+        val testCombatBoard = TestCombatBoard(centerHex, player, enemy)
 
-        assertTrue(sword.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(sword.validCombatHex(player, testCombatBoard))
         assertEquals(2, testCombatBoard.defendingPlayer.power)
 
-        sword.applyEffect(TestPlayer.player, testCombatBoard)
+        sword.applyEffect(player, testCombatBoard)
 
         assertEquals(0, testCombatBoard.defendingPlayer.power)
 
@@ -513,26 +601,26 @@ class FactionMechAbilityTest {
 
     @Test
     fun testShield() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         centerHex.unitsPresent.add(enemyMech)
 
-        TestPlayer.player.power = 2
-        TestPlayer.enemy.power = 2
+        player.power = 2
+        enemy.power = 2
 
         val shield = Shield()
 
         assertFalse(shield.appliesForAttack)
 
         assertTrue(shield.appliesForDefense)
-        val testCombatBoard = TestCombatBoard(centerHex, TestPlayer.enemy, TestPlayer.player)
+        val testCombatBoard = TestCombatBoard(centerHex, enemy, player)
 
-        assertTrue(shield.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(shield.validCombatHex(player, testCombatBoard))
         assertEquals(2, testCombatBoard.defendingPlayer.power)
 
-        shield.applyEffect(TestPlayer.player, testCombatBoard)
+        shield.applyEffect(player, testCombatBoard)
 
         assertEquals(4, testCombatBoard.defendingPlayer.power)
 
@@ -541,56 +629,56 @@ class FactionMechAbilityTest {
 
     @Test
     fun testRonin() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         centerHex.unitsPresent.add(enemyMech)
 
-        TestPlayer.player.power = 2
-        TestPlayer.enemy.power = 2
+        player.power = 2
+        enemy.power = 2
 
         val ronin = Ronin()
 
         assertTrue(ronin.appliesForAttack)
-        var testCombatBoard = TestCombatBoard(centerHex, TestPlayer.player, TestPlayer.enemy)
+        var testCombatBoard = TestCombatBoard(centerHex, player, enemy)
 
-        assertTrue(ronin.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(ronin.validCombatHex(player, testCombatBoard))
         assertEquals(2, testCombatBoard.attackingPlayer.power)
 
-        ronin.applyEffect(TestPlayer.player, testCombatBoard)
+        ronin.applyEffect(player, testCombatBoard)
 
         assertEquals(4, testCombatBoard.attackingPlayer.power)
 
-        TestPlayer.player.power = 2
-        TestPlayer.enemy.power = 2
+        player.power = 2
+        enemy.power = 2
 
         assertTrue(ronin.appliesForDefense)
-        testCombatBoard = TestCombatBoard(centerHex, TestPlayer.enemy, TestPlayer.player)
+        testCombatBoard = TestCombatBoard(centerHex, enemy, player)
 
-        assertTrue(ronin.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(ronin.validCombatHex(player, testCombatBoard))
         assertEquals(2, testCombatBoard.defendingPlayer.power)
 
-        ronin.applyEffect(TestPlayer.player, testCombatBoard)
+        ronin.applyEffect(player, testCombatBoard)
 
         assertEquals(4, testCombatBoard.defendingPlayer.power)
 
         //Shouldn't apply with two units present.
-        val mech2 = TestUnit(TestPlayer.player, UnitType.MECH)
+        val mech2 = TestUnit(player, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech2)
 
-        testCombatBoard = TestCombatBoard(centerHex, TestPlayer.player, TestPlayer.enemy)
+        testCombatBoard = TestCombatBoard(centerHex, player, enemy)
 
-        assertFalse(ronin.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertFalse(ronin.validCombatHex(player, testCombatBoard))
 
         assertFalse(ronin.appliesDuringUncontested)
     }
 
     @Test
     fun testCamaraderie() {
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         centerHex.unitsPresent.add(mech)
         centerHex.unitsPresent.add(enemyMech)
@@ -601,12 +689,12 @@ class FactionMechAbilityTest {
         assertFalse(camaraderie.appliesForDefense)
         assertTrue(camaraderie.appliesDuringUncontested)
 
-        val testCombatBoard = TestCombatBoard(centerHex, TestPlayer.player, TestPlayer.enemy)
+        val testCombatBoard = TestCombatBoard(centerHex, player, enemy)
 
-        assertTrue(camaraderie.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(camaraderie.validCombatHex(player, testCombatBoard))
         assertFalse(testCombatBoard.attackingPlayer.camaraderie)
 
-        camaraderie.applyEffect(TestPlayer.player, testCombatBoard)
+        camaraderie.applyEffect(player, testCombatBoard)
 
         //Testing the effect of Camaraderie will be the job of the combat board tests
         assertTrue(testCombatBoard.attackingPlayer.camaraderie)
@@ -616,14 +704,22 @@ class FactionMechAbilityTest {
     fun testSuiton() {
         val suiton = Suiton()
 
+        assertTrue(suiton.canUse(player))
+
+        assertTrue(suiton.validUnitType(UnitType.CHARACTER))
+        assertTrue(suiton.validUnitType(UnitType.MECH))
+        assertFalse(suiton.validUnitType(UnitType.WORKER))
+        assertFalse(suiton.validUnitType(UnitType.AIRSHIP))
+        assertFalse(suiton.allowsRetreat)
+
         assertTrue(suiton.validStartingHex(centerHex))
 
         val validDest = suiton.validEndingHexes(centerHex)
         assertEquals(1, validDest!!.size)
         assertEquals(lakeDesc.location, validDest[0]!!.desc.location)
 
-        val mech = TestUnit(TestPlayer.player, UnitType.MECH)
-        val enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
+        val mech = TestUnit(player, UnitType.MECH)
+        val enemyMech = TestUnit(enemy, UnitType.MECH)
 
         val lakeHex = testMap.findHexAtIndex(lakeDesc.location)!!
 
@@ -631,22 +727,22 @@ class FactionMechAbilityTest {
         lakeHex.unitsPresent.add(enemyMech)
 
         assertTrue(suiton.appliesForAttack)
-        var testCombatBoard = TestCombatBoard(lakeHex, TestPlayer.player, TestPlayer.enemy)
+        var testCombatBoard = TestCombatBoard(lakeHex, player, enemy)
 
-        assertTrue(suiton.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(suiton.validCombatHex(player, testCombatBoard))
         assertEquals(1, testCombatBoard.attackingPlayer.cardLimit)
 
-        suiton.applyEffect(TestPlayer.player, testCombatBoard)
+        suiton.applyEffect(player, testCombatBoard)
 
         assertEquals(2, testCombatBoard.attackingPlayer.cardLimit)
 
         assertTrue(suiton.appliesForDefense)
-        testCombatBoard = TestCombatBoard(lakeHex, TestPlayer.enemy, TestPlayer.player)
+        testCombatBoard = TestCombatBoard(lakeHex, enemy, player)
 
-        assertTrue(suiton.validCombatHex(TestPlayer.player, testCombatBoard))
+        assertTrue(suiton.validCombatHex(player, testCombatBoard))
         assertEquals(1, testCombatBoard.defendingPlayer.cardLimit)
 
-        suiton.applyEffect(TestPlayer.player, testCombatBoard)
+        suiton.applyEffect(player, testCombatBoard)
 
         assertEquals(2, testCombatBoard.defendingPlayer.cardLimit)
 

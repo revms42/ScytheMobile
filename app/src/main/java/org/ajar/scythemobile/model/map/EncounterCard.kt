@@ -23,8 +23,8 @@ class EncounterDeck {
         //TODO: Init the deck
     }
 
-    fun drawCard() : EncounterCard {
-        return deck.removeAt((Math.random() * deck.size).toInt())
+    fun drawCard() : EncounterCard? {
+        return if (deck.isNotEmpty()) deck.removeAt((Math.random() * deck.size).toInt()) else null
     }
 
     companion object {

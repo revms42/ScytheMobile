@@ -71,8 +71,6 @@ abstract class AbstractPlayerCombatBoard(final override val player: Player, fina
         }
     }
 
-    abstract fun requestCombatDecision()
-
     override fun retreatUnits(fromHex: MapHex) {
         var ability: MovementRule? = null
         for (unit in unitsPresent) {
@@ -113,6 +111,7 @@ interface PlayerCombatBoard {
     fun concludeCombat(winner: Boolean, workersDrivenOff: Int)
     fun finalPower() : Int
     fun retreatUnits(fromHex: MapHex)
+    fun requestCombatDecision()
 }
 
 open class DefaultCombatBoard(final override val combatHex: MapHex, override val attackingPlayer: PlayerCombatBoard, override val defendingPlayer: PlayerCombatBoard) : CombatBoard {
@@ -158,7 +157,8 @@ open class DefaultCombatBoard(final override val combatHex: MapHex, override val
     }
 
     override fun resolveCombat() {
-        if (results!!.defenderResult > results!!.attackerResult) {
+        val defenseWon = results!!.defenderResult > results!!.attackerResult
+        if (defenseWon) {
             defendingPlayer.concludeCombat(true, 0)
             attackingPlayer.concludeCombat(false, 0)
 
@@ -177,6 +177,8 @@ open class DefaultCombatBoard(final override val combatHex: MapHex, override val
 
             defendingPlayer.unitsPresent
         }.forEach { gameUnit -> combatHex.dropAll(gameUnit)}
+
+        if(!defenseWon) combatHex.resolveMove(attackingPlayer.unitsPresent)
     }
 
     companion object {

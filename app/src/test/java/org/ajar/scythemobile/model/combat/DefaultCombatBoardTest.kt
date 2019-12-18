@@ -17,6 +17,9 @@ import org.junit.Test
 
 class DefaultCombatBoardTest {
 
+    lateinit var player: TestPlayer
+    lateinit var enemy: TestPlayer
+
     lateinit var map: GameMap
     lateinit var playerBase: MapHex
     lateinit var enemyBase: MapHex
@@ -32,24 +35,24 @@ class DefaultCombatBoardTest {
 
     @Before
     fun setup() {
-        TestPlayer.player = TestPlayer(FactionMat.NORDIC)
-        TestPlayer.enemy = TestPlayer(FactionMat.NORDIC)
+        player = TestPlayer(FactionMat.NORDIC)
+        enemy = TestPlayer(FactionMat.NORDIC)
 
-        val lakeHexDesc = MapHexDesc(7, HexNeigbors(nw = 3, w = 8), SpecialFeature.LAKE)
-        val tunnelHexDesc = MapHexDesc(8, HexNeigbors(ne = 3, e = 7), SpecialFeature.TUNNEL)
-        val tundraHexDesc = MapHexDesc( 9, HexNeigbors(w = 3, sw = 7), ResourceFeature.TUNDRA)
+        val lakeHexDesc = MapHexDesc(7, HexNeighbors(nw = 3, w = 8), SpecialFeature.LAKE)
+        val tunnelHexDesc = MapHexDesc(8, HexNeighbors(ne = 3, e = 7), SpecialFeature.TUNNEL)
+        val tundraHexDesc = MapHexDesc( 9, HexNeighbors(w = 3, sw = 7), ResourceFeature.TUNDRA)
 
-        val playerBaseDesc = MapHexDesc(1, HexNeigbors(), HomeBase(TestPlayer.player))
-        val enemyBaseDesc = MapHexDesc(2, HexNeigbors(), HomeBase(TestPlayer.enemy))
-        val combatHexDesc = MapHexDesc(3, HexNeigbors(sw = 8, se = 7, e = 9))
+        val playerBaseDesc = MapHexDesc(1, HexNeighbors(), HomeBase(player))
+        val enemyBaseDesc = MapHexDesc(2, HexNeighbors(), HomeBase(enemy))
+        val combatHexDesc = MapHexDesc(3, HexNeighbors(sw = 8, se = 7, e = 9))
 
         val mapDesc = MapDesc(playerBaseDesc, enemyBaseDesc, combatHexDesc, lakeHexDesc, tundraHexDesc, tunnelHexDesc)
 
-        playerMech = TestUnit(TestPlayer.player, UnitType.MECH)
-        playerWorker = TestUnit(TestPlayer.player, UnitType.WORKER)
+        playerMech = TestUnit(player, UnitType.MECH)
+        playerWorker = TestUnit(player, UnitType.WORKER)
 
-        enemyMech = TestUnit(TestPlayer.enemy, UnitType.MECH)
-        enemyWorker = TestUnit(TestPlayer.enemy, UnitType.WORKER)
+        enemyMech = TestUnit(enemy, UnitType.MECH)
+        enemyWorker = TestUnit(enemy, UnitType.WORKER)
 
         map = GameMap(mapDesc)
 
@@ -57,28 +60,28 @@ class DefaultCombatBoardTest {
         lakeHex = map.findHexAtIndex(lakeHexDesc.location)!!
         combatHex.unitsPresent.addAll(listOf(playerMech, playerWorker, enemyMech, enemyWorker))
 
-        playerBase = map.findHomeBase(TestPlayer.player)!!
+        playerBase = map.findHomeBase(player)!!
 
-        TestPlayer.player.power = 2
-        TestPlayer.player.popularity = 3
-        TestPlayer.player.combatCards.clear()
-        TestPlayer.player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
-        TestPlayer.player.stars.clear()
+        player.power = 2
+        player.popularity = 3
+        player.combatCards.clear()
+        player.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        player.stars.clear()
 
-        enemyBase = map.findHomeBase(TestPlayer.enemy)!!
+        enemyBase = map.findHomeBase(enemy)!!
 
-        TestPlayer.enemy.power = 3
-        TestPlayer.enemy.popularity = 2
-        TestPlayer.enemy.combatCards.clear()
-        TestPlayer.enemy.combatCards.add(CombatCardDeck.currentDeck.drawCard())
-        TestPlayer.enemy.stars.clear()
+        enemy.power = 3
+        enemy.popularity = 2
+        enemy.combatCards.clear()
+        enemy.combatCards.add(CombatCardDeck.currentDeck.drawCard())
+        enemy.stars.clear()
 
-        combatBoard = DefaultCombatBoard(combatHex, TestPlayer.player, TestPlayer.enemy)
+        combatBoard = DefaultCombatBoard(combatHex, player, enemy)
     }
 
     @Test
     fun testGetPlayerBoard() {
-        val playerBoard = combatBoard.getPlayerBoard(TestPlayer.player)
+        val playerBoard = combatBoard.getPlayerBoard(player)
         assertEquals(2, playerBoard.unitsPresent.size)
         assertTrue(playerBoard.unitsPresent.containsAll(listOf(playerWorker, playerMech)))
         assertEquals(2, playerBoard.power)
@@ -88,7 +91,7 @@ class DefaultCombatBoardTest {
 
     @Test
     fun testGetOpposingBoard() {
-        val enemyBoard = combatBoard.getOpposingBoard(TestPlayer.player)
+        val enemyBoard = combatBoard.getOpposingBoard(player)
         assertEquals(2, enemyBoard.unitsPresent.size)
         assertTrue(enemyBoard.unitsPresent.containsAll(listOf(enemyWorker, enemyMech)))
         assertEquals(3, enemyBoard.power)
@@ -97,15 +100,26 @@ class DefaultCombatBoardTest {
     }
 
     @Test
+    fun testRequestDecision() {
+        val initialCard = player.combatCards[0]
+        val playerBoard = combatBoard.getPlayerBoard(player)
+
+        playerBoard.requestCombatDecision()
+
+        assertEquals(0, playerBoard.powerSelected)
+        assertEquals(initialCard.power, playerBoard.finalPower())
+    }
+
+    @Test
     fun testDetermineResults() {
-        combatBoard.getPlayerBoard(TestPlayer.player).powerSelected = 2
-        combatBoard.getOpposingBoard(TestPlayer.player).powerSelected = 3
+        combatBoard.getPlayerBoard(player).powerSelected = 2
+        combatBoard.getOpposingBoard(player).powerSelected = 3
 
         var combatResults = combatBoard.determineResults()
         assertEquals(2, combatResults.attackerResult)
         assertEquals(3, combatResults.defenderResult)
 
-        combatBoard.getOpposingBoard(TestPlayer.player).powerSelected = 3
+        combatBoard.getOpposingBoard(player).powerSelected = 3
 
         // You can't take it back.
         combatResults = combatBoard.determineResults()
@@ -115,10 +129,10 @@ class DefaultCombatBoardTest {
 
     @Test
     fun testResolveCombatAttackerWins() {
-        combatBoard.getPlayerBoard(TestPlayer.player).powerSelected = 2
-        combatBoard.getOpposingBoard(TestPlayer.player).powerSelected = 2
+        combatBoard.getPlayerBoard(player).powerSelected = 2
+        combatBoard.getOpposingBoard(player).powerSelected = 2
 
-        enemyWorker.heldMapResources?.add(MapResource(MapResourceType.FOOD))
+        enemyWorker.heldMapResources.add(MapResource(MapResourceType.FOOD))
 
         val combatResults = combatBoard.determineResults()
         assertEquals(2, combatResults.attackerResult)
@@ -129,26 +143,26 @@ class DefaultCombatBoardTest {
         assertEquals(2, combatHex.unitsPresent.size)
         assertTrue(combatHex.unitsPresent.containsAll(listOf(playerMech, playerWorker)))
         assertTrue(enemyBase.unitsPresent.containsAll(listOf(enemyMech, enemyWorker)))
-        assertEquals(0, enemyWorker.heldMapResources?.size)
-        assertEquals(1, TestPlayer.player.getStarCount(StarType.COMBAT))
+        assertEquals(0, enemyWorker.heldMapResources.size)
+        assertEquals(1, player.getStarCount(StarType.COMBAT))
 
-        assertEquals(2, TestPlayer.player.popularity)
-        assertEquals(0, TestPlayer.player.power)
+        assertEquals(2, player.popularity)
+        assertEquals(0, player.power)
 
-        assertEquals(2, TestPlayer.enemy.popularity)
-        assertEquals(1, TestPlayer.enemy.power)
-        assertEquals(2, TestPlayer.enemy.combatCards.size)
-        assertEquals(0, TestPlayer.enemy.getStarCount(StarType.COMBAT))
+        assertEquals(2, enemy.popularity)
+        assertEquals(1, enemy.power)
+        assertEquals(2, enemy.combatCards.size)
+        assertEquals(0, enemy.getStarCount(StarType.COMBAT))
 
         assertEquals(1, combatHex.heldMapResources.size)
     }
 
     @Test
     fun testResolveCombatAttackerWinsAgainstSeaworthy() {
-        TestPlayer.enemy.factionMat.unlockMechAbility("Seaworthy")
+        enemy.factionMat.unlockMechAbility("Seaworthy")
 
-        combatBoard.getPlayerBoard(TestPlayer.player).powerSelected = 2
-        combatBoard.getOpposingBoard(TestPlayer.player).powerSelected = 2
+        combatBoard.getPlayerBoard(player).powerSelected = 2
+        combatBoard.getOpposingBoard(player).powerSelected = 2
 
         enemyWorker.heldMapResources.add(MapResource(MapResourceType.FOOD))
 
@@ -162,25 +176,25 @@ class DefaultCombatBoardTest {
         assertTrue(combatHex.unitsPresent.containsAll(listOf(playerMech, playerWorker)))
         assertTrue(lakeHex.unitsPresent.containsAll(listOf(enemyMech, enemyWorker)))
         assertEquals(0, enemyWorker.heldMapResources.size)
-        assertEquals(1, TestPlayer.player.getStarCount(StarType.COMBAT))
+        assertEquals(1, player.getStarCount(StarType.COMBAT))
 
-        assertEquals(2, TestPlayer.player.popularity)
-        assertEquals(0, TestPlayer.player.power)
+        assertEquals(2, player.popularity)
+        assertEquals(0, player.power)
 
-        assertEquals(2, TestPlayer.enemy.popularity)
-        assertEquals(1, TestPlayer.enemy.power)
-        assertEquals(2, TestPlayer.enemy.combatCards.size)
-        assertEquals(0, TestPlayer.enemy.getStarCount(StarType.COMBAT))
+        assertEquals(2, enemy.popularity)
+        assertEquals(1, enemy.power)
+        assertEquals(2, enemy.combatCards.size)
+        assertEquals(0, enemy.getStarCount(StarType.COMBAT))
 
         assertEquals(1, combatHex.heldMapResources.size)
     }
 
     @Test
     fun testResolveCombatDefenderWins() {
-        combatBoard.getPlayerBoard(TestPlayer.player).powerSelected = 2
-        combatBoard.getOpposingBoard(TestPlayer.player).powerSelected = 3
+        combatBoard.getPlayerBoard(player).powerSelected = 2
+        combatBoard.getOpposingBoard(player).powerSelected = 3
 
-        playerWorker.heldMapResources?.add(MapResource(MapResourceType.FOOD))
+        playerWorker.heldMapResources.add(MapResource(MapResourceType.FOOD))
 
         val combatResults = combatBoard.determineResults()
         assertEquals(2, combatResults.attackerResult)
@@ -191,26 +205,26 @@ class DefaultCombatBoardTest {
         assertEquals(2, combatHex.unitsPresent.size)
         assertTrue(combatHex.unitsPresent.containsAll(listOf(enemyMech, enemyWorker)))
         assertTrue(playerBase.unitsPresent.containsAll(listOf(playerMech, playerWorker)))
-        assertEquals(0, playerWorker.heldMapResources?.size)
-        assertEquals(0, TestPlayer.player.getStarCount(StarType.COMBAT))
+        assertEquals(0, playerWorker.heldMapResources.size)
+        assertEquals(0, player.getStarCount(StarType.COMBAT))
 
-        assertEquals(3, TestPlayer.player.popularity)
-        assertEquals(0, TestPlayer.player.power)
-        assertEquals(2, TestPlayer.player.combatCards.size)
+        assertEquals(3, player.popularity)
+        assertEquals(0, player.power)
+        assertEquals(2, player.combatCards.size)
 
-        assertEquals(2, TestPlayer.enemy.popularity)
-        assertEquals(0, TestPlayer.enemy.power)
-        assertEquals(1, TestPlayer.enemy.getStarCount(StarType.COMBAT))
+        assertEquals(2, enemy.popularity)
+        assertEquals(0, enemy.power)
+        assertEquals(1, enemy.getStarCount(StarType.COMBAT))
 
         assertEquals(1, combatHex.heldMapResources.size)
     }
 
     @Test
     fun testResolveCombatDefenderWinsAgainstSeaworthy() {
-        TestPlayer.player.factionMat.unlockMechAbility("Seaworthy")
+        player.factionMat.unlockMechAbility("Seaworthy")
 
-        combatBoard.getPlayerBoard(TestPlayer.player).powerSelected = 2
-        combatBoard.getOpposingBoard(TestPlayer.player).powerSelected = 3
+        combatBoard.getPlayerBoard(player).powerSelected = 2
+        combatBoard.getOpposingBoard(player).powerSelected = 3
 
         playerWorker.heldMapResources.add(MapResource(MapResourceType.FOOD))
 
@@ -224,15 +238,15 @@ class DefaultCombatBoardTest {
         assertTrue(combatHex.unitsPresent.containsAll(listOf(enemyMech, enemyWorker)))
         assertTrue(lakeHex.unitsPresent.containsAll(listOf(playerMech, playerWorker)))
         assertEquals(0, playerWorker.heldMapResources.size)
-        assertEquals(0, TestPlayer.player.getStarCount(StarType.COMBAT))
+        assertEquals(0, player.getStarCount(StarType.COMBAT))
 
-        assertEquals(3, TestPlayer.player.popularity)
-        assertEquals(0, TestPlayer.player.power)
-        assertEquals(2, TestPlayer.player.combatCards.size)
+        assertEquals(3, player.popularity)
+        assertEquals(0, player.power)
+        assertEquals(2, player.combatCards.size)
 
-        assertEquals(2, TestPlayer.enemy.popularity)
-        assertEquals(0, TestPlayer.enemy.power)
-        assertEquals(1, TestPlayer.enemy.getStarCount(StarType.COMBAT))
+        assertEquals(2, enemy.popularity)
+        assertEquals(0, enemy.power)
+        assertEquals(1, enemy.getStarCount(StarType.COMBAT))
 
         assertEquals(1, combatHex.heldMapResources.size)
     }

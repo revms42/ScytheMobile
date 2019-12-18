@@ -39,7 +39,7 @@ class TrapUnit(override val controllingPlayer: Player, val trapType: TrapType) :
 
     override val heldMapResources: MutableList<MapResource> = ArrayList()
 
-    var _sprung: Boolean? = null
+    private var _sprung: Boolean? = null
     val sprung: Boolean
         get() {
             if(_sprung == null) {
@@ -52,10 +52,19 @@ class TrapUnit(override val controllingPlayer: Player, val trapType: TrapType) :
         trapType.applyToPlayer(unit.controllingPlayer)
         _sprung = true
     }
+
+    fun resetTrap() {
+        _sprung = false
+    }
 }
 
 class FlagUnit(override val controllingPlayer: Player) : GameUnit {
     override val type: UnitType = UnitType.FLAG
+    override val heldMapResources: MutableList<MapResource> = ArrayList()
+}
+
+class MechUnit(override val controllingPlayer: Player) : GameUnit {
+    override val type: UnitType = UnitType.MECH
     override val heldMapResources: MutableList<MapResource> = ArrayList()
 }
 
@@ -69,7 +78,7 @@ enum class UnitType {
     STRUCTURE
 }
 
-interface GameUnit : ResourceHolder{
+interface GameUnit : ResourceHolder {
 
     val controllingPlayer: Player
     val type: UnitType
