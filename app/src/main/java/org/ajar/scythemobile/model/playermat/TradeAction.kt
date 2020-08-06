@@ -62,6 +62,7 @@ class TradeAction (
             firstWorker.first().heldMapResources.add(MapResource(first.first()))
             secondWorker.first().heldMapResources.add(MapResource(second.first()))
         }
+        player.payResources(cost)
     }
 
     override var canPerform: (player: Player) -> Boolean = { player: Player ->  canPerformTrade(player)}
