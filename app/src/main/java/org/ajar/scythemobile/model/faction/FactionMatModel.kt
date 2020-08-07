@@ -157,7 +157,7 @@ class FactionMatInstance(val model: FactionMatModel) {
     }
 
     fun getCombatAbilities() : List<CombatRule> {
-        return unlockedMechAbility.filter { it is CombatRule }.map { it as CombatRule }
+        return unlockedMechAbility.filterIsInstance<CombatRule>()
     }
 
     fun unlockMechAbility(name: String) {
