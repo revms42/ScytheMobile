@@ -1,8 +1,6 @@
 package org.ajar.scythemobile.model.map
 
-import org.ajar.scythemobile.model.entity.GameUnit
-import org.ajar.scythemobile.model.entity.Player
-import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.PlayerInstance
 
 class GameMap (desc: MapDesc) {
 
@@ -10,7 +8,7 @@ class GameMap (desc: MapDesc) {
 
     val homeBases: List<FactionHomeHex>
         get() {
-            return mapHexes.filter { it is FactionHomeHex }.map { it as FactionHomeHex }
+            return mapHexes.filterIsInstance<FactionHomeHex>()
         }
 
     init {
@@ -25,31 +23,11 @@ class GameMap (desc: MapDesc) {
         return mapHexes.filter { mapHex ->  mapHex.desc.mapFeature.firstOrNull { mapFeature ->  predicate(mapFeature)} != null}
     }
 
-    fun findHomeBase(player: Player) : MapHex? {
+    fun findHomeBase(player: PlayerInstance) : MapHex? {
         return mapHexes.firstOrNull { mapHex -> mapHex.desc.mapFeature.firstOrNull { mapFeature -> mapFeature is HomeBase && mapFeature.player == player} != null }
     }
 
-    fun findUnit(type: UnitType? = null, player: Player? = null): List<GameUnit> {
-        var allUnits = mapHexes.flatMap { mapHex -> mapHex.unitsPresent }
-
-        return if(type != null) {
-            allUnits = allUnits.filter { gameUnit -> gameUnit.type == type }
-
-            if (player != null) {
-                allUnits.filter { gameUnit -> gameUnit.controllingPlayer == player }
-            } else {
-                allUnits
-            }
-        } else {
-            allUnits
-        }
-    }
-
-    fun locateUnit(unit: GameUnit): MapHex? {
-        return mapHexes.firstOrNull { mapHex -> mapHex.unitsPresent.contains(unit) }
-    }
-
-    fun addHomeBase(desc: MapHexDesc, player: Player? = null) {
+    fun addHomeBase(desc: MapHexDesc, player: PlayerInstance? = null) {
         mapHexes.add(FactionHomeHex(desc, player))
     }
 

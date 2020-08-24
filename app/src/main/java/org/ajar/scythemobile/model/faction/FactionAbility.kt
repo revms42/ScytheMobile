@@ -1,10 +1,11 @@
 package org.ajar.scythemobile.model.faction
 
-import org.ajar.scythemobile.model.combat.CombatBoard
-import org.ajar.scythemobile.model.entity.*
-import org.ajar.scythemobile.model.map.GameMap
-import org.ajar.scythemobile.model.map.MapHex
-import org.ajar.scythemobile.model.map.SpecialFeature
+import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.old.model.combat.CombatBoard
+import org.ajar.scythemobile.old.model.entity.*
+import org.ajar.scythemobile.old.model.map.GameMap
+import org.ajar.scythemobile.old.model.map.MapHex
+import org.ajar.scythemobile.old.model.map.SpecialFeature
 
 enum class DefaultFactionAbility(override val abilityName: String, override val description: String) : FactionAbility {
     MEANDER(

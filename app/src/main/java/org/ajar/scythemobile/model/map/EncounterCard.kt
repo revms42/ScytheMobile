@@ -1,7 +1,7 @@
 package org.ajar.scythemobile.model.map
 
 import org.ajar.scythemobile.model.entity.GameUnit
-import org.ajar.scythemobile.model.entity.Player
+import org.ajar.scythemobile.old.model.entity.Player
 
 interface EncounterOutcome {
     val title: String
@@ -20,7 +20,7 @@ class EncounterDeck {
     private val deck: ArrayList<EncounterCard> = ArrayList()
 
     init {
-        //TODO: Init the deck
+        TODO("Init the deck")
     }
 
     fun drawCard() : EncounterCard? {

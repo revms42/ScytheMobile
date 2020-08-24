@@ -1,6 +1,6 @@
 package org.ajar.scythemobile.model.map
 
-import org.ajar.scythemobile.model.faction.FactionMat
+import org.ajar.scythemobile.model.faction.StandardFactionMat
 
 /*
  * https://www.inkedgaming.com/products/scythe-neoprene-board-game-mat-36-x-28
@@ -28,13 +28,13 @@ import org.ajar.scythemobile.model.faction.FactionMat
 
 class MapDesc(vararg val mapHexDescs: MapHexDesc =
     arrayOf(
-        MapHexDesc(1, HexNeighbors(sw = 8, se = 9), HomeBase(FactionMat.ALBION)),
-        MapHexDesc(2, HexNeighbors(sw = 11, se = 12), HomeBase(FactionMat.NORDIC)),
-        MapHexDesc(3, HexNeighbors(e = 21, se = 27), HomeBase(FactionMat.POLONIA)),
-        MapHexDesc(4, HexNeighbors(w = 26, sw = 33), HomeBase(FactionMat.RUSVIET), RiverFeature(direction = Direction.NW)),
-        MapHexDesc(5, HexNeighbors(ne = 41, e = 48), HomeBase(FactionMat.SAXONY)),
-        MapHexDesc(6, HexNeighbors(w = 53, nw = 47), HomeBase(FactionMat.TOGAWA)),
-        MapHexDesc(7, HexNeighbors(ne = 50, e = 54), HomeBase(FactionMat.CRIMEA)),
+        MapHexDesc(1, HexNeighbors(sw = 8, se = 9), HomeBase(StandardFactionMat.ALBION)),
+        MapHexDesc(2, HexNeighbors(sw = 11, se = 12), HomeBase(StandardFactionMat.NORDIC)),
+        MapHexDesc(3, HexNeighbors(e = 21, se = 27), HomeBase(StandardFactionMat.POLONIA)),
+        MapHexDesc(4, HexNeighbors(w = 26, sw = 33), HomeBase(StandardFactionMat.RUSVIET), RiverFeature(direction = Direction.NW)),
+        MapHexDesc(5, HexNeighbors(ne = 41, e = 48), HomeBase(StandardFactionMat.SAXONY)),
+        MapHexDesc(6, HexNeighbors(w = 53, nw = 47), HomeBase(StandardFactionMat.TOGAWA)),
+        MapHexDesc(7, HexNeighbors(ne = 50, e = 54), HomeBase(StandardFactionMat.CRIMEA)),
 
         MapHexDesc(8, HexNeighbors(sw = 14, se = 15, e = 9), ResourceFeature.MOUNTAIN),
         MapHexDesc(9, HexNeighbors(w = 8, sw = 15, se = 16, e = 10), ResourceFeature.FARM),

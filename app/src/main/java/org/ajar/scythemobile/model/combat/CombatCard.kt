@@ -1,21 +1,26 @@
 package org.ajar.scythemobile.model.combat
 
-class CombatCardDeck(twos: Int = 16, threes: Int = 12, fours: Int = 8, fives: Int = 6, private val regenerative: Boolean = true) {
+import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.data.ResourceData
+import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.model.PlayerInstance
+
+class CombatCardDeck(val twos: Int = 16, val threes: Int = 12, val fours: Int = 8, val fives: Int = 6) {
 
     private val cardList: MutableList<CombatCard> = ArrayList()
 
-    init {
+    fun init() {
         for (i in 0..twos) {
-            cardList.add(CombatCard(2))
+            cardList.add(CombatCard(ResourceData(0, -1, -1, CapitalResourceType.CARDS.id, 2)))
         }
         for (i in 0..threes) {
-            cardList.add(CombatCard(3))
+            cardList.add(CombatCard(ResourceData(0, -1, -1, CapitalResourceType.CARDS.id, 3)))
         }
         for (i in 0..fours) {
-            cardList.add(CombatCard(4))
+            cardList.add(CombatCard(ResourceData(0, -1, -1, CapitalResourceType.CARDS.id, 4)))
         }
         for (i in 0..fives) {
-            cardList.add(CombatCard(5))
+            cardList.add(CombatCard(ResourceData(0, -1, -1, CapitalResourceType.CARDS.id, 5)))
         }
 
         for(i in 0..cardList.size) {
@@ -23,15 +28,30 @@ class CombatCardDeck(twos: Int = 16, threes: Int = 12, fours: Int = 8, fives: In
 
             cardList.add((Math.random() * cardList.size).toInt(), cardList.removeAt(random))
         }
+
+        ScytheDatabase.instance!!.resourceDao().addResource(*cardList.map { it.resourceData }.toTypedArray())
     }
 
-    fun drawCard(): CombatCard {
+    private fun update(combatCard: CombatCard) {
+        ScytheDatabase.instance!!.resourceDao().updateResource(combatCard.resourceData)
+    }
+
+    fun drawCard(playerInstance: PlayerInstance): CombatCard? {
+        if(cardList.isEmpty()) return null
+
         val card = cardList.removeAt(0)
-        if(regenerative) {
-            cardList.add(CombatCard(card.power))
-        }
+        card.resourceData.owner = playerInstance.playerId
+        update(card)
         return card
     }
+
+    fun returnCard(combatCard: CombatCard) {
+        combatCard.resourceData.owner = -1
+        cardList += combatCard
+        update(combatCard)
+    }
+
+    fun cardsRemaining() : Int = cardList.size
 
     companion object {
         private var _currentDeck: CombatCardDeck? = null
@@ -39,10 +59,17 @@ class CombatCardDeck(twos: Int = 16, threes: Int = 12, fours: Int = 8, fives: In
             get() {
                 if(_currentDeck == null) {
                     _currentDeck = CombatCardDeck()
+
+                    val cards = ScytheDatabase.instance!!.resourceDao().getResourcesOfType(CapitalResourceType.CARDS.id)
+                    if(cards != null && cards.isNotEmpty()) {
+                        _currentDeck!!.cardList.addAll(cards.filter { it.owner == -1 }.map { cardData -> CombatCard(cardData) })
+                    } else {
+                        _currentDeck!!.init()
+                    }
                 }
                 return _currentDeck!!
             }
     }
 }
 
-class CombatCard(val power: Int)
+class CombatCard(val resourceData: ResourceData)

@@ -1,3 +1,98 @@
 <resources>
     <string name="app_name">ScytheMobile</string>
+
+    <string name="combat_start_msg">Please choose combat power and/or cards.</string>
+    <string name="combat_start_nav_header">Prepare for Combat</string>
+    <string name="combat_send_nav_header">Send Combat Request to Player</string>
+
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_send_combat_request">Send Combat Request</string>
+    <string name="button_finish_combat">Finish Combat</string>
+
+    <string name="subject_combat_defend">Choose Power and Combat Cards for Defense</string>
+
+    <string-array name="objectives">
+        <item>Control at least 3 mountain territories at the end of your turn.</item>
+        <item>Control at least 3 tunnels at the end of your turn.</item>
+        <item>Control at least 3 farm territories at the end of your turn.</item>
+        <item>Control at least 3 tundra territories at the end of your turn.</item>
+        <item>Control the factory at the end of your turn and have the highest power of any player(ties are ok).</item>
+
+        <item>Force an opponent's worker to retreat and still have at least 7 power.</item>
+        <item>Have 1 Factory Card, at least 1 mech, and no more than 3 workers.</item>
+        <item>Have $2 or less, at least 4 workers, and at least 7 popularity.</item>
+        <item>Control a territory with at least 9 resource tokens (at least 1 of each type) on it at the end of your turn.</item>
+        <item>Control at least 3 forest territories at the end of your turn.</item>
+
+        <item>Control at least 3 village territories at the end of your turn.</item>
+        <item>Have at least $20 at the end of your turn.</item>
+        <item>Have at least 6 of your tokens (i.e. character, workers, mechs, and structures) on 1 territory.</item>
+        <item>Have at least 1 upgrade, 1 mech, 1 structure, 1 recruit, and 1 of each resource at the end of your turn.</item>
+        <item>Have the same number of workers and recruits.</item>
+
+        <item>Control a territory with your character, exactly 1 mech, exactly 1 worker, and at least 5 resources at the end of your turn.</item>
+        <item>Have 0 Factory cards and control at least 2 territories adjacent to the Factory at the end of your turn.</item>
+        <item>Have 0 power, at least 13 popularity, and at least 5 workers.</item>
+        <item>Control at least 5 territories surrounding the same lake at the end of your turn.</item>
+        <item>Build at least 3 structures, have at least 7 popularity, and have 0 mechs.</item>
+
+        <item>Control at least 9 tokens of the same resource at the end of your turn.</item>
+        <item>Have 1 Factory card and 0 upgrades.</item>
+        <item>Have 8 or more combat cards in hand and at least 1 combat victory star.</item>
+        <item>Have at least 5 workers on a territory adjacent to the Factory at the end of your turn.</item>
+        <item>Have 3 or less popularity, at least 13 power, and at least 2 mechs.</item>
+
+        <item>Control at least 1 of each primary terrain type with at least 1 worker on each at the end of your turn.</item>
+        <item>Build at least 3 structures, none of which are adjacent to your home base.</item>
+    </string-array>
+
+    <string-array name="objective_names">
+        <item>Higher Ground Advantage</item>
+        <item>Underworld Advantage</item>
+        <item>Harvest Advantage</item>
+        <item>Northern Advantage</item>
+        <item>King of the Hill</item>
+
+        <item>Send One Back as a Warning</item>
+        <item>Machine Over Muscle</item>
+        <item>Roll Up Your Sleeves with the Common Man</item>
+        <item>Stockpile for the Winter</item>
+        <item>Woodland Advantage</item>
+
+        <item>Population Advantage</item>
+        <item>Get Rich or Cry Trying</item>
+        <item>Foundations of the Empire</item>
+        <item>Hedge Your Bets</item>
+        <item>Balanced Workforce</item>
+
+        <item>A Wolf Among the Sheep</item>
+        <item>Divide and Conquer</item>
+        <item>Become a Beloved Pacifist</item>
+        <item>Shore Up the Shore</item>
+        <item>Create a Permanent Foothold</item>
+
+        <item>Monopolize the Market</item>
+        <item>Technological Breakthrough</item>
+        <item>Achieve Tactical Mastery</item>
+        <item>Establish a Human Shield</item>
+        <item>Become a Despised Warmonger</item>
+
+        <item>Diversify Production</item>
+        <item>Build a Local Infrastructure</item>
+    </string-array>
+
+    <string-array name="capital_resources">
+        <item>Power</item>
+        <item>Popularity</item>
+        <item>Coins</item>
+        <item>Combat Cards</item>
+    </string-array>
+
+    <string-array name="natural_resources">
+        <item>Wood</item>
+        <item>Food</item>
+        <item>Oil</item>
+        <item>Metal</item>
+    </string-array>
 </resources>
