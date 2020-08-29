@@ -20,6 +20,9 @@ interface PlayerDataDAO {
     @Query("SELECT * FROM ${PlayerData.TABLE_NAME} WHERE ${PlayerData.COLUMN_NAME} = :name LIMIT 1")
     fun getPlayer(name: String): PlayerData?
 
+    @Query("SELECT * FROM ${PlayerData.TABLE_NAME} WHERE ${PlayerData.COLUMN_INDEX} = :id LIMIT 1")
+    fun getPlayer(id: Int): PlayerData?
+
     @Query("SELECT ${PlayerData.COLUMN_PLAYER_MAT} FROM ${PlayerData.TABLE_NAME} WHERE ${PlayerData.COLUMN_INDEX} = :id LIMIT 1")
     fun getPlayerMat(id: Int): PlayerMatData?
 

@@ -280,7 +280,7 @@ class PlayerMatInstance(val playerMat: PlayerMat, val playerInstance: PlayerInst
     val sections: List<Section> = playerMat.makeSections(playerInstance)
 
     fun initialize(playerInstance: PlayerInstance) {
-        playerInstance.coins = playerMat.initialCoins
+        playerInstance.drawCoins(playerMat.initialCoins)
         playerInstance.popularity = playerMat.initialPopularity
     }
 }

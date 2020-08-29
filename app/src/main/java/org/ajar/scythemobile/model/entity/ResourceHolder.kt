@@ -1,4 +1,4 @@
-package org.ajar.scythemobile.old.model.entity
+package org.ajar.scythemobile.model.entity
 
 interface ResourceHolder {
     val heldMapResources: MutableList<Int>

@@ -10,12 +10,8 @@ data class UnitData(
         @ColumnInfo(name = COLUMN_OWNER) var owner: Int,
         @ColumnInfo(name = COLUMN_LOCATION) var loc: Int,
         @ColumnInfo(name = COLUMN_TYPE) var type: Int,
-        @ColumnInfo(name = COLUMN_CARRIED_WOOD) var wood: Int,
-        @ColumnInfo(name = COLUMN_CARRIED_METAL) var metal: Int,
-        @ColumnInfo(name = COLUMN_CARRIED_FOOD) var food: Int,
-        @ColumnInfo(name = COLUMN_CARRIED_OIL) var oil: Int,
-        @ColumnInfo(name = COLUMN_CARRIED_WORKER) var worker: Int,
-        @ColumnInfo(name = COLUMN_CARRIED_MECH) var mech: Int
+        @ColumnInfo(name = COLUMN_STATE) var state: Int,
+        @ColumnInfo(name = COLUMN_SUB_TYPE) var subType: Int
 ) {
 
     companion object {
@@ -25,11 +21,7 @@ data class UnitData(
         const val COLUMN_OWNER = "owner"
         const val COLUMN_LOCATION = "loc"
         const val COLUMN_TYPE = "type"
-        const val COLUMN_CARRIED_WOOD = "wood"
-        const val COLUMN_CARRIED_METAL = "metal"
-        const val COLUMN_CARRIED_FOOD = "food"
-        const val COLUMN_CARRIED_OIL = "oil"
-        const val COLUMN_CARRIED_WORKER = "worker"
-        const val COLUMN_CARRIED_MECH = "mech"
+        const val COLUMN_STATE = "state"
+        const val COLUMN_SUB_TYPE = "sub_type"
     }
 }

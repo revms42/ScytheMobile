@@ -1,20 +1,17 @@
 package org.ajar.scythemobile.old.model.combat
 
+import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.combat.CombatCard
-import org.ajar.scythemobile.old.model.CombatChoice
-import org.ajar.scythemobile.old.model.RetreatChoice
 import org.ajar.scythemobile.model.StarType
-import org.ajar.scythemobile.old.model.entity.AbstractPlayer
 import org.ajar.scythemobile.model.entity.GameUnit
-import org.ajar.scythemobile.old.model.entity.Player
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.faction.MovementRule
-import org.ajar.scythemobile.old.model.map.GameMap
-import org.ajar.scythemobile.old.model.map.MapHex
+import org.ajar.scythemobile.model.map.GameMap
+import org.ajar.scythemobile.model.map.MapHex
 
-abstract class AbstractPlayerCombatBoard(final override val player: Player, final override val unitsPresent: List<GameUnit>) : PlayerCombatBoard {
+abstract class AbstractPlayerCombatBoard(final override val player: PlayerInstance, final override val unitsPresent: List<GameUnit>) : PlayerCombatBoard {
 
-    override val cardsAvailable: HashSet<CombatCard> = HashSet(player.combatCards)
+    override val cardsAvailable: Collection<CombatCard> = player.combatCards?: emptyList()
 
     private var _power: Int = player.power
     override var power: Int
@@ -94,8 +91,8 @@ abstract class AbstractPlayerCombatBoard(final override val player: Player, fina
 }
 
 interface PlayerCombatBoard {
-    val player: Player
-    val cardsAvailable: MutableSet<CombatCard>
+    val player: PlayerInstance
+    val cardsAvailable: MutableCollection<CombatCard>
     var power: Int
 
     val unitsPresent: List<GameUnit>
@@ -133,7 +130,7 @@ open class DefaultCombatBoard(final override val combatHex: MapHex, override val
 
     private var results: CombatResults? = null
 
-    override fun getPlayerBoard(player: Player): PlayerCombatBoard {
+    override fun getPlayerBoard(player: PlayerInstance): PlayerCombatBoard {
         return if(player == attackingPlayer.player) {
             attackingPlayer
         } else {
@@ -141,7 +138,7 @@ open class DefaultCombatBoard(final override val combatHex: MapHex, override val
         }
     }
 
-    override fun getOpposingBoard(player: Player): PlayerCombatBoard {
+    override fun getOpposingBoard(player: PlayerInstance): PlayerCombatBoard {
         return if(player == defendingPlayer.player) {
             attackingPlayer
         } else {
@@ -183,8 +180,8 @@ open class DefaultCombatBoard(final override val combatHex: MapHex, override val
 
     companion object {
 
-        private var _createPlayerBoard: ((Player, List<GameUnit>) -> PlayerCombatBoard)? = null
-        val createPlayerBoard: (Player, List<GameUnit>) -> PlayerCombatBoard
+        private var _createPlayerBoard: ((PlayerInstance, List<GameUnit>) -> PlayerCombatBoard)? = null
+        val createPlayerBoard: (PlayerInstance, List<GameUnit>) -> PlayerCombatBoard
             get() {
                 if(_createPlayerBoard == null) {
                     _createPlayerBoard = ::DefaultPlayerCombatBoard
@@ -203,8 +200,8 @@ interface CombatBoard {
     val attackingPlayer: PlayerCombatBoard
     val defendingPlayer: PlayerCombatBoard
 
-    fun getPlayerBoard(player: Player): PlayerCombatBoard
-    fun getOpposingBoard(player: Player): PlayerCombatBoard
+    fun getPlayerBoard(player: PlayerInstance): PlayerCombatBoard
+    fun getOpposingBoard(player: PlayerInstance): PlayerCombatBoard
 
     fun determineResults(): CombatResults
     fun resolveCombat()

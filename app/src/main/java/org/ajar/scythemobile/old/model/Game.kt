@@ -2,7 +2,7 @@ package org.ajar.scythemobile.old.model
 
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.old.model.entity.Player
-import org.ajar.scythemobile.old.model.objective.ObjectiveCardDeck
+import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
 import org.ajar.scythemobile.old.model.turn.Turn
 import org.ajar.scythemobile.old.model.turn.TurnUpdate
 

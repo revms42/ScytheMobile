@@ -43,7 +43,7 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
 
         override val cost: List<Resource>
             get() {
-                return when(ScytheDatabase.instance!!.unitDao().getUnitsForPlayer(playerInstance.playerId, UnitType.WORKER.ordinal)?.size?: 0) {
+                return when(ScytheDatabase.unitDao()!!.getUnitsForPlayer(playerInstance.playerId, UnitType.WORKER.ordinal)?.size?: 0) {
                     in 0..3 -> emptyList()
                     in 4..5 -> listOf(CapitalResourceType.POWER)
                     in 6..7 -> listOf(CapitalResourceType.POWER, CapitalResourceType.POPULARITY)

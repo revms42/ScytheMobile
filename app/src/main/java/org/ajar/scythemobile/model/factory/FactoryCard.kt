@@ -6,12 +6,12 @@ import androidx.core.util.set
 interface FactoryCard {
 
     companion object {
-        private val factionMats = SparseArray<FactoryCard>()
+        private val factoryCards = SparseArray<FactoryCard>()
 
         operator fun set(id: Int, mat: FactoryCard) {
-            factionMats[id] = mat
+            factoryCards[id] = mat
         }
 
-        operator fun get(id: Int): FactoryCard? = factionMats[id]
+        operator fun get(id: Int): FactoryCard? = factoryCards[id]
     }
 }

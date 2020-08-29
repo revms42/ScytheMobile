@@ -2,24 +2,14 @@ package org.ajar.scythemobile.model.faction
 
 import android.util.SparseArray
 import androidx.core.util.set
-import org.ajar.scythemobile.data.FactionMatData
-import org.ajar.scythemobile.data.PlayerData
+import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
-import org.ajar.scythemobile.model.entity.FlagUnit
-import org.ajar.scythemobile.model.entity.TrapType
-import org.ajar.scythemobile.model.entity.TrapUnit
-import org.ajar.scythemobile.old.model.ExaltChoice
-import org.ajar.scythemobile.old.model.MaifukuChoice
 import org.ajar.scythemobile.model.StarType
 import org.ajar.scythemobile.model.combat.CombatCardDeck
-import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.entity.*
 import org.ajar.scythemobile.old.model.faction.*
-import org.ajar.scythemobile.old.model.map.GameMap
-import org.ajar.scythemobile.old.model.map.MapHex
-import org.ajar.scythemobile.old.model.production.CrimeaCardResource
-import org.ajar.scythemobile.old.model.production.Resource
-import org.ajar.scythemobile.old.model.production.ResourceType
-import org.ajar.scythemobile.old.model.turn.CoercianTurnAction
 
 interface FactionMat {
     val matName: String
@@ -49,6 +39,9 @@ interface FactionMat {
         val top = if(playerData.factoryCard != null) 4 else 3
         return (0..top).filter { it != playerData.playerMat.lastSection }
     }
+
+    fun placeableTokens(player: PlayerInstance): List<GameUnit>?
+    fun controlledResource(player: PlayerInstance, vararg type: Resource): List<ResourceData>?
 
     fun initializePlayer(player: PlayerInstance)
 
@@ -106,16 +99,15 @@ enum class StandardFactionMat(
                 RiverWalk.FARM_TUNDRA, Wayfare(), Speed.singleton, Scout()
         )
 
-        override fun initializePlayer(player: PlayerInstance) {
-            val originalPrompt = player.promptForPayment
-
-            player.promptForPayment = { cost: List<ResourceType>, map: MutableMap<Resource, MapHex> ->
-                if(!player.turn.checkIfActionTypePerformed(CoercianTurnAction::class.java)) {
-                    player.combatCards.sortedBy { it.power }.firstOrNull { true }?.let {map[CrimeaCardResource(it)] = GameMap.currentMap!!.findHomeBase(player) as MapHex }
+        override fun controlledResource(player: PlayerInstance, vararg type: Resource): List<ResourceData>? {
+            val default = super.controlledResource(player, *type)?.toMutableList()
+            if(!player.playerData.flagCoercion) {
+                val card = ScytheDatabase.resourceDao()!!.getOwnedResourcesOfType(CapitalResourceType.CARDS.id, player.playerId)?.minBy {
+                    it.value
                 }
-
-                originalPrompt.invoke(cost, map)
+                if(card != null) default?.add(card)
             }
+            return default
         }
     },
     RUSVIET("Rusviet Union", CharacterDescription.OLGA, DefaultFactionAbility.RELENTLESS, 0x00FF0000, 3, 2, 0, 0) {
@@ -134,13 +126,13 @@ enum class StandardFactionMat(
         )
 
         override fun initializePlayer(player: PlayerInstance) {
-            player.tokens = mutableListOf(
-                    FlagUnit(player),
-                    FlagUnit(player),
-                    FlagUnit(player),
-                    FlagUnit(player)
+            ScytheDatabase.unitDao()!!.addUnit(
+                    *(0..3).map { UnitData(0, player.playerId, -1, UnitType.FLAG.ordinal, -1, -1) }.toTypedArray()
             )
-            player.tokenPlacementChoice = ExaltChoice()
+        }
+
+        override fun placeableTokens(player: PlayerInstance): List<GameUnit>? {
+            return ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.FLAG.ordinal)?.filter { it.loc == -1 }?.map { GameUnit(it, player) }
         }
     },
     TOGAWA("Togawa Shogunate", CharacterDescription.AKIKO, DefaultFactionAbility.MAIFUKU, 0x00DD00DD, 0, 2, 0, 0) {
@@ -149,13 +141,13 @@ enum class StandardFactionMat(
         )
 
         override fun initializePlayer(player: PlayerInstance) {
-            player.tokens = mutableListOf(
-                    TrapUnit(player, TrapType.MAIFUKU_LOSE_CARDS),
-                    TrapUnit(player, TrapType.MAIFUKU_LOSE_MONEY),
-                    TrapUnit(player, TrapType.MAIFUKU_LOSE_POP),
-                    TrapUnit(player, TrapType.MAIFUKU_LOSE_POWER)
+            ScytheDatabase.unitDao()!!.addUnit(
+                    *TrapType.values().map { type -> UnitData(0, player.playerId, -1, UnitType.TRAP.ordinal, TrapUnit.TrapState.NONE.ordinal, type.ordinal) }.toTypedArray()
             )
-            player.tokenPlacementChoice = MaifukuChoice()
+        }
+
+        override fun placeableTokens(player: PlayerInstance): List<GameUnit>? {
+            return ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.TRAP.ordinal)?.filter { it.loc == -1 }?.map { TrapUnit(it, player) }
         }
     };
 
@@ -163,6 +155,11 @@ enum class StandardFactionMat(
         for(i in 1..initialCombatCards) {
             CombatCardDeck.currentDeck.drawCard(player)
         }
+    }
+
+    override fun placeableTokens(player: PlayerInstance): List<GameUnit>? = null
+    override fun controlledResource(player: PlayerInstance, vararg type: Resource): List<ResourceData>? {
+        return type.flatMap { ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(it.id, player.playerId)?: emptyList() }
     }
 
     companion object {

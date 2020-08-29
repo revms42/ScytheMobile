@@ -1,14 +1,13 @@
 package org.ajar.scythemobile.old.model.faction
 
 import org.ajar.scythemobile.model.combat.CombatCardDeck
-import org.ajar.scythemobile.model.faction.StandardMove
-import org.ajar.scythemobile.model.faction.TunnelMove
 import org.ajar.scythemobile.old.model.TestCombatBoard
 import org.ajar.scythemobile.old.model.TestPlayer
 import org.ajar.scythemobile.old.model.TestUnit
 import org.ajar.scythemobile.old.model.map.GameMap
 import org.ajar.scythemobile.old.model.map.MapHex
 import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.faction.*
 import org.ajar.scythemobile.old.model.map.*
 import org.ajar.scythemobile.old.model.turn.MoveTurnAction
 
@@ -70,13 +69,13 @@ class FactionMechAbilityTest {
 
         var validDest = move.validEndingHexes(hex1)
         assertEquals(2, validDest!!.size)
-        assertEquals(2, validDest.filter { it!!.desc.location == mountainDesc.location || it.desc.location == farmDesc.location }.size)
+        assertEquals(2, validDest.filter { it!!.data.location == mountainDesc.location || it.data.location == farmDesc.location }.size)
         assertNotSame(validDest[0], validDest[1])
 
         assertTrue(move.validStartingHex(hex6))
         validDest = move.validEndingHexes(hex6)
         assertEquals(1, validDest!!.size)
-        assertEquals(mountainDesc.location, validDest[0]!!.desc.location)
+        assertEquals(mountainDesc.location, validDest[0]!!.data.location)
 
         assertFalse(move.validStartingHex(hex7))
     }
@@ -92,11 +91,11 @@ class FactionMechAbilityTest {
 
         var validDest = tunnelMove.validEndingHexes(centerHex)
         assertEquals(1, validDest!!.size)
-        assertEquals(tunnelDesc2.location, validDest[0]!!.desc.location)
+        assertEquals(tunnelDesc2.location, validDest[0]!!.data.location)
 
         validDest = tunnelMove.validEndingHexes(tunnel2)
         assertEquals(1, validDest!!.size)
-        assertEquals(tunnelDesc.location, validDest[0]!!.desc.location)
+        assertEquals(tunnelDesc.location, validDest[0]!!.data.location)
     }
 
     @Test
@@ -111,7 +110,7 @@ class FactionMechAbilityTest {
 
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
-        assertEquals(2, validDest.filter { it!!.desc.location == mountainDesc.location || it.desc.location == forestDesc.location }.size)
+        assertEquals(2, validDest.filter { it!!.data.location == mountainDesc.location || it.data.location == forestDesc.location }.size)
         assertNotSame(validDest[0], validDest[1])
     }
 
@@ -127,7 +126,7 @@ class FactionMechAbilityTest {
 
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
-        assertEquals(2, validDest.filter { it!!.desc.location == farmDesc.location || it.desc.location == tundraDesc.location }.size)
+        assertEquals(2, validDest.filter { it!!.data.location == farmDesc.location || it.data.location == tundraDesc.location }.size)
         assertNotSame(validDest[0], validDest[1])
     }
 
@@ -143,7 +142,7 @@ class FactionMechAbilityTest {
 
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
-        assertEquals(2,validDest.filter { it!!.desc.location == farmDesc.location || it.desc.location == villageDesc.location }.size)
+        assertEquals(2,validDest.filter { it!!.data.location == farmDesc.location || it.data.location == villageDesc.location }.size)
         assertNotSame(validDest[0], validDest[1])
     }
 
@@ -159,7 +158,7 @@ class FactionMechAbilityTest {
 
         val validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
-        assertEquals(2, validDest.filter { it!!.desc.location == mountainDesc.location || it.desc.location == villageDesc.location }.size)
+        assertEquals(2, validDest.filter { it!!.data.location == mountainDesc.location || it.data.location == villageDesc.location }.size)
         assertNotSame(validDest[0], validDest[1])
     }
 
@@ -181,7 +180,7 @@ class FactionMechAbilityTest {
 
         var validDest = underpass.validEndingHexes(mountain1)
         assertEquals(2, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == tunnelDesc.location || it.desc.location == tunnelDesc2.location}.size == 2)
+        assertTrue(validDest.filter { it!!.data.location == tunnelDesc.location || it.data.location == tunnelDesc2.location}.size == 2)
 
         val startingUnit = TestUnit(player, UnitType.MECH)
         val endingUnit = TestUnit(player, UnitType.WORKER)
@@ -195,7 +194,7 @@ class FactionMechAbilityTest {
 
         validDest = underpass.validEndingHexes(centerHex)
         assertEquals(1, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == mountainDesc.location }.size == 1)
+        assertTrue(validDest.filter { it!!.data.location == mountainDesc.location }.size == 1)
     }
 
     @Test
@@ -216,7 +215,7 @@ class FactionMechAbilityTest {
 
         var validDest = township.validEndingHexes(village)
         assertEquals(1, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == factoryDesc.location }.size == 1)
+        assertTrue(validDest.filter { it!!.data.location == factoryDesc.location }.size == 1)
 
         val startingUnit = TestUnit(player, UnitType.MECH)
         val endingUnit = TestUnit(player, UnitType.WORKER)
@@ -230,7 +229,7 @@ class FactionMechAbilityTest {
 
         validDest = township.validEndingHexes(factory)
         assertEquals(1, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == villageDesc.location }.size == 1)
+        assertTrue(validDest.filter { it!!.data.location == villageDesc.location }.size == 1)
     }
 
     @Test
@@ -247,11 +246,11 @@ class FactionMechAbilityTest {
 
         var validDest = seaworthy.validEndingHexes(lake1)
         assertEquals(3, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == tunnelDesc.location || it.desc.location == forestDesc.location || it.desc.location == tundraDesc.location}.size == 3)
+        assertTrue(validDest.filter { it!!.data.location == tunnelDesc.location || it.data.location == forestDesc.location || it.data.location == tundraDesc.location}.size == 3)
 
         validDest = seaworthy.validEndingHexes(centerHex)
         assertEquals(1, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == lakeDesc.location }.size == 1)
+        assertTrue(validDest.filter { it!!.data.location == lakeDesc.location }.size == 1)
     }
 
     @Test
@@ -273,7 +272,7 @@ class FactionMechAbilityTest {
 
         val validDest = wayfare.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == -42 || it.desc.location == -44 }.size == 2)
+        assertTrue(validDest.filter { it!!.data.location == -42 || it.data.location == -44 }.size == 2)
     }
 
     @Test
@@ -300,7 +299,7 @@ class FactionMechAbilityTest {
 
         val validDest = rally.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == villageDesc.location || it.desc.location == forestDesc.location }.size == 2)
+        assertTrue(validDest.filter { it!!.data.location == villageDesc.location || it.data.location == forestDesc.location }.size == 2)
     }
 
     @Test
@@ -325,7 +324,7 @@ class FactionMechAbilityTest {
 
         val validDest = shinobi.validEndingHexes(centerHex)
         assertEquals(2, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == villageDesc.location || it.desc.location == forestDesc.location }.size == 2)
+        assertTrue(validDest.filter { it!!.data.location == villageDesc.location || it.data.location == forestDesc.location }.size == 2)
     }
 
     @Test
@@ -342,11 +341,11 @@ class FactionMechAbilityTest {
 
         var validDest = submerge.validEndingHexes(lake1)
         assertEquals(1, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == lakeDesc2.location }.size == 1)
+        assertTrue(validDest.filter { it!!.data.location == lakeDesc2.location }.size == 1)
 
         validDest = submerge.validEndingHexes(centerHex)
         assertEquals(1, validDest!!.size)
-        assertTrue(validDest.filter { it!!.desc.location == lakeDesc.location }.size == 1)
+        assertTrue(validDest.filter { it!!.data.location == lakeDesc.location }.size == 1)
     }
 
     @Test
@@ -362,11 +361,11 @@ class FactionMechAbilityTest {
         var validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(5, validDest!!.size)
         assertTrue(validDest.filter {
-            it!!.desc.location == mountainDesc.location ||
-            it.desc.location == villageDesc.location ||
-            it.desc.location == forestDesc.location ||
-            it.desc.location == farmDesc.location ||
-            it.desc.location == tundraDesc.location
+            it!!.data.location == mountainDesc.location ||
+            it.data.location == villageDesc.location ||
+            it.data.location == forestDesc.location ||
+            it.data.location == farmDesc.location ||
+            it.data.location == tundraDesc.location
         }.size == 5)
 
         val otherHex = testMap.findHexAtIndex(1)!!
@@ -374,7 +373,7 @@ class FactionMechAbilityTest {
 
         validDest = riverWalk.validEndingHexes(otherHex)
         assertEquals(1, validDest!!.size)
-        assertTrue(validDest[0]!!.desc.location == tunnelDesc.location)
+        assertTrue(validDest[0]!!.data.location == tunnelDesc.location)
     }
 
     @Test
@@ -393,11 +392,11 @@ class FactionMechAbilityTest {
         var validDest = riverWalk.validEndingHexes(centerHex)
         assertEquals(5, validDest!!.size)
         assertTrue(validDest.filter {
-            it!!.desc.location == mountainDesc.location ||
-                    it.desc.location == villageDesc.location ||
-                    it.desc.location == forestDesc.location ||
-                    it.desc.location == farmDesc.location ||
-                    it.desc.location == tundraDesc.location
+            it!!.data.location == mountainDesc.location ||
+                    it.data.location == villageDesc.location ||
+                    it.data.location == forestDesc.location ||
+                    it.data.location == farmDesc.location ||
+                    it.data.location == tundraDesc.location
         }.size == 5)
 
         val otherHex = testMap.findHexAtIndex(1)!!
@@ -717,7 +716,7 @@ class FactionMechAbilityTest {
 
         val validDest = suiton.validEndingHexes(centerHex)
         assertEquals(1, validDest!!.size)
-        assertEquals(lakeDesc.location, validDest[0]!!.desc.location)
+        assertEquals(lakeDesc.location, validDest[0]!!.data.location)
 
         val mech = TestUnit(player, UnitType.MECH)
         val enemyMech = TestUnit(enemy, UnitType.MECH)

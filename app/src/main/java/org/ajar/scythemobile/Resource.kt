@@ -26,8 +26,8 @@ enum class CapitalResourceType(override var displayName: String, override var im
         override fun minus(playerInstance: PlayerInstance) { playerInstance.popularity -= 1 }
     },
     COINS("Coins"){
-        override fun plus(playerInstance: PlayerInstance) { playerInstance.coins += 1 }
-        override fun minus(playerInstance: PlayerInstance) { playerInstance.coins -= 1 }
+        override fun plus(playerInstance: PlayerInstance) { playerInstance.drawCoins(1)}
+        override fun minus(playerInstance: PlayerInstance) { playerInstance.takeCoins(1)}
     },
     CARDS("Combat Cards"){
         override fun plus(playerInstance: PlayerInstance) {

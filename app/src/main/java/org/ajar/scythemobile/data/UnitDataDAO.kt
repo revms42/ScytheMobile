@@ -17,7 +17,7 @@ interface UnitDataDAO {
     fun getUnitsAtLocation(loc: Int): List<UnitData>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addUnit(unit: UnitData)
+    fun addUnit(vararg unit: UnitData)
 
     @Delete
     fun removeUnit(vararg unit: UnitData)

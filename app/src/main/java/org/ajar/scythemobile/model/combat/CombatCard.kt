@@ -4,6 +4,7 @@ import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.turn.TurnHolder
 
 class CombatCardDeck(val twos: Int = 16, val threes: Int = 12, val fours: Int = 8, val fives: Int = 6) {
 
@@ -29,11 +30,11 @@ class CombatCardDeck(val twos: Int = 16, val threes: Int = 12, val fours: Int = 
             cardList.add((Math.random() * cardList.size).toInt(), cardList.removeAt(random))
         }
 
-        ScytheDatabase.instance!!.resourceDao().addResource(*cardList.map { it.resourceData }.toTypedArray())
+        ScytheDatabase.resourceDao()!!.addResource(*cardList.map { it.resourceData }.toTypedArray())
     }
 
     private fun update(combatCard: CombatCard) {
-        ScytheDatabase.instance!!.resourceDao().updateResource(combatCard.resourceData)
+        TurnHolder.updateResource(combatCard.resourceData)
     }
 
     fun drawCard(playerInstance: PlayerInstance): CombatCard? {
@@ -60,7 +61,7 @@ class CombatCardDeck(val twos: Int = 16, val threes: Int = 12, val fours: Int = 
                 if(_currentDeck == null) {
                     _currentDeck = CombatCardDeck()
 
-                    val cards = ScytheDatabase.instance!!.resourceDao().getResourcesOfType(CapitalResourceType.CARDS.id)
+                    val cards = ScytheDatabase.resourceDao()?.getResourcesOfType(CapitalResourceType.CARDS.id)
                     if(cards != null && cards.isNotEmpty()) {
                         _currentDeck!!.cardList.addAll(cards.filter { it.owner == -1 }.map { cardData -> CombatCard(cardData) })
                     } else {

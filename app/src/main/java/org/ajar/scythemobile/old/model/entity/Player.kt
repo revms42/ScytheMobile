@@ -15,8 +15,8 @@ import org.ajar.scythemobile.old.model.map.EncounterCard
 import org.ajar.scythemobile.old.model.map.GameMap
 import org.ajar.scythemobile.old.model.map.HomeBase
 import org.ajar.scythemobile.old.model.map.MapHex
-import org.ajar.scythemobile.old.model.objective.Objective
-import org.ajar.scythemobile.old.model.objective.ObjectiveCardDeck
+import org.ajar.scythemobile.model.objective.Objective
+import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
 import org.ajar.scythemobile.old.model.playermat.PlayerMatInstance
 import org.ajar.scythemobile.old.model.playermat.PlayerMatModel
 import org.ajar.scythemobile.old.model.playermat.SectionInstance

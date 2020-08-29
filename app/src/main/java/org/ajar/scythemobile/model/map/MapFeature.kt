@@ -1,52 +1,54 @@
 package org.ajar.scythemobile.model.map
 
-import org.ajar.scythemobile.model.PlayerInstance
-import org.ajar.scythemobile.model.faction.StandardFactionMat
-import org.ajar.scythemobile.old.model.production.MapResourceType
-import org.ajar.scythemobile.old.model.entity.Player
-import org.ajar.scythemobile.old.model.faction.FactionMatModel
-
-enum class SpecialFeature(override val featureName: String) : MapFeature {
-    LAKE("Lake"),
-    ENCOUNTER("Encounter"),
-    TUNNEL("Tunnel"),
-    FACTORY("Factory"),
-    ANY("(any)")
-}
-
-class RiverFeature(override val featureName: String = "River", val direction: Direction) : MapFeature
-
-class HomeBase(var player: PlayerInstance? = null) : MapFeature {
-
-    private var model: StandardFactionMat? = null
-
-    constructor(model: StandardFactionMat): this(null) {
-        this.model = model
-    }
-
-    private val ownerName: String
-        get() {
-            return if(player != null) {
-                player!!.factionMat.factionMat.matName
-            } else {
-                model!!.matName
-            }
-        }
-
-    override val featureName: String
-        get() {
-            return "$ownerName Home Base"
-        }
-}
-
-enum class ResourceFeature(override val featureName: String, val mapResource: MapResourceType) : MapFeature {
-    MOUNTAIN("Mountain", MapResourceType.METAL),
-    TUNDRA("Tundra", MapResourceType.OIL),
-    FARM("Farm", MapResourceType.FOOD),
-    FOREST("Forest", MapResourceType.WOOD),
-    VILLAGE("Village", MapResourceType.WORKER)
-}
+import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.faction.FactionMat
 
 interface MapFeature {
-    val featureName: String
+    fun applyToData(builder: MapHexBuilder)
+}
+
+enum class TerrainFeature(var displayName: String, var desc: String, val resource: NaturalResourceType? = null) : MapFeature {
+    FOREST("Forest", "", NaturalResourceType.WOOD),
+    FIELD("Field", "", NaturalResourceType.FOOD),
+    MOUNTAIN("Mountain","", NaturalResourceType.METAL),
+    TUNDRA("Tundra", "", NaturalResourceType.OIL),
+    VILLAGE("Village", ""),
+    LAKE("Lake", ""),
+    FACTORY("Factory", "");
+
+    override fun applyToData(builder: MapHexBuilder) {
+        builder.terrain = this.ordinal
+    }
+
+    companion object {
+        fun valueOf(ordinal: Int): TerrainFeature {
+            return values()[ordinal]
+        }
+    }
+}
+
+class RiverFeature(val direction: Direction) : MapFeature {
+    override fun applyToData(builder: MapHexBuilder) {
+        builder.addRiver(direction)
+    }
+}
+
+class HomeBase(val faction: FactionMat) : MapFeature {
+    override fun applyToData(builder: MapHexBuilder) {
+        builder.faction = faction.id
+    }
+
+}
+
+enum class SpecialFeature : MapFeature {
+    TUNNEL {
+        override fun applyToData(builder: MapHexBuilder) {
+            builder.tunnel = true
+        }
+    },
+    ENCOUNTER {
+        override fun applyToData(builder: MapHexBuilder) {
+            TODO("Encounter")
+        }
+    }
 }

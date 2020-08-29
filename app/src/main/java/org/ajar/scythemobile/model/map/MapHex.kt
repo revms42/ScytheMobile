@@ -1,54 +1,39 @@
 package org.ajar.scythemobile.model.map
 
-import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.data.MapHexData
+import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.model.entity.UnitType
 
-class FactionHomeHex(desc: MapHexDesc, val player: PlayerInstance?) : MapHex(desc)
-
-open class MapHex(val desc: MapHexDesc) {
-
-    var encounterCard: EncounterCard? = null
-
-    init {
-        if(desc.mapFeature.contains(SpecialFeature.ENCOUNTER)) {
-            encounterCard = EncounterDeck.currentDeck.drawCard()
-        }
-    }
+open class MapHex(val data: MapHexData) {
 
     val playerInControl : Int?
         get() {
-            TODO("NYI")
+            return ScytheDatabase.unitDao()?.getUnitsAtLocation(data.loc)?.firstOrNull { UnitType.controlUnits.contains(UnitType.valueOf(it.type)) }?.owner
         }
 
-    private fun matchingNeighbors(riversBlock: Boolean, predicate: (MapFeature) -> Boolean) : List<MapHex?> {
-        return Direction.values().map { direction ->  neighbor(direction, riversBlock) }.filter { neighbor -> neighbor?.desc?.mapFeature?.firstOrNull { feature -> predicate(feature) } != null }
+    private fun matchingNeighbors(riversBlock: Boolean, predicate: (MapHexData?) -> Boolean) : List<MapHex?> {
+        return Direction.values().map { direction ->  neighbor(direction, riversBlock) }.filter { predicate(it?.data) }
     }
 
-    private fun nonMatchingNeighbors(riversBlock: Boolean, predicate: (MapFeature) -> Boolean) : List<MapHex?> {
-        return Direction.values().map { direction ->  neighbor(direction, riversBlock)}.filter { neighbor -> neighbor?.desc?.mapFeature?.none { feature -> predicate(feature) }?: false }
+    private fun nonMatchingNeighbors(riversBlock: Boolean, predicate: (MapHexData?) -> Boolean) : List<MapHex?> {
+        return Direction.values().map { direction ->  neighbor(direction, riversBlock)}.filter { !predicate(it?.data) }
     }
 
-    fun matchingNeighborsNoRivers(predicate: (MapFeature) -> Boolean) : List<MapHex?> = matchingNeighbors(true, predicate)
-    fun matchingNeighborsIncludeRivers(predicate: (MapFeature) -> Boolean) : List<MapHex?> = matchingNeighbors(false, predicate)
+    fun matchingNeighborsNoRivers(predicate: (MapHexData?) -> Boolean) : List<MapHex?> = matchingNeighbors(true, predicate)
+    fun matchingNeighborsIncludeRivers(predicate: (MapHexData?) -> Boolean) : List<MapHex?> = matchingNeighbors(false, predicate)
 
-    fun nonMatchingNeighborsNoRivers(predicate: (MapFeature) -> Boolean) : List<MapHex?> = nonMatchingNeighbors(true, predicate)
-    fun nonMatchingNeighborsIncludeRivers(predicate: (MapFeature) -> Boolean) : List<MapHex?> = nonMatchingNeighbors(false, predicate)
+    fun nonMatchingNeighborsNoRivers(predicate: (MapHexData?) -> Boolean) : List<MapHex?> = nonMatchingNeighbors(true, predicate)
+    fun nonMatchingNeighborsIncludeRivers(predicate: (MapHexData?) -> Boolean) : List<MapHex?> = nonMatchingNeighbors(false, predicate)
 
     private fun neighbor(direction: Direction, riversBlock: Boolean = true) : MapHex? {
-        if(riversBlock && desc.mapFeature.find { it is RiverFeature && it.direction == direction } != null) return null
+        if(riversBlock && data.rivers.getDirection(direction)) return null
 
-        val index = when(direction) {
-            Direction.NW -> desc.hexNeighbors.nw
-            Direction.NE -> desc.hexNeighbors.ne
-            Direction.E -> desc.hexNeighbors.e
-            Direction.SE -> desc.hexNeighbors.se
-            Direction.SW -> desc.hexNeighbors.sw
-            Direction.W -> desc.hexNeighbors.w
-        }
+        val index = data.neighbors.getDirection(direction)
 
-        return GameMap.currentMap?.findHexAtIndex(index)
+        return GameMap.currentMap.findHexAtIndex(index)
     }
 
     override fun toString(): String {
-        return "${desc.mapFeature[0]} ${desc.location}"
+        return "${TerrainFeature.valueOf(data.terrain).displayName} ${data.loc}"
     }
 }

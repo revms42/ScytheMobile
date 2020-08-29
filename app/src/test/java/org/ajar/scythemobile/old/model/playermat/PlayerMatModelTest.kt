@@ -4,7 +4,7 @@ import org.ajar.scythemobile.old.model.TestPlayer
 import org.ajar.scythemobile.old.model.TestUnit
 import org.ajar.scythemobile.old.model.entity.Player
 import org.ajar.scythemobile.model.entity.UnitType
-import org.ajar.scythemobile.old.model.faction.RiverWalk
+import org.ajar.scythemobile.model.faction.RiverWalk
 import org.ajar.scythemobile.old.model.map.*
 import org.ajar.scythemobile.old.model.production.PlayerResourceType
 import org.ajar.scythemobile.old.model.turn.*

@@ -13,7 +13,6 @@ import org.ajar.scythemobile.old.model.map.MapHex
 import org.ajar.scythemobile.old.model.production.CrimeaCardResource
 import org.ajar.scythemobile.old.model.production.Resource
 import org.ajar.scythemobile.old.model.production.ResourceType
-import org.ajar.scythemobile.old.model.turn.CoercianTurnAction
 
 enum class FactionMat(
         override val matName: String,

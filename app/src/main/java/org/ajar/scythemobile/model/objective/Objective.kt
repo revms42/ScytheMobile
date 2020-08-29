@@ -1,4 +1,4 @@
-package org.ajar.scythemobile.old.model.objective
+package org.ajar.scythemobile.model.objective
 
 import android.content.Context
 import android.util.SparseArray
@@ -9,10 +9,7 @@ import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.UnitType
-import org.ajar.scythemobile.model.map.GameMap
-import org.ajar.scythemobile.model.map.MapFeature
-import org.ajar.scythemobile.model.map.ResourceFeature
-import org.ajar.scythemobile.model.map.SpecialFeature
+import org.ajar.scythemobile.model.map.*
 import kotlin.math.roundToInt
 
 class ObjectiveCardDeck(private val objectives: MutableList<Objective>) {
@@ -91,7 +88,7 @@ class MapFeatureControlObjective(override val id: Int, override var image: Int, 
 sealed class PlayerRankObjective(override val id: Int = -1, override var image: Int = -1) : Objective {
     class HighestPower : PlayerRankObjective() {
         override fun evaluate(playerInstance: PlayerInstance): Boolean {
-            return ScytheDatabase.instance?.playerDao()?.getHighestPower() == playerInstance.power
+            return ScytheDatabase.playerDao()?.getHighestPower() == playerInstance.power
         }
     }
 }
@@ -99,12 +96,12 @@ sealed class PlayerRankObjective(override val id: Int = -1, override var image: 
 class Stockpile(override val id: Int = -1, override var image: Int = -1) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
         return UnitType.controlUnits.flatMap { type ->
-            ScytheDatabase.instance!!.unitDao().getUnitsForPlayer(playerInstance.playerId, type.ordinal)?: emptyList()
+            ScytheDatabase.unitDao()!!.getUnitsForPlayer(playerInstance.playerId, type.ordinal)?: emptyList()
         }.firstOrNull { unitData ->
             val loc = unitData.loc.let { if(it == -1) null else it }
 
             loc?.let {
-                val resources = ScytheDatabase.instance!!.resourceDao().getResourcesAt(it)
+                val resources = ScytheDatabase.resourceDao()!!.getResourcesAt(it)
 
                 if(resources?.size?: 0 >= 9) {
                     val types = arrayOf(false, false, false, false)
@@ -126,7 +123,7 @@ class FoundationsOfEmpire(override val id: Int, override var image: Int) : Objec
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
         val countMap = SparseIntArray()
         return UnitType.values().firstOrNull { unitType ->
-            ScytheDatabase.instance!!.unitDao().getUnitsForPlayer(playerInstance.playerId, unitType.ordinal)?.firstOrNull { unit ->
+            ScytheDatabase.unitDao()!!.getUnitsForPlayer(playerInstance.playerId, unitType.ordinal)?.firstOrNull { unit ->
                 countMap[unit.loc] = countMap[unit.loc] + 1
 
                 countMap[unit.loc] >= 6
@@ -143,7 +140,7 @@ class HedgingBets(override val id: Int, override var image: Int) : Objective {
         var hasMech = false
         var hasStructure = false
         val hasResource = UnitType.controlUnits.firstOrNull { type ->
-            (ScytheDatabase.instance!!.unitDao().getUnitsForPlayer(playerInstance.playerId, type.ordinal)?: emptyList()).firstOrNull { unit ->
+            (ScytheDatabase.unitDao()!!.getUnitsForPlayer(playerInstance.playerId, type.ordinal)?: emptyList()).firstOrNull { unit ->
                 val loc = unit.loc
 
                 when(unit.type) {
@@ -152,7 +149,7 @@ class HedgingBets(override val id: Int, override var image: Int) : Objective {
                 }
 
                 if(loc != -1) {
-                    ScytheDatabase.instance!!.resourceDao().getResourcesAt(loc)?.firstOrNull { resource ->
+                    ScytheDatabase.resourceDao()!!.getResourcesAt(loc)?.firstOrNull { resource ->
                         resourceTypes[resource.type] = true
                         resourceTypes.size() == 4
                     } != null
@@ -168,7 +165,7 @@ class HedgingBets(override val id: Int, override var image: Int) : Objective {
 
 class BalancedWorkforce(override val id: Int, override var image: Int) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
-        val workers = ScytheDatabase.instance!!.unitDao().getUnitsForPlayer(playerInstance.playerId, UnitType.WORKER.ordinal)?.size?: 0
+        val workers = ScytheDatabase.unitDao()!!.getUnitsForPlayer(playerInstance.playerId, UnitType.WORKER.ordinal)?.size?: 0
 
         return workers > 0 && workers == playerInstance.recruits
     }
@@ -176,14 +173,14 @@ class BalancedWorkforce(override val id: Int, override var image: Int) : Objecti
 
 class WolfAmongSheep(override val id: Int, override var image: Int) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
-        return ScytheDatabase.instance!!.unitDao().getUnitsForPlayer(playerInstance.playerId, UnitType.CHARACTER.ordinal)?.let { list ->
-            val present = ScytheDatabase.instance!!.unitDao().getUnitsAtLocation(list[0].loc)
+        return ScytheDatabase.unitDao()!!.getUnitsForPlayer(playerInstance.playerId, UnitType.CHARACTER.ordinal)?.let { list ->
+            val present = ScytheDatabase.unitDao()!!.getUnitsAtLocation(list[0].loc)
 
             val requiredPresent = present?.size == 3 &&
                     present.firstOrNull { unit -> unit.type == UnitType.WORKER.ordinal } != null &&
                     present.firstOrNull { unit -> unit.type == UnitType.MECH.ordinal } != null
 
-            val resourcesPresent = ScytheDatabase.instance!!.resourceDao().getResourcesAt(list[0].loc)?.size?: 0 >= 5
+            val resourcesPresent = ScytheDatabase.resourceDao()!!.getResourcesAt(list[0].loc)?.size?: 0 >= 5
 
             requiredPresent && resourcesPresent
         }?: false
@@ -192,9 +189,9 @@ class WolfAmongSheep(override val id: Int, override var image: Int) : Objective 
 
 class SurroundFeature(private val specialFeature: SpecialFeature, val hexes: Int, override val id: Int = 1, override var image: Int = -1) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
-        val dao = ScytheDatabase.instance!!.unitDao()
+        val dao = ScytheDatabase.unitDao()!!
         return GameMap.currentMap!!.findAllMatching { feature -> feature == specialFeature }.firstOrNull {
-            it.desc.hexNeighbors.asArray().count { loc ->
+            it.data.hexNeighbors.asArray().count { loc ->
                 dao.getUnitsAtLocation(loc)?.firstOrNull { unitData -> UnitType.controlUnits.contains(UnitType.values()[unitData.type]) }?.owner == playerInstance.playerId
             } >= hexes
         } != null
@@ -206,11 +203,11 @@ class MonopolizeTheMarket(override val id: Int, override var image: Int) : Objec
         val hexes = SparseBooleanArray()
         val map = SparseIntArray()
 
-        val dao = ScytheDatabase.instance!!.unitDao()
+        val dao = ScytheDatabase.unitDao()!!
         return UnitType.controlUnits.firstOrNull { type ->
             dao.getUnitsForPlayer(playerInstance.playerId, type.ordinal)?.firstOrNull { unit ->
                 if(!hexes[unit.loc]) {
-                    ScytheDatabase.instance!!.resourceDao().getResourcesAt(unit.loc)?.let { hexes[unit.loc] = true ; it }?.firstOrNull { resourceData ->
+                    ScytheDatabase.resourceDao()!!.getResourcesAt(unit.loc)?.let { hexes[unit.loc] = true ; it }?.firstOrNull { resourceData ->
                         map[resourceData.type]++
 
                         map[resourceData.type] >= 9
@@ -225,8 +222,8 @@ class MonopolizeTheMarket(override val id: Int, override var image: Int) : Objec
 
 class HumanShield(override val id: Int, override var image: Int) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
-        return GameMap.currentMap!!.findAllMatching { mapFeature -> mapFeature == SpecialFeature.FACTORY }.first().desc.hexNeighbors.asArray().firstOrNull { loc ->
-            ScytheDatabase.instance!!.unitDao().getUnitsAtLocation(loc)?.count { unit -> unit.type == UnitType.WORKER.ordinal && unit.owner == playerInstance.playerId }?: 0 >= 5
+        return GameMap.currentMap!!.findAllMatching { mapFeature -> mapFeature == TerrainFeature.FACTORY }.first().data.hexNeighbors.asArray().firstOrNull { loc ->
+            ScytheDatabase.unitDao()!!.getUnitsAtLocation(loc)?.count { unit -> unit.type == UnitType.WORKER.ordinal && unit.owner == playerInstance.playerId }?: 0 >= 5
         } != null
     }
 }
@@ -234,8 +231,8 @@ class HumanShield(override val id: Int, override var image: Int) : Objective {
 class DiversifyProduction(override val id: Int, override var image: Int) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
         val types = SparseBooleanArray()
-        return ScytheDatabase.instance!!.unitDao().getUnitsForPlayer(playerInstance.playerId, UnitType.WORKER.ordinal)?.firstOrNull { worker ->
-            GameMap.currentMap!!.findHexAtIndex(worker.loc)?.desc?.mapFeature?.filterIsInstance<ResourceFeature>()?.firstOrNull()?.let { types[it.ordinal] = true }
+        return ScytheDatabase.unitDao()!!.getUnitsForPlayer(playerInstance.playerId, UnitType.WORKER.ordinal)?.firstOrNull { worker ->
+            GameMap.currentMap!!.findHexAtIndex(worker.loc)?.data?.mapFeature?.filterIsInstance<ResourceFeature>()?.firstOrNull()?.let { types[it.ordinal] = true }
             types.size() >= 5
         } != null
     }
@@ -243,13 +240,13 @@ class DiversifyProduction(override val id: Int, override var image: Int) : Objec
 
 class BuildLocalInfrastructure(override val id: Int, override var image: Int) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
-        val forbidden = GameMap.currentMap!!.findHomeBase(playerInstance)?.desc?.hexNeighbors!!.asArray()
+        val forbidden = GameMap.currentMap!!.findHomeBase(playerInstance)?.data?.hexNeighbors!!.asArray()
 
 
         var forbiddenCount = 0
         var allowedCount = 0
         UnitType.structures.firstOrNull {
-            val loc = ScytheDatabase.instance!!.unitDao().getUnitsForPlayer(playerInstance.playerId, UnitType.MILL.ordinal)?.firstOrNull()?.loc
+            val loc = ScytheDatabase.unitDao()!!.getUnitsForPlayer(playerInstance.playerId, UnitType.MILL.ordinal)?.firstOrNull()?.loc
 
             if(loc != null) {
                 if(forbidden.contains(loc)) {
@@ -294,7 +291,7 @@ sealed class PlayerQualityObjective(override val id: Int = -1, override var imag
     }
     class AtLeastStructures(private val threshold: Int) : PlayerQualityObjective() {
         override fun evaluate(playerInstance: PlayerInstance): Boolean {
-            val dao = ScytheDatabase.instance!!.unitDao()
+            val dao = ScytheDatabase.unitDao()!!
 
             return UnitType.structures.sumBy { unitType -> dao.getUnitsForPlayer(playerInstance.playerId, unitType.ordinal)?.size?: 0 } >= threshold
         }
@@ -352,11 +349,11 @@ sealed class PlayerQualityObjective(override val id: Int = -1, override var imag
 }
 
 enum class DefaultObjective(private val wrappedObjective: Objective) : Objective {
-    HIGHER_GROUND_ADVANTAGE(MapFeatureControlObjective(0, -1, ResourceFeature.MOUNTAIN)),
+    HIGHER_GROUND_ADVANTAGE(MapFeatureControlObjective(0, -1, TerrainFeature.MOUNTAIN)),
     UNDERWORLD_ADVANTAGE(MapFeatureControlObjective(1, -1, SpecialFeature.TUNNEL)),
-    HARVEST_ADVANTAGE(MapFeatureControlObjective(2, -1, ResourceFeature.FARM)),
-    NORTHERN_ADVANTAGE(MapFeatureControlObjective(3, -1, ResourceFeature.TUNDRA)),
-    KING_OF_THE_HILL(MultipleCriteriaObjective(4, -1, PlayerRankObjective.HighestPower(), MapFeatureControlObjective(-1, -1, SpecialFeature.FACTORY))),
+    HARVEST_ADVANTAGE(MapFeatureControlObjective(2, -1, TerrainFeature.FIELD)),
+    NORTHERN_ADVANTAGE(MapFeatureControlObjective(3, -1, TerrainFeature.TUNDRA)),
+    KING_OF_THE_HILL(MultipleCriteriaObjective(4, -1, PlayerRankObjective.HighestPower(), MapFeatureControlObjective(-1, -1, TerrainFeature.FACTORY))),
 
     SEND_ONE_BACK_AS_A_WARNING(MultipleCriteriaObjective(5, -1, PlayerQualityObjective.AtLeastPower(7), PlayerQualityObjective.ForcedRetreat())),
     MACHINE_OVER_MUSCLE(
@@ -374,9 +371,9 @@ enum class DefaultObjective(private val wrappedObjective: Objective) : Objective
             )
     ),
     STOCKPILE_FOR_THE_WINTER(Stockpile(8, -1)),
-    WOODLAND_ADVANTAGE(MapFeatureControlObjective(9, -1, ResourceFeature.FOREST)),
+    WOODLAND_ADVANTAGE(MapFeatureControlObjective(9, -1, TerrainFeature.FOREST)),
 
-    POPULATION_ADVANTAGE(MapFeatureControlObjective(10, -1, ResourceFeature.VILLAGE)),
+    POPULATION_ADVANTAGE(MapFeatureControlObjective(10, -1, TerrainFeature.VILLAGE)),
     GET_RICH_OR_CRY_TRYING(PlayerQualityObjective.AtLeastCoins(20, 11, -1)),
     FOUNDATIONS_OF_THE_EMPIRE(FoundationsOfEmpire(12, -1)),
     HEDGE_YOUR_BETS(HedgingBets(13, -1)),
@@ -386,7 +383,7 @@ enum class DefaultObjective(private val wrappedObjective: Objective) : Objective
     DIVIDE_AND_CONQUER(
             MultipleCriteriaObjective(16, -1,
                     PlayerQualityObjective.NoFactoryCard(),
-                    SurroundFeature(SpecialFeature.FACTORY, 2)
+                    SurroundFeature(TerrainFeature.FACTORY, 2)
             )
     ),
     BECOME_A_BELOVED_PACIFIST(
@@ -396,7 +393,7 @@ enum class DefaultObjective(private val wrappedObjective: Objective) : Objective
                     PlayerQualityObjective.AtLeastUnits(5, UnitType.WORKER)
             )
     ),
-    SHORE_UP_THE_SHORE(SurroundFeature(SpecialFeature.LAKE, 5, 18, -1)),
+    SHORE_UP_THE_SHORE(SurroundFeature(TerrainFeature.LAKE, 5, 18, -1)),
     CREATE_A_PERMANENT_FOOTHOLD(
             MultipleCriteriaObjective(19, -1,
                     PlayerQualityObjective.AtLeastPop(7),

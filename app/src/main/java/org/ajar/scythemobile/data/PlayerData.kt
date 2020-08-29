@@ -26,6 +26,8 @@ data class PlayerData(
         @ColumnInfo(name = COLUMN_STAR_POPULARITY) var starPopularity: Int,
         @ColumnInfo(name = COLUMN_STAR_POWER) var starPower: Int,
         @ColumnInfo(name = COLUMN_FLAG_FORCED_RETREAT) var flagRetreat: Boolean,
+        @ColumnInfo(name = COLUMN_FLAG_USED_COERCION) var flagCoercion: Boolean,
+        @ColumnInfo(name = COLUMN_FLAG_USED_TOKA) var flagToka: Boolean,
         @ColumnInfo(name = COLUMN_FACTORY_CARD) var factoryCard: Int?
 ) {
     companion object {
@@ -54,6 +56,8 @@ data class PlayerData(
         const val COLUMN_STAR_POWER = "star_power"
 
         const val COLUMN_FLAG_FORCED_RETREAT = "flag_retreat"
+        const val COLUMN_FLAG_USED_COERCION = "flag_coercion"
+        const val COLUMN_FLAG_USED_TOKA = "flag_toka"
 
         const val COLUMN_FACTORY_CARD = "factory_card"
     }
