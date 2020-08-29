@@ -1,71 +1,63 @@
 package org.ajar.scythemobile.model.entity
 
-import org.ajar.scythemobile.model.production.MapResource
+import org.ajar.scythemobile.data.UnitData
+import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.turn.TurnHolder
 
-enum class TrapType(val description: String, val sprungPicture: Int = -1) {
+enum class TrapType(var description: String, var sprungPicture: Int = -1) {
     MAIFUKU_LOSE_POP("Lose 2 popularity"){
-        override fun applyToPlayer(player: Player) {
+        override fun applyToPlayer(player: PlayerInstance) {
             player.popularity -= 2
         }
     },
     MAIFUKU_LOSE_MONEY("Lose $4"){
-        override fun applyToPlayer(player: Player) {
-            player.coins -= 4
+        override fun applyToPlayer(player: PlayerInstance) {
+            player.takeCoins(4)
         }
     },
     MAIFUKU_LOSE_POWER("Lose 3 power") {
-        override fun applyToPlayer(player: Player) {
+        override fun applyToPlayer(player: PlayerInstance) {
             player.power -= 3
         }
     },
     MAIFUKU_LOSE_CARDS("Lose 2 combat cards at random") {
-        override fun applyToPlayer(player: Player) {
-            val cards = player.combatCards
-
-            for (i in 0..1){
-                if(cards.size > 1) {
-                    val cardToSteal = cards.toList()[(Math.random() * cards.size).toInt()]
-                    cards.remove(cardToSteal)
-                }
-            }
+        override fun applyToPlayer(player: PlayerInstance) {
+            player.takeCombatCards(2)
         }
     };
 
-    abstract fun applyToPlayer(player: Player)
+    abstract fun applyToPlayer(player: PlayerInstance)
 }
 
-class TrapUnit(override val controllingPlayer: Player, val trapType: TrapType) : GameUnit {
-    override val type: UnitType = UnitType.FLAG
+class TrapUnit(unitData: UnitData, controllingPlayer: PlayerInstance) : GameUnit(unitData, controllingPlayer) {
 
-    override val heldMapResources: MutableList<MapResource> = ArrayList()
-
-    private var _sprung: Boolean? = null
-    val sprung: Boolean
-        get() {
-            if(_sprung == null) {
-                this._sprung = false
-            }
-            return _sprung!!
+    init {
+        if (unitData.state == TrapState.NONE.ordinal) {
+            unitData.state = TrapState.ARMED.ordinal
+            TurnHolder.updateMove(unitData)
         }
+    }
+
+    val sprung: Boolean
+        get() = unitData.state == TrapState.SPRUNG.ordinal
 
     fun springTrap(unit: GameUnit) {
+        val trapType = TrapType.values()[unitData.subType]
         trapType.applyToPlayer(unit.controllingPlayer)
-        _sprung = true
+        unitData.state = TrapState.SPRUNG.ordinal
+        TurnHolder.updateMove(unitData)
     }
 
     fun resetTrap() {
-        _sprung = false
+        unitData.state = TrapState.ARMED.ordinal
+        TurnHolder.updateMove(unitData)
     }
-}
 
-class FlagUnit(override val controllingPlayer: Player) : GameUnit {
-    override val type: UnitType = UnitType.FLAG
-    override val heldMapResources: MutableList<MapResource> = ArrayList()
-}
-
-class MechUnit(override val controllingPlayer: Player) : GameUnit {
-    override val type: UnitType = UnitType.MECH
-    override val heldMapResources: MutableList<MapResource> = ArrayList()
+    enum class TrapState {
+        NONE,
+        ARMED,
+        SPRUNG
+    }
 }
 
 enum class UnitType {
@@ -75,11 +67,32 @@ enum class UnitType {
     FLAG,
     WORKER,
     AIRSHIP,
-    STRUCTURE
+    MILL,
+    MONUMENT,
+    MINE,
+    ARMORY;
+
+    companion object {
+        val structures = listOf(MILL, MONUMENT, MINE, ARMORY)
+        val controlUnits = listOf(CHARACTER, WORKER, MECH, AIRSHIP, ARMORY, MILL, MINE, ARMORY, MONUMENT)
+
+        fun valueOf(index: Int): UnitType {
+            return values()[index]
+        }
+    }
 }
 
-interface GameUnit : ResourceHolder {
+open class GameUnit(val unitData: UnitData, val controllingPlayer: PlayerInstance, var image: Int = -1) : ResourceHolder {
+    override val heldMapResources: MutableList<Int> = ArrayList()
 
-    val controllingPlayer: Player
+    val pos: Int
+        get() = unitData.loc
+
     val type: UnitType
+        get() = UnitType.values()[unitData.type]
+
+    fun move(loc: Int) {
+        unitData.loc = loc
+        TurnHolder.updateMove(unitData)
+    }
 }

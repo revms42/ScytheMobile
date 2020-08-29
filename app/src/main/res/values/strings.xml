@@ -1,3 +1,243 @@
 <resources>
     <string name="app_name">ScytheMobile</string>
+
+    <string name="combat_start_msg">Please choose combat power and/or cards.</string>
+    <string name="combat_start_nav_header">Prepare for Combat</string>
+    <string name="combat_send_nav_header">Send Combat Request to Player</string>
+
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_send_combat_request">Send Combat Request</string>
+    <string name="button_finish_combat">Finish Combat</string>
+
+    <string name="subject_combat_defend">Choose Power and Combat Cards for Defense</string>
+
+    <string-array name="objectives">
+        <item>Control at least 3 mountain territories at the end of your turn.</item>
+        <item>Control at least 3 tunnels at the end of your turn.</item>
+        <item>Control at least 3 farm territories at the end of your turn.</item>
+        <item>Control at least 3 tundra territories at the end of your turn.</item>
+        <item>Control the factory at the end of your turn and have the highest power of any player(ties are ok).</item>
+
+        <item>Force an opponent\'s worker to retreat and still have at least 7 power.</item>
+        <item>Have 1 Factory Card, at least 1 mech, and no more than 3 workers.</item>
+        <item>Have $2 or less, at least 4 workers, and at least 7 popularity.</item>
+        <item>Control a territory with at least 9 resource tokens (at least 1 of each type) on it at the end of your turn.</item>
+        <item>Control at least 3 forest territories at the end of your turn.</item>
+
+        <item>Control at least 3 village territories at the end of your turn.</item>
+        <item>Have at least $20 at the end of your turn.</item>
+        <item>Have at least 6 of your tokens (i.e. character, workers, mechs, and structures) on 1 territory.</item>
+        <item>Have at least 1 upgrade, 1 mech, 1 structure, 1 recruit, and 1 of each resource at the end of your turn.</item>
+        <item>Have the same number of workers and recruits.</item>
+
+        <item>Control a territory with your character, exactly 1 mech, exactly 1 worker, and at least 5 resources at the end of your turn.</item>
+        <item>Have 0 Factory cards and control at least 2 territories adjacent to the Factory at the end of your turn.</item>
+        <item>Have 0 power, at least 13 popularity, and at least 5 workers.</item>
+        <item>Control at least 5 territories surrounding the same lake at the end of your turn.</item>
+        <item>Build at least 3 structures, have at least 7 popularity, and have 0 mechs.</item>
+
+        <item>Control at least 9 tokens of the same resource at the end of your turn.</item>
+        <item>Have 1 Factory card and 0 upgrades.</item>
+        <item>Have 8 or more combat cards in hand and at least 1 combat victory star.</item>
+        <item>Have at least 5 workers on a territory adjacent to the Factory at the end of your turn.</item>
+        <item>Have 3 or less popularity, at least 13 power, and at least 2 mechs.</item>
+
+        <item>Control at least 1 of each primary terrain type with at least 1 worker on each at the end of your turn.</item>
+        <item>Build at least 3 structures, none of which are adjacent to your home base.</item>
+    </string-array>
+
+    <string-array name="objective_names">
+        <item>Higher Ground Advantage</item>
+        <item>Underworld Advantage</item>
+        <item>Harvest Advantage</item>
+        <item>Northern Advantage</item>
+        <item>King of the Hill</item>
+
+        <item>Send One Back as a Warning</item>
+        <item>Machine Over Muscle</item>
+        <item>Roll Up Your Sleeves with the Common Man</item>
+        <item>Stockpile for the Winter</item>
+        <item>Woodland Advantage</item>
+
+        <item>Population Advantage</item>
+        <item>Get Rich or Cry Trying</item>
+        <item>Foundations of the Empire</item>
+        <item>Hedge Your Bets</item>
+        <item>Balanced Workforce</item>
+
+        <item>A Wolf Among the Sheep</item>
+        <item>Divide and Conquer</item>
+        <item>Become a Beloved Pacifist</item>
+        <item>Shore Up the Shore</item>
+        <item>Create a Permanent Foothold</item>
+
+        <item>Monopolize the Market</item>
+        <item>Technological Breakthrough</item>
+        <item>Achieve Tactical Mastery</item>
+        <item>Establish a Human Shield</item>
+        <item>Become a Despised Warmonger</item>
+
+        <item>Diversify Production</item>
+        <item>Build a Local Infrastructure</item>
+    </string-array>
+
+    <string-array name="capital_resources">
+        <item>Power</item>
+        <item>Popularity</item>
+        <item>Coins</item>
+        <item>Combat Cards</item>
+    </string-array>
+
+    <string-array name="natural_resources">
+        <item>Wood</item>
+        <item>Food</item>
+        <item>Oil</item>
+        <item>Metal</item>
+    </string-array>
+
+    <string-array name="encounter_popular_option">
+        <item>WHISTLE WHILE YOU WAIT FOR THE GEESE TO CROSS THE ROAD: Gain $2 and 1 popularity.</item>
+        <item>TAKE ORDERS FROM YOUR SUPERIOR OFFICER WITH HUMILITY: Gain 1 combat card and 1 popularity.</item>
+        <item>HERD THE SHEEP ON THE HILLSIDE FOR AN AFTERNOON: Gain 2 food and 1 popularity.</item>
+        <item>TAKE PHOTOS FOR THE OVERLY ENTHUSIASTIC SOLDIERS: Gain 2 metal and 1 popularity.</item>
+        <item>GO FISHING WITH THE SOLDIERS BY POSING AS LOCALS: Gain 2 food and gain 1 popularity.</item>
+        <item>LET THE BEARS FROLIC TOGETHER IN THE SNOW: Gain $2 and 1 popularity.</item>
+        <item>PAY YOUR RESPECTS AS YOU PASS THROUGH THE NORDIC CAMP: Gain 2 oil and 1 popularity</item>
+        <item>PET THE REINDEER AND FLIRT WITH THE LOCALS AT THE REFINERY: Gain $2 and 1 popularity.</item>
+        <item>HELP AN INVENTOR INSTALL A HEAVY GEAR: Gain 2 oil and 1 popularity.</item>
+        <item>STEER THE DISORIENTED MECH THROUGH THE FOG WITH YOUR LANTERN: Gain 2 oil and 1 popularity.</item>
+
+        <item>PICK FRUIT FOR THE LADY… AND KEEP A FEW FOR YOURSELF: Gain 2 food and 1 popularity.</item>
+        <item>KNOCK DOWN A TREE TO HELP THE WORKERS WITH THEIR DAILY QUOTA: Gain 2 wood and 1 popularity</item>
+        <item>ENJOY AN AFTERNOON FESTIVAL WITH THE COMMONERS: Gain $2 and 1 popularity.</item>
+        <item>REPAIR A BROKEN FENCE TO SECURE THE PIGS: Gain 2 food and 1 popularity.</item>
+        <item>TAKE A RIDE ON A FERRY AS THE WIND TUSSLES YOUR LONG, FLOWING HAIR: Gain 2 popularity.</item>
+        <item>PLANT CROPS AT A FARM FOR A DAY TO EARN SOME GOODWILL: Gain 2 food and 1 popularity.</item>
+        <item>ADMIRE A RETIRED SOLDIER\’S PRIZED GUN: Gain 1 combat card and 1 popularity.</item>
+        <item>SHOOT A WILD BOAR FOR A LUNCH OF BACON: Gain 2 food and 1 popularity.</item>
+        <item>SHARE SOME GOOD NEWS FROM HOME WITH THE TRAVELERS: Gain $2 and 1 popularity.</item>
+        <item>OBSERVE A CHILDHOOD GAME OF WAR: Gain 1 combat card and 1 popularity.</item>
+
+        <item>DISTRACT THE ROGUE MECH WITH YOUR YODELING SKILLS TO SAVE THE COW: Gain 2 popularity.</item>
+        <item>OFFER SOME ADVICE TO FIX A BROKEN PULLEY AT A DEFUNCT MINE: Gain $2 and 1 popularity.</item>
+        <item>TAMPER WITH THE DRAFT DOCUMENTS TO KEEP THE FAMILY TOGETHER: Gain $2 and 1 popularity.</item>
+        <item>CONCEIVE A PLAN WITH THE PATROLLING TROOPS IN THE FOREST: Gain 1 combat card and gain 1 popularity.</item>
+        <item>SALVAGE AMMO FROM A SECRET UNDERGROUND FACILITY: Gain 2 power and 1 popularity.</item>
+        <item>ARMWRESTLE A BRUTE AT THE LOCAL TAVERN: Gain 2 power and 1 popularity.</item>
+        <item>HELP AN ANXIOUS FARMER FIND A MISSING PART FOR HIS MECH: Gain $2 and 1 popularity.</item>
+        <item>GIVE THE NEWLY RECRUITED SOLDIER A LIFT TO HIS NEW ASSIGNMENT: Gain $2 and 1 popularity.</item>
+        <item>TELL A GROUP OF SOLDIERS A FUNNY STORY WHILE THEY EAT LUNCH: Gain $2 and 1 popularity.</item>
+        <item>SHOW THE FARMER THE CONTROL YOU HAVE OVER YOUR ANIMAL: Gain 2 power and 1 popularity.</item>
+
+        <item>CLEAR UPROOTED TREES AFTER THE BATTLE IS OVER: Gain 2 wood and 1 popularity.</item>
+        <item>CREATE AN ALLIANCE WITH THE TOWN MAYOR: Gain $2 and 1 popularity.</item>
+        <item>BEFRIEND THE SAMURAI FROM A FARAWAY LAND: Gain $2 and 1 popularity.</item>
+        <item>POINT THE TRAVELING CONVOY IN THE RIGHT DIRECTION: Gain $2 and 1 popularity.</item>
+        <item>AS THE LADY POINTS AT YOU ACCUSINGLY, HAVE YOUR ANIMAL COMPANION POINT AT THE NEARBY HUNTER TO BREAK THE TENSION: Gain 2 popularity.</item>
+        <item>OFFER TO TRANSLATE FOR THE LOCALS AND THE SOLDIERS: Gain 2 oil and 1 popularity.</item>
+        <item>URGE THE PAIR OF LONG-LOST LOVERS TO REUNITE: Gain 2 popularity.</item>
+        <item>QUIETLY WATCH THE FISHERMAN FROM ACROSS THE LAKE: Gain 2 popularity.</item>
+        <item>STEER THE MECHS AWAY FROM THE ELECTRIC LINES: Gain 2 food and 1 popularity.</item>
+        <item>REASSURE THE YOUNG LAD THAT THE ARMY IS JUST PASSING THROUGH: Gain 1 combat card and 1 popularity.</item>
+
+        <item>TAKE A WALK IN THE WOODS WITH THE BRIGADE: Gain 2 power and 1 popularity.</item>
+        <item>USE YOUR MECH\’S HEADLIGHTS TO GUIDE THE AIRSHIP THROUGH THE THICK CLOUDS: Gain $2 and 1 popularity.</item>
+    </string-array>
+    <string-array name="encounter_commercial_option">
+        <item>PAY THE GIRL FOR HER PET GEESE—OR, AS YOU CALL THEM, DINNER: Pay $2 to gain 4 food.</item>
+        <item>GIVE THE VILLAGER A RIDE HOME ON YOUR HORSE: Pay $2 to gain 4 wood.</item>
+        <item>SERVE LAMB FOR DINNER TONIGHT: Pay $2 to gain 1 worker and 3 food.</item>
+        <item>HIRE A MERCENARY TO JOIN YOUR GROUP: Pay $3 to enlist a recruit.</item>
+        <item>BRIBE THE SOLDIERS FOR THEIR MECH: Pay $4 to deploy a mech.</item>
+        <item>START A BEAR CAVALRY BY ENLISTING THE ANIMAL: Pay $3 to enlist 1 recruit.</item>
+        <item>SIT DOWN AND ENTERTAIN THE TROOP WITH A GREATLY EMBELLISHED STORY:  Pay $2 to gain 1 upgrade.</item>
+        <item>STOCK UP ON OIL FOR THE JOURNEY AHEAD: Pay $2 to gain 4 oil.</item>
+        <item>HIRE THE INVENTOR AND FUND HIS CRAZY INVENTIONS: Pay $3 to build 1 structure.</item>
+        <item>PAY THE STRANDED MAN FOR HIS MECH: Pay $4 to deploy 1 mech.</item>
+
+        <item>PAY THE LADY TO SUPPLY YOUR EMPIRE WITH UNLIMITED APPLES: Pay $2 to gain 1 worker and 3 food.</item>
+        <item>HIRE THE BUILDERS FOR A DAY: Pay $3 to build 1 structure.</item>
+        <item>ENTER A BATTLE OF WITS &amp; LOSE ON PURPOSE: Pay $2 to gain 2 power and 2 popularity.</item>
+        <item>DISASSEMBLE THE MECH FOR SPARE PARTS: Pay $2 to gain any 3 resources.</item>
+        <item>TRADE WITH THE CARAVAN FOR A VARIETY OF GOODS: Pay $2 to gain any 3 resources.</item>
+        <item>DISLODGE A STUBBORN PLOW TO EARN A FAVOR FROM THE FARMERS: Pay $2 to gain 1 worker and any 2 resources.</item>
+        <item>HIRE THE SOLDIER TO RELIVE HIS GLORY DAYS: Pay $2 to gain 2 power &amp; 2 combat cards.</item>
+        <item>HERD THE BOARS AWAY FROM TOWN: Pay $2 to gain any 3 resources.</item>
+        <item>TRADE FOR A COW AND EAT STEAK FOR DINNER: Pay $2 to gain 4 food.</item>
+        <item>TOSS SOME COINS TO THE KIDS ON BEHALF OF YOUR FACTION: Pay $2 to gain 3 popularity.</item>
+
+        <item>SEIZE CONTROL OF THE MECH AND SCUTTLE INTO THE FOREST: Pay $4 to deploy 1 mech.</item>
+        <item>HAGGLE FOR SOME CHEAP ORE FROM THE MINE\’S OWNER: Pay $2 to gain 4 metal.</item>
+        <item>DELIVER CONSCRIPTION PAPERS AND PAYMENT: Pay $3 to enlist 1 recruit.</item>
+        <item>RELIEVE THE SOLDIERS OF SOME DEAD WEIGHT: Pay $2 to gain any 3 resources.</item>
+        <item>BRIBE THE RESEARCHERS TO GIVE YOU AN ADVANCED WEAPON: Pay $2 to gain 4 power.</item>
+        <item>BUY EVERYONE A ROUND OF DRINKS: Pay $2 to gain 3 popularity.</item>
+        <item>CON THE FARMER INTO SELLING YOU SOME SCRAP METAL UNDER MARKET VALUE: Pay $2 to gain 4 metal.</item>
+        <item>HIRE THE SOLDIER\’S FAMILY TO WORK FOR YOU: Pay $2 to gain a worker and any 2 resources.</item>
+        <item>PAY FOR THE SECRETS TO WONDROUS NEW TECHNOLOGY: Pay $3 to gain 1 upgrade.</item>
+        <item>PAY THE FARMER TO STRIP HIS MECH OF ALL ITS AMMO: Pay $2 to gain 4 power.</item>
+
+        <item>THROW DOWN YOUR BAGS AND RUSH INTO BATTLE: Pay $2 to gain 3 popularity.</item>
+        <item>STOCK UP ON AMMO AND MAPS IN THE TOWN: Pay $2 to gain 2 power and 2 combat cards.</item>
+        <item>LEARN HOW TO FIGHT WITH A KATANA: Pay $2 to gain 2 power and 2 combat cards.</item>
+        <item>ASK THE MECHS TO BLOW A HOLE IN THE MOUNTAINSIDE: Pay $2 to gain 4 metal.</item>
+        <item>PAY THE LADY TO USE PART OF HER FENCE AS KINDLING: Pay $2 to gain 4 wood.</item>
+        <item>MAKE A HIGH-STAKES BET AND WIN A MECH: Pay $4 to deploy 1 mech.</item>
+        <item>BUY A PLOT OF THIS VERDANT PLAIN: Pay $2 to gain 2 food and 2 oil.</item>
+        <item>BROKER A DEAL FOR THE OLD MECH: Pay $4 to deploy 1 mech.</item>
+        <item>GET AWKWARD COW-MILKING LESSONS FROM THE FARMERS: Pay $2 to gain 4 food.</item>
+        <item>MAKE A DEVOTION AT THE WAYWARD CHAPEL: Pay $2 to gain 3 popularity.</item>
+
+        <item>BRIBE THE SOLDIERS FOR BATTLE TACTICS: Pay $2 to gain 4 combat cards.</item>
+        <item>HITCH A RIDE INTO THE GREAT UNKNOWN: Pay $2 total to move any units from this encounter territory to any 1 empty adjacent land territory (even across rivers).</item>
+    </string-array>
+    <string-array name="encounter_unpopular_option">
+        <item>GLEEFULLY FEED THE GEESE TO YOUR ANIMAL AND CLAIM THE FARM AS YOUR OWN: Pay 2 popularity to build 1 structure.</item>
+        <item>THREATEN TO CREATE AN AVALANCHE WITH YOUR BAZOOKA: Pay 2 popularity to enlist 1 recruit.</item>
+        <item>USE THE SHEEP TO TRIP UP A PASSING MECH: Pay 3 popularity to deploy 1 mech.</item>
+        <item>PRACTICE SHOOTING AT THE UNSUSPECTING TARGETS: Pay 2 popularity to gain 4 metal.</item>
+        <item>WAIT UNTIL DUSK TO INVADE THE CAMP: Pay 2 popularity to gain 2 food and 2 metal.</item>
+        <item>HAVE A BEAR MEAT SANDWICH FOR LUNCH: Pay 2 popularity to gain 4 food.</item>
+        <item>AMBUSH THE SOLDIERS AT MIDNIGHT: Pay 2 popularity to gain 4 oil.</item>
+        <item>CONVINCE THE SOLDIER THAT REINDEER AREN\’T REAL:  Pay 2 popularity to enlist 1 recruit.</item>
+        <item>STEAL THE INVENTOR\’S FUEL SOURCE: Pay 2 popularity to gain 4 oil.</item>
+        <item>SHOUT NONSENSE UNTIL THE MECH COMES CLOSE ENOUGH FOR YOU TO ROB IT: Pay 2 popularity to gain $2 and any 2 resources.</item>
+
+        <item>BANISH THE LADY FROM HER FAMILY\’S LAND: Pay 2 popularity to build 1 structure.</item>
+        <item>THREATEN TO START A FOREST FIRE IF ONE OF THE LUMBERJACKS WON\’T WORK FOR YOU: Pay 2 popularity to gain 1 worker and 3 wood.</item>
+        <item>DRINK TOO MUCH AND RAID THE STOREHOUSE: Pay 3 popularity to gain any 5 resources.</item>
+        <item>STARTLE THE PIGS TO START A STAMPEDE: Pay 2 popularity to gain 1 worker and 3 metal.</item>
+        <item>PILLAGE THE TRAVELER\’S WARES AT GUNPOINT: Pay 3 popularity to gain any 5 resources.</item>
+        <item>SALT THE EARTH AND FORCE THE PEOPLE TO ENLIST: Pay 2 popularity to enlist 1 recruit.</item>
+        <item>STEAL THE SOLDIER\’S MECH WHILE HE\’S NAPPING:  Pay 3 popularity to gain 1 mech.</item>
+        <item>STEER THE BOARS INTO THE HELPLESS VILLAGE: Pay 2 popularity to gain 1 worker and 3 wood.</item>
+        <item>CONVINCE THE SOLDIERS THAT THE PATTERNS ON THE COWS CONTAIN CODED MAPS FROM THE ENEMY: Pay 2 popularity to gain 2 combat cards and 3 power.</item>
+        <item>CUT DOWN THE TREE TO SIGNAL AN END OF THE AGE OF INNOCENCE: Pay 2 popularity to gain 4 wood.</item>
+
+        <item>STEER THE COW UNDER THE MECH TO SEE WHAT HAPPENS: Pay 2 popularity to gain 2 combat cards and 3 power.</item>
+        <item>CUT THE PULLEY LOOSE WITHOUT HESITATION: Pay 2 popularity to build 1 structure.</item>
+        <item>STRONG-ARM THE FAMILY TO TAKE OVER THEIR FARM: Pay 2 popularity to gain 1 worker and 3 food.</item>
+        <item>DECEIVE THE SOLDIERS AND STEAL THEIR MECH: Pay 3 popularity to deploy 1 mech.</item>
+        <item>SPY ON THE RESEARCHERS\’ SECRETS AFTER PRETENDING TO BEFRIEND THEM: Pay 2 popularity to gain 1 upgrade and any 2 resources.</item>
+        <item>START A FIGHT AND SNEAK AWAY WITH THE KEYS TO THE TAVERN: Pay 2 popularity to build 1 structure.</item>
+        <item>STEAL THE NEWLY BUILT MECH WHEN IT\’S READY: Pay 3 popularity to deploy 1 mech.</item>
+        <item>THROW THE CRESTFALLEN FAMILY OUT OF THEIR HOUSE: Pay 2 popularity to build 1 structure.</item>
+        <item>STEAL THEIR FUEL AND ONE ROASTED KIELBASA: Pay 2 popularity to gain 3 oil and 1 food.</item>
+        <item>GIVE YOUR ANIMAL THE SIGNAL TO GO BERSERK: Pay 2 popularity to build 1 structure.</item>
+
+        <item>STUDY THE BATTLEFIELD FROM AFAR, PLOTTING YOUR OPPONENT\’S DEMISE: Pay 2 popularity to look at any one opponent\’s combat cards, then draw 3 combat cards.</item>
+        <item>INFILTRATE THE TOWN TO STEAL ITS INDUSTRIAL SECRETS: Pay 2 popularity to gain 1 upgrade and any 2 resources.</item>
+        <item>SPY ON THE FOREIGN MECHS TO LEARN NEW TECHNOLOGIES: Pay 2 popularity to gain 1 upgrade and 2 food.</item>
+        <item>STEER THE STRANGER WAY OFF COURSE, GIVING HIM NO OTHER CHOICE BUT TO JOIN YOUR TROOP: Pay 2 popularity to enlist 1 recruit.</item>
+        <item>SWITCH POSITIONS WITH THE LADY AND HER FAMILY: Pay 2 popularity to gain 1 worker and 3 oil.</item>
+        <item>INTENTIONALLY MISTRANSLATE TO RILE UP THE PEOPLE AND SEIZE CONTROL OF THE OIL REFINERY: Pay 2 popularity to gain 1 worker and 3 oil.</item>
+        <item>RE-ENLIST THE SOLDIER BEFORE HE GETS COMFORTABLE: Pay 2 popularity to enlist 1 recruit.</item>
+        <item>SMILE AS YOU PUSH THE MECH INTO THE LAKE: Pay 2 popularity to gain 4 food.</item>
+        <item>SIPHON ELECTRICITY TO TURBOCHARGE YOUR ARMAMENT: Pay 2 popularity to gain 5 power.</item>
+        <item>DISMEMBER A MECH AND USE THE METAL SHELL AS YOUR NEW HOME: Pay 2 popularity to build 1 structure.</item>
+
+        <item>LIE TO THE SOLDIERS ABOUT AN INCOMING WINTER STORM: Pay 3 popularity to enlist 1 recruit and gain 2 wood.</item>
+        <item>CAPSIZE THE AIRSHIP, JUST TO SEE WHAT FALLS OUT: Pay 3 popularity to gain any 5 resources.</item>
+    </string-array>
 </resources>

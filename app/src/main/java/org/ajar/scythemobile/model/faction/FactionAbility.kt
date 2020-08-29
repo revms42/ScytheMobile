@@ -1,7 +1,8 @@
 package org.ajar.scythemobile.model.faction
 
-import org.ajar.scythemobile.model.combat.CombatBoard
-import org.ajar.scythemobile.model.entity.*
+import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.old.model.combat.CombatBoard
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.map.SpecialFeature
@@ -16,7 +17,7 @@ enum class DefaultFactionAbility(override val abilityName: String, override val 
             "Your workers may move across rivers."
     ),
     COERCION(
-            "Coercion NYI",
+            "Coercion",
             "Once per turn, you may spend 1 combat card as if it were any 1 mapResource token."
     ),
     RELENTLESS(
@@ -63,7 +64,7 @@ class StandardMove : AbstractMovementRule(
     }
 
     override fun validStartingHex(hex: MapHex): Boolean {
-        return !hex.desc.mapFeature.contains(SpecialFeature.LAKE)
+        return !hex.data.mapFeature.contains(SpecialFeature.LAKE)
     }
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
@@ -77,7 +78,7 @@ class TunnelMove : AbstractMovementRule(
 ) {
 
     override fun validStartingHex(hex: MapHex): Boolean {
-        return hex.desc.mapFeature.contains(SpecialFeature.TUNNEL)
+        return hex.data.mapFeature.contains(SpecialFeature.TUNNEL)
     }
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
@@ -94,7 +95,7 @@ abstract class AbstractCombatRule(
         override val appliesDuringUncontested: Boolean = false
 ) : CombatRule {
 
-    override fun validCombatHex(player: Player, combatBoard: CombatBoard): Boolean = true
+    override fun validCombatHex(player: PlayerInstance, combatBoard: CombatBoard): Boolean = true
 }
 
 interface CombatRule : FactionAbility {
@@ -102,8 +103,8 @@ interface CombatRule : FactionAbility {
     val appliesForAttack: Boolean
     val appliesForDefense : Boolean
     val appliesDuringUncontested: Boolean
-    fun validCombatHex(player: Player, combatBoard: CombatBoard) : Boolean
-    fun applyEffect(player: Player, combatBoard: CombatBoard)
+    fun validCombatHex(player: PlayerInstance, combatBoard: CombatBoard) : Boolean
+    fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard)
 }
 
 abstract class AbstractMovementRule(
@@ -113,14 +114,14 @@ abstract class AbstractMovementRule(
 ) : MovementRule {
 
     override fun validStartingHex(hex: MapHex): Boolean = true
-    override fun canUse(player: Player) = true
+    override fun canUse(player: PlayerInstance) = true
     override fun validUnitType(unitType: UnitType): Boolean {
         return unitType == UnitType.MECH || unitType == UnitType.CHARACTER
     }
 }
 
 interface MovementRule : FactionAbility {
-    fun canUse(player: Player) : Boolean
+    fun canUse(player: PlayerInstance) : Boolean
     fun validStartingHex(hex: MapHex) : Boolean
     fun validEndingHexes(starting: MapHex) : List<MapHex?>?
     fun validUnitType(unitType: UnitType) : Boolean
