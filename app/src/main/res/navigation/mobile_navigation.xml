@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_upgrade">
+
+    <fragment
+        android:id="@+id/nav_upgrade"
+        android:name="org.ajar.scythemobile.ui.upgrade.UpgradeFragment"
+        android:label="@string/menu_upgrade"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_deploy"
+        android:name="org.ajar.scythemobile.ui.deploy.DeployFragment"
+        android:label="@string/menu_deploy"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_enlist"
+        android:name="org.ajar.scythemobile.ui.enlist.EnlistFragment"
+        android:label="@string/menu_enlist"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_build"
+        android:name="org.ajar.scythemobile.ui.build.BuildFragment"
+        android:label="@string/menu_build"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_trade"
+        android:name="org.ajar.scythemobile.ui.trade.TradeFragment"
+        android:label="@string/menu_trade"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_move"
+        android:name="org.ajar.scythemobile.ui.move.MoveFragment"
+        android:label="@string/menu_move"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_produce"
+        android:name="org.ajar.scythemobile.ui.produce.ProduceFragment"
+        android:label="@string/menu_produce"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_bolster"
+        android:name="org.ajar.scythemobile.ui.bolster.BolsterFragment"
+        android:label="@string/menu_bolster"
+        tools:layout="@layout/fragment_slideshow" />
+</navigation>

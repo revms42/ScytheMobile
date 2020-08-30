@@ -240,4 +240,21 @@
         <item>LIE TO THE SOLDIERS ABOUT AN INCOMING WINTER STORM: Pay 3 popularity to enlist 1 recruit and gain 2 wood.</item>
         <item>CAPSIZE THE AIRSHIP, JUST TO SEE WHAT FALLS OUT: Pay 3 popularity to gain any 5 resources.</item>
     </string-array>
+    <string name="title_activity_scythe_turn">ScytheTurn</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_upgrade">Upgrade</string>
+    <string name="menu_deploy">Deploy</string>
+    <string name="menu_enlist">Enlist</string>
+    <string name="menu_build">Build</string>
+
+    <string name="menu_trade">Trade</string>
+    <string name="menu_move">Move</string>
+    <string name="menu_produce">Produce</string>
+    <string name="menu_bolster">Bolster</string>
 </resources>
