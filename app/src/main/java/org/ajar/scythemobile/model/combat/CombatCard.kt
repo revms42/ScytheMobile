@@ -73,4 +73,7 @@ class CombatCardDeck(val twos: Int = 16, val threes: Int = 12, val fours: Int = 
     }
 }
 
-class CombatCard(val resourceData: ResourceData)
+class CombatCard(val resourceData: ResourceData) {
+    val power: Int
+        get() = resourceData.value
+}

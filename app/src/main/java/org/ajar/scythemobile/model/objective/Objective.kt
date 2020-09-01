@@ -79,9 +79,15 @@ class MultipleCriteriaObjective(override val id: Int, override var image: Int, p
     }
 }
 
-class MapFeatureControlObjective(override val id: Int, override var image: Int, private val feature: MapFeature, private val count: Int = 3) : Objective {
+class MapFeatureControlObjective(override val id: Int, override var image: Int, private val feature: TerrainFeature, private val count: Int = 3) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
-        return GameMap.currentMap!!.findAllMatching { mapFeature -> mapFeature == feature }.filter { it.playerInControl == playerInstance.playerId }.count() >= count
+        return GameMap.currentMap.findAllMatching { mapFeature -> mapFeature?.terrain == feature.ordinal }?.filter { it.playerInControl == playerInstance.playerId }?.count()?:0 >= count
+    }
+}
+
+class TunnelControlObjective(override val id: Int, override var image: Int, private val count: Int = 3) : Objective {
+    override fun evaluate(playerInstance: PlayerInstance): Boolean {
+        return GameMap.currentMap.findAllMatching { mapFeature -> mapFeature?.tunnel?: false }?.filter { it.playerInControl == playerInstance.playerId }?.count()?:0 >= count
     }
 }
 
@@ -187,11 +193,11 @@ class WolfAmongSheep(override val id: Int, override var image: Int) : Objective 
     }
 }
 
-class SurroundFeature(private val specialFeature: SpecialFeature, val hexes: Int, override val id: Int = 1, override var image: Int = -1) : Objective {
+class SurroundFeature(private val specialFeature: TerrainFeature, val hexes: Int, override val id: Int = 1, override var image: Int = -1) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
         val dao = ScytheDatabase.unitDao()!!
-        return GameMap.currentMap!!.findAllMatching { feature -> feature == specialFeature }.firstOrNull {
-            it.data.hexNeighbors.asArray().count { loc ->
+        return GameMap.currentMap.findAllMatching { feature -> feature?.terrain == specialFeature.ordinal }?.firstOrNull {
+            it.data.neighbors.asArray().count { loc ->
                 dao.getUnitsAtLocation(loc)?.firstOrNull { unitData -> UnitType.controlUnits.contains(UnitType.values()[unitData.type]) }?.owner == playerInstance.playerId
             } >= hexes
         } != null
@@ -222,7 +228,7 @@ class MonopolizeTheMarket(override val id: Int, override var image: Int) : Objec
 
 class HumanShield(override val id: Int, override var image: Int) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
-        return GameMap.currentMap!!.findAllMatching { mapFeature -> mapFeature == TerrainFeature.FACTORY }.first().data.hexNeighbors.asArray().firstOrNull { loc ->
+        return GameMap.currentMap.findAllMatching { mapFeature -> mapFeature?.terrain == TerrainFeature.FACTORY.ordinal }?.firstOrNull()?.data?.neighbors?.asArray()?.firstOrNull { loc ->
             ScytheDatabase.unitDao()!!.getUnitsAtLocation(loc)?.count { unit -> unit.type == UnitType.WORKER.ordinal && unit.owner == playerInstance.playerId }?: 0 >= 5
         } != null
     }
@@ -232,7 +238,9 @@ class DiversifyProduction(override val id: Int, override var image: Int) : Objec
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
         val types = SparseBooleanArray()
         return ScytheDatabase.unitDao()!!.getUnitsForPlayer(playerInstance.playerId, UnitType.WORKER.ordinal)?.firstOrNull { worker ->
-            GameMap.currentMap!!.findHexAtIndex(worker.loc)?.data?.mapFeature?.filterIsInstance<ResourceFeature>()?.firstOrNull()?.let { types[it.ordinal] = true }
+            GameMap.currentMap.findHexAtIndex(worker.loc)?.data?.terrain?.also {
+                if(it < 5) types[it] = true
+            }
             types.size() >= 5
         } != null
     }
@@ -240,8 +248,7 @@ class DiversifyProduction(override val id: Int, override var image: Int) : Objec
 
 class BuildLocalInfrastructure(override val id: Int, override var image: Int) : Objective {
     override fun evaluate(playerInstance: PlayerInstance): Boolean {
-        val forbidden = GameMap.currentMap!!.findHomeBase(playerInstance)?.data?.hexNeighbors!!.asArray()
-
+        val forbidden = GameMap.currentMap.findHomeBase(playerInstance)!!.data.neighbors.asArray()
 
         var forbiddenCount = 0
         var allowedCount = 0
@@ -350,7 +357,7 @@ sealed class PlayerQualityObjective(override val id: Int = -1, override var imag
 
 enum class DefaultObjective(private val wrappedObjective: Objective) : Objective {
     HIGHER_GROUND_ADVANTAGE(MapFeatureControlObjective(0, -1, TerrainFeature.MOUNTAIN)),
-    UNDERWORLD_ADVANTAGE(MapFeatureControlObjective(1, -1, SpecialFeature.TUNNEL)),
+    UNDERWORLD_ADVANTAGE(TunnelControlObjective(1, -1)),
     HARVEST_ADVANTAGE(MapFeatureControlObjective(2, -1, TerrainFeature.FIELD)),
     NORTHERN_ADVANTAGE(MapFeatureControlObjective(3, -1, TerrainFeature.TUNDRA)),
     KING_OF_THE_HILL(MultipleCriteriaObjective(4, -1, PlayerRankObjective.HighestPower(), MapFeatureControlObjective(-1, -1, TerrainFeature.FACTORY))),

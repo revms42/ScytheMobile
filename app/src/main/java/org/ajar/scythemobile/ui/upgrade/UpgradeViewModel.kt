@@ -1,8 +1,8 @@
-package org.ajar.scythemobile.ui.ui.home
+package org.ajar.scythemobile.ui.upgrade
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 
 class UpgradeViewModel : ViewModel() {
 

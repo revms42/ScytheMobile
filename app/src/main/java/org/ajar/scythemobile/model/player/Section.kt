@@ -2,6 +2,7 @@ package org.ajar.scythemobile.model.player
 
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.R
 import org.ajar.scythemobile.Resource
 import org.ajar.scythemobile.data.PlayerMatData
 import org.ajar.scythemobile.data.ScytheDatabase
@@ -11,6 +12,7 @@ import org.ajar.scythemobile.model.entity.UnitType
 class Section(val topRowAction: TopRowAction, val bottomRowAction: BottomRowAction)
 
 interface PlayerMatAction {
+    val fragmentNav: Int
     val playerInstance: PlayerInstance
     val playerMatData: PlayerMatData
         get() = playerInstance.playerData.playerMat
@@ -20,6 +22,8 @@ interface PlayerMatAction {
 
 sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerMatAction {
     class MoveOrGain(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
+        override val fragmentNav: Int = R.id.nav_move
+
         private val data = playerMatData.moveGainSection
 
         override val upgrades: Int
@@ -28,6 +32,8 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
         override val cost: List<Resource> = emptyList()
     }
     class Trade(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
+        override val fragmentNav: Int = R.id.nav_trade
+
         private val data = playerMatData.tradeSection
 
         override val upgrades: Int
@@ -36,6 +42,8 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
         override val cost: List<Resource> = listOf(CapitalResourceType.COINS)
     }
     class Produce(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
+        override val fragmentNav: Int = R.id.nav_produce
+
         private val data = playerMatData.produceSection
 
         override val upgrades: Int
@@ -52,6 +60,8 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
             }
     }
     class Bolster(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
+        override val fragmentNav: Int = R.id.nav_bolster
+
         private val data = playerMatData.bolsterSection
 
         override val upgrades: Int
@@ -63,6 +73,8 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
 
 sealed class BottomRowAction(override val playerInstance: PlayerInstance, val startingCost: Int, val costBottom: Int, val coins: Int) : PlayerMatAction {
     class Upgrade(playerInstance: PlayerInstance, startingCost: Int, costBottom: Int, coins: Int) : BottomRowAction(playerInstance, startingCost, costBottom, coins) {
+        override val fragmentNav: Int = R.id.nav_upgrade
+
         private val data = playerMatData.upgradeSection
 
         override val upgrades: Int
@@ -76,6 +88,8 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
             get() = (1..data.oilCost).map { NaturalResourceType.OIL }
     }
     class Deploy(playerInstance: PlayerInstance, startingCost: Int, costBottom: Int, coins: Int) : BottomRowAction(playerInstance, startingCost, costBottom, coins) {
+        override val fragmentNav: Int = R.id.nav_deploy
+
         private val data = playerMatData.deploySection
 
         override val upgrades: Int
@@ -89,6 +103,8 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
             get() = (1..data.metalCost).map { NaturalResourceType.METAL }
     }
     class Build(playerInstance: PlayerInstance, startingCost: Int, costBottom: Int, coins: Int) : BottomRowAction(playerInstance, startingCost, costBottom, coins) {
+        override val fragmentNav: Int = R.id.nav_build
+
         private val data = playerMatData.buildSection
 
         override val upgrades: Int
@@ -102,6 +118,8 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
             get() = (1..data.woodCost).map { NaturalResourceType.WOOD }
     }
     class Enlist(playerInstance: PlayerInstance, startingCost: Int, costBottom: Int, coins: Int) : BottomRowAction(playerInstance, startingCost, costBottom, coins) {
+        override val fragmentNav: Int = R.id.nav_enlist
+
         private val data = playerMatData.enlistSection
 
         override val upgrades: Int

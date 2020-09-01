@@ -1,12 +1,30 @@
 package org.ajar.scythemobile.data
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
 import org.ajar.scythemobile.NaturalResourceType
 
+private class Converters {
+    @TypeConverter
+    fun intListToString(value: List<Int>): String? {
+        val builder = StringBuilder()
+        value.forEach {
+            if(builder.isNotEmpty()) {
+                builder.append(",")
+            }
+            builder.append(it)
+        }
+        return builder.toString()
+    }
+
+    @TypeConverter
+    fun stringToIntList(value: String): List<Int>? {
+        return value.split(",").map { it.toInt() }
+    }
+}
+
 @Database(entities = [PlayerData::class, UnitData::class, ResourceData::class, MapHexData::class, TurnData::class], version = 1)
+@TypeConverters(Converters::class)
 abstract class ScytheDatabase : RoomDatabase() {
     abstract fun playerDao(): PlayerDataDAO
     abstract fun unitDao(): UnitDataDAO
@@ -53,7 +71,7 @@ abstract class ScytheDatabase : RoomDatabase() {
                 }
                 with(db.resourceDao()) {
                     this.getResources()?.map { resource ->
-                        resource.pos = -1
+                        resource.loc = -1
                         resource.owner = -1
                         resource
                     }?.toTypedArray()?.also { this.updateResource(*it) }

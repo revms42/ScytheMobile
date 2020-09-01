@@ -5,7 +5,7 @@ import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.old.model.combat.CombatBoard
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
-import org.ajar.scythemobile.model.map.SpecialFeature
+import org.ajar.scythemobile.model.map.TerrainFeature
 
 enum class DefaultFactionAbility(override val abilityName: String, override val description: String) : FactionAbility {
     MEANDER(
@@ -50,7 +50,7 @@ class Swim : AbstractMovementRule(
     }
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
-        return starting.matchingNeighborsIncludeRivers { it != SpecialFeature.LAKE }
+        return starting.matchingNeighborsIncludeRivers { it?.terrain != TerrainFeature.LAKE.ordinal }
     }
 
 }
@@ -64,11 +64,11 @@ class StandardMove : AbstractMovementRule(
     }
 
     override fun validStartingHex(hex: MapHex): Boolean {
-        return !hex.data.mapFeature.contains(SpecialFeature.LAKE)
+        return hex.data.terrain != TerrainFeature.LAKE.ordinal
     }
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
-        return starting.nonMatchingNeighborsNoRivers { it == SpecialFeature.LAKE }
+        return starting.nonMatchingNeighborsNoRivers { it?.terrain == TerrainFeature.LAKE.ordinal }
     }
 }
 
@@ -78,11 +78,11 @@ class TunnelMove : AbstractMovementRule(
 ) {
 
     override fun validStartingHex(hex: MapHex): Boolean {
-        return hex.data.mapFeature.contains(SpecialFeature.TUNNEL)
+        return hex.data.tunnel
     }
 
     override fun validEndingHexes(starting: MapHex): List<MapHex?>? {
-        return GameMap.currentMap?.findAllMatching { mapFeature -> mapFeature == SpecialFeature.TUNNEL}?.filter { mapHex -> mapHex != starting }
+        return GameMap.currentMap.findAllMatching { mapFeature -> mapFeature?.tunnel?: false}?.filter { mapHex -> mapHex != starting }
     }
 
 }

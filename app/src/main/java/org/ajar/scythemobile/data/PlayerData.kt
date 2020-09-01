@@ -14,8 +14,8 @@ data class PlayerData(
         @ColumnInfo(name = COLUMN_POPULARITY) var popularity: Int,
         @ColumnInfo(name = COLUMN_OBJECTIVE_1) var objectiveOne: Int,
         @ColumnInfo(name = COLUMN_OBJECTIVE_2) var objectiveTwo: Int,
-        @ColumnInfo(name = COLUMN_FACTION_MAT) @Embedded var factionMat: FactionMatData,
-        @ColumnInfo(name = COLUMN_PLAYER_MAT) @Embedded var playerMat: PlayerMatData,
+        @Embedded(prefix = PREFIX_FACTION_MAT) var factionMat: FactionMatData,
+        @Embedded(prefix = PREFIX_PLAYER_MAT) var playerMat: PlayerMatData,
         @ColumnInfo(name = COLUMN_STAR_UPGRADES) var starUpgrades: Int,
         @ColumnInfo(name = COLUMN_STAR_MECHS) var starMechs: Int,
         @ColumnInfo(name = COLUMN_STAR_STRUCTURES) var starStructures: Int,
@@ -31,7 +31,7 @@ data class PlayerData(
         @ColumnInfo(name = COLUMN_FACTORY_CARD) var factoryCard: Int?
 ) {
     companion object {
-        const val TABLE_NAME = "PlayerTable"
+        const val TABLE_NAME = "PlayerData"
 
         const val COLUMN_NAME = "name"
         const val COLUMN_INDEX = "ID"
@@ -42,8 +42,8 @@ data class PlayerData(
         const val COLUMN_OBJECTIVE_1 = "objective_1"
         const val COLUMN_OBJECTIVE_2 = "objective_2"
 
-        const val COLUMN_FACTION_MAT = "factionMat"
-        const val COLUMN_PLAYER_MAT = "playerMat"
+        const val PREFIX_FACTION_MAT = "fm_"
+        const val PREFIX_PLAYER_MAT = "pm"
 
         const val COLUMN_STAR_UPGRADES = "star_upgrade"
         const val COLUMN_STAR_MECHS = "star_mech"
@@ -83,27 +83,27 @@ data class FactionMatData(
 data class PlayerMatData(
         @ColumnInfo(name = COLUMN_MAT_ID) var matId: Int,
         @ColumnInfo(name = COLUMN_LAST_SECTION) var lastSection: Int,
-        @ColumnInfo(name = COLUMN_TRADE) @Embedded var tradeSection: TradeSectionData,
-        @ColumnInfo(name = COLUMN_PRODUCE) @Embedded var produceSection: ProduceSectionData,
-        @ColumnInfo(name = COLUMN_BOLSTER) @Embedded var bolsterSection: BolsterSectionData,
-        @ColumnInfo(name = COLUMN_MOVE_GAIN) @Embedded var moveGainSection: MoveGainSectionData,
-        @ColumnInfo(name = COLUMN_UPGRADE) @Embedded var upgradeSection: UpgradeSectionData,
-        @ColumnInfo(name = COLUMN_DEPLOY) @Embedded var deploySection: DeploySectionData,
-        @ColumnInfo(name = COLUMN_BUILD) @Embedded var buildSection: BuildSectionData,
-        @ColumnInfo(name = COLUMN_ENLIST) @Embedded var enlistSection: EnlistSectionData
+        @Embedded(prefix = PREFIX_TRADE) var tradeSection: TradeSectionData,
+        @Embedded(prefix =  PREFIX_PRODUCE) var produceSection: ProduceSectionData,
+        @Embedded(prefix =  PREFIX_BOLSTER) var bolsterSection: BolsterSectionData,
+        @Embedded(prefix =  PREFIX_MOVE_GAIN) var moveGainSection: MoveGainSectionData,
+        @Embedded(prefix =  PREFIX_UPGRADE) var upgradeSection: UpgradeSectionData,
+        @Embedded(prefix =  PREFIX_DEPLOY) var deploySection: DeploySectionData,
+        @Embedded(prefix =  PREFIX_BUILD) var buildSection: BuildSectionData,
+        @Embedded(prefix =  PREFIX_ENLIST) var enlistSection: EnlistSectionData
 ) {
 
     companion object {
         const val COLUMN_MAT_ID = "player_mat_id"
         const val COLUMN_LAST_SECTION = "last_section"
-        const val COLUMN_TRADE = "trade_section"
-        const val COLUMN_PRODUCE = "produce_section"
-        const val COLUMN_BOLSTER = "bolster_section"
-        const val COLUMN_MOVE_GAIN = "move_gain_section"
-        const val COLUMN_UPGRADE = "upgrade_section"
-        const val COLUMN_DEPLOY = "deploy_section"
-        const val COLUMN_BUILD = "build_section"
-        const val COLUMN_ENLIST = "enlist_section"
+        const val PREFIX_TRADE = "trade_section"
+        const val PREFIX_PRODUCE = "produce_section"
+        const val PREFIX_BOLSTER = "bolster_section"
+        const val PREFIX_MOVE_GAIN = "move_gain_section"
+        const val PREFIX_UPGRADE = "upgrade_section"
+        const val PREFIX_DEPLOY = "deploy_section"
+        const val PREFIX_BUILD = "build_section"
+        const val PREFIX_ENLIST = "enlist_section"
     }
 }
 

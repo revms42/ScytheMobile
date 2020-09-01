@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.support.v4.app.Fragment
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import org.ajar.scythemobile.R
 
 class BolsterFragment : Fragment() {
@@ -20,7 +20,7 @@ class BolsterFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         bolsterViewModel =
-                ViewModelProviders.of(this).get(BolsterViewModel::class.java)
+                ViewModelProvider(requireActivity()).get(BolsterViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
         bolsterViewModel.text.observe(viewLifecycleOwner, Observer {

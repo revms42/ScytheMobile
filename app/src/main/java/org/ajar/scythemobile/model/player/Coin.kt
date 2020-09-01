@@ -11,11 +11,11 @@ class Bank(val circulation: Int = 495) {
 
     fun init() {
         vault.addAll((0..circulation).map { Coin(ResourceData(0, -1, -1, CapitalResourceType.COINS.id)) })
-        ScytheDatabase.instance!!.resourceDao().addResource(*vault.map { it.resourceData }.toTypedArray())
+        ScytheDatabase.resourceDao()?.addResource(*vault.map { it.resourceData }.toTypedArray())
     }
 
     private fun update(coin: Coin) {
-        ScytheDatabase.instance!!.resourceDao().updateResource(coin.resourceData)
+        ScytheDatabase.resourceDao()?.updateResource(coin.resourceData)
     }
 
     fun withDrawCoin(playerInstance: PlayerInstance): Coin? {
@@ -39,7 +39,7 @@ class Bank(val circulation: Int = 495) {
         val currentBank: Bank
             get() {
                 if(_currentBank  == null) {
-                    val coins = ScytheDatabase.instance!!.resourceDao().getResourcesOfType(CapitalResourceType.COINS.id)
+                    val coins = ScytheDatabase.resourceDao()?.getResourcesOfType(CapitalResourceType.COINS.id)
 
                     _currentBank = Bank()
                     if(coins != null && coins.isNotEmpty()) {

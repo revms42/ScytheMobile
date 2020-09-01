@@ -33,7 +33,7 @@ sealed class EncounterAction {
                                     list
                                 }
                             }?.map { resource ->
-                                resource.pos = unit.pos
+                                resource.loc = unit.pos
                                 resource
                             }?.toTypedArray()!!
                     )

@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.ajar.scythemobile.model.map.Direction
 
-@Entity
+@Entity(tableName = MapHexData.TABLE_NAME)
 data class MapHexData(
         @PrimaryKey(autoGenerate = false) @ColumnInfo(name = COLUMN_LOC) val loc: Int,
         @ColumnInfo(name = COLUMN_TERRAIN_FEATURE) val terrain: Int,
@@ -19,12 +19,10 @@ data class MapHexData(
         @ColumnInfo(name = COLUMN_HOMEBASE) val faction: Int? = null
 ) {
     companion object {
-        const val TABLE_NAME = "map"
+        const val TABLE_NAME = "Map"
         const val COLUMN_LOC = "loc"
 
         const val COLUMN_TERRAIN_FEATURE = "feature_terrain"
-
-
 
         const val COLUMN_ENCOUNTER = "encounter"
         const val COLUMN_TUNNEL = "tunnel"
@@ -65,6 +63,10 @@ data class Neighbors (
             Direction.SW -> sw
             Direction.W -> w
         }
+    }
+
+    fun asArray(): Array<Int> {
+        return arrayOf(nw, ne, e, se, sw, w)
     }
 
     companion object {

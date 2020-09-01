@@ -14,7 +14,6 @@ import org.ajar.scythemobile.model.faction.FactionMat
 import org.ajar.scythemobile.model.player.*
 import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
-import org.ajar.scythemobile.old.model.entity.Player
 import org.ajar.scythemobile.turn.TurnHolder
 
 class PlayerInstance private constructor(

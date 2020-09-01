@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.support.v4.app.Fragment
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.ui.move.MoveViewModel
 
@@ -21,7 +21,7 @@ class TradeFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         buildViewModel =
-                ViewModelProviders.of(this).get(MoveViewModel::class.java)
+                ViewModelProvider(requireActivity()).get(MoveViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
         buildViewModel.text.observe(viewLifecycleOwner, Observer {

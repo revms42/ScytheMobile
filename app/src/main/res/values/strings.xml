@@ -248,6 +248,8 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
+    <string name="menu_start">Upgrade</string>
+
     <string name="menu_upgrade">Upgrade</string>
     <string name="menu_deploy">Deploy</string>
     <string name="menu_enlist">Enlist</string>
@@ -257,4 +259,7 @@
     <string name="menu_move">Move</string>
     <string name="menu_produce">Produce</string>
     <string name="menu_bolster">Bolster</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

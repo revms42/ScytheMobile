@@ -1,9 +1,10 @@
 package org.ajar.scythemobile.turn
 
 import org.ajar.scythemobile.data.*
+import org.ajar.scythemobile.model.PlayerInstance
 
 object TurnHolder {
-    private val turnEntry: TurnData
+    val currentTurn: TurnData
         get() {
             return ScytheDatabase.turnDao()?.getCurrentTurn().let { currentTurn ->
                 currentTurn?.let { turn ->
@@ -26,6 +27,9 @@ object TurnHolder {
     private val cachedPlayerUpdates: HashMap<Int,PlayerData> = HashMap()
     private val cachedResourceUpdates: HashMap<Int,ResourceData> = HashMap()
     private val cachedEncounterUpdates: HashMap<Int,MapHexData> = HashMap()
+
+    val currentPlayer: PlayerInstance
+        get() = PlayerInstance.loadPlayer(currentTurn.playerId)
 
     fun updatePlayer(vararg playerData: PlayerData) {
         playerData.forEach { cachedPlayerUpdates[it.id] = it }
@@ -52,7 +56,7 @@ object TurnHolder {
         cachedResourceUpdates.clear()
         cachedEncounterUpdates.clear()
 
-        if(turnEntry.combatOne?.combatResolved != false && turnEntry.combatTwo?.combatResolved != false && turnEntry.combatThree?.combatResolved != false) {
+        if(currentTurn.combatOne?.combatResolved != false && currentTurn.combatTwo?.combatResolved != false && currentTurn.combatThree?.combatResolved != false) {
             ScytheDatabase.unitDao()?.updateUnit(*cachedMoves.values.toTypedArray())
             cachedMoves.clear()
         }

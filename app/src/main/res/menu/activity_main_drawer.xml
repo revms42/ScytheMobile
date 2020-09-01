@@ -5,16 +5,40 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_start"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/menu_start" />
+        <item
             android:id="@+id/nav_upgrade"
             android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
+            android:title="@string/menu_upgrade" />
         <item
             android:id="@+id/nav_deploy"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:title="@string/menu_deploy" />
         <item
             android:id="@+id/nav_enlist"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:title="@string/menu_enlist" />
+        <item
+            android:id="@+id/nav_bolster"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="@string/menu_bolster" />
+        <item
+            android:id="@+id/nav_build"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="@string/menu_build" />
+        <item
+            android:id="@+id/nav_move"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="@string/menu_move" />
+        <item
+            android:id="@+id/nav_produce"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="@string/menu_produce" />
+        <item
+            android:id="@+id/nav_trade"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="@string/menu_trade" />
     </group>
 </menu>
