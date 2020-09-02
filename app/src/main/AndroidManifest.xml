@@ -17,8 +17,6 @@
         <meta-data
             android:name="com.google.android.actions"
             android:resource="@xml/actions" />
-
-        <activity android:name=".ui.combat.CombatActivity" />
     </application>
 
 </manifest>
