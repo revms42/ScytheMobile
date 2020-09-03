@@ -8,8 +8,23 @@ open class MapHex(val data: MapHexData) {
 
     val playerInControl : Int?
         get() {
-            return ScytheDatabase.unitDao()?.getUnitsAtLocation(data.loc)?.firstOrNull { UnitType.controlUnits.contains(UnitType.valueOf(it.type)) }?.owner
+            return if(provokesCombat) {
+                ScytheDatabase.unitDao()?.getUnitsAtLocation(data.loc)?.firstOrNull { UnitType.provokeUnits.contains(UnitType.valueOf(it.type)) }?.owner
+            } else {
+                ScytheDatabase.unitDao()?.getUnitsAtLocation(data.loc)?.firstOrNull { UnitType.controlUnits.contains(UnitType.valueOf(it.type)) }?.owner
+            }
         }
+
+    val provokesCombat : Boolean
+        get() {
+            return ScytheDatabase.unitDao()?.getUnitsAtLocation(data.loc)?.any { UnitType.provokeUnits.contains(UnitType.valueOf(it.type)) }?: false
+        }
+
+    val loc: Int
+        get() = data.loc
+
+    val terrain: TerrainFeature
+        get() = TerrainFeature.valueOf(data.terrain)
 
     private fun matchingNeighbors(riversBlock: Boolean, predicate: (MapHexData?) -> Boolean) : List<MapHex?> {
         return Direction.values().map { direction ->  neighbor(direction, riversBlock) }.filter { predicate(it?.data) }

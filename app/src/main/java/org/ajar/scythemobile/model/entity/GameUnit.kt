@@ -75,6 +75,7 @@ enum class UnitType {
     companion object {
         val structures = listOf(MILL, MONUMENT, MINE, ARMORY)
         val controlUnits = listOf(CHARACTER, WORKER, MECH, AIRSHIP, ARMORY, MILL, MINE, ARMORY, MONUMENT)
+        val provokeUnits = listOf(CHARACTER, WORKER, MECH)
 
         fun valueOf(index: Int): UnitType {
             return values()[index]
@@ -85,8 +86,14 @@ enum class UnitType {
 open class GameUnit(val unitData: UnitData, val controllingPlayer: PlayerInstance, var image: Int = -1) : ResourceHolder {
     override val heldMapResources: MutableList<Int> = ArrayList()
 
-    val pos: Int
+    var pos: Int
         get() = unitData.loc
+        set(value) {
+            unitData.loc = value
+        }
+
+    val id: Int
+        get() = unitData.id
 
     val type: UnitType
         get() = UnitType.values()[unitData.type]

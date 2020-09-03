@@ -2,6 +2,9 @@ package org.ajar.scythemobile.turn
 
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.entity.GameUnit
+import org.ajar.scythemobile.model.map.GameMap
+import java.lang.IllegalArgumentException
 
 object TurnHolder {
     val currentTurn: TurnData
@@ -30,6 +33,33 @@ object TurnHolder {
 
     val currentPlayer: PlayerInstance
         get() = PlayerInstance.loadPlayer(currentTurn.playerId)
+
+    fun addCombat(hex: Int, gameUnits: List<Int>) {
+        when {
+            currentTurn.combatOne == null -> {
+                currentTurn.combatOne = createCombatRecord(hex, gameUnits)
+            }
+            currentTurn.combatOne != null && currentTurn.combatOne!!.hex == hex -> {
+                currentTurn.combatOne!!.attackingUnits = currentTurn.combatOne!!.attackingUnits + gameUnits
+            }
+            currentTurn.combatTwo == null -> {
+                currentTurn.combatTwo = createCombatRecord(hex, gameUnits)
+            }
+            currentTurn.combatTwo != null && currentTurn.combatTwo!!.hex == hex -> {
+                currentTurn.combatTwo!!.attackingUnits = currentTurn.combatTwo!!.attackingUnits + gameUnits
+            }
+            currentTurn.combatThree == null -> {
+                currentTurn.combatThree = createCombatRecord(hex, gameUnits)
+            }
+            currentTurn.combatThree != null && currentTurn.combatThree!!.hex == hex -> {
+                currentTurn.combatThree!!.attackingUnits = currentTurn.combatThree!!.attackingUnits + gameUnits
+            }
+            else -> throw IllegalArgumentException("There should never be more than three combats in a turn!")
+        }
+    }
+
+    private fun createCombatRecord(hex: Int, gameUnits: List<Int>) : CombatRecord =
+            CombatRecord(hex, gameUnits, GameMap.currentMap.unitsAtHex(hex).filter { it.owner != currentPlayer.playerId }.map { it.id } )
 
     fun updatePlayer(vararg playerData: PlayerData) {
         playerData.forEach { cachedPlayerUpdates[it.id] = it }

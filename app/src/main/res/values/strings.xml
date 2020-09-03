@@ -266,4 +266,6 @@
     <string name="menu_start_combat">Start Combat</string>
     <string name="menu_answer_combat">Answer Combat</string>
     <string name="menu_resolve_combat">Resolve Combat</string>
+
+    <string name="menu_choice_mech">Choose Mech To Deploy</string>
 </resources>

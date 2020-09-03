@@ -2,6 +2,7 @@ package org.ajar.scythemobile.model.map
 
 import org.ajar.scythemobile.data.MapHexData
 import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
 
 class GameMap(list: List<MapHexData>) {
@@ -55,6 +56,10 @@ class GameMap(list: List<MapHexData>) {
 
     fun findHomeBase(id: Int) : MapHex? {
         return ScytheDatabase.playerDao()?.getPlayer(id)?.let { findFactionBase(it.factionMat.matId) }
+    }
+
+    fun unitsAtHex(hex: Int) : List<UnitData> {
+        return ScytheDatabase.unitDao()?.getUnitsAtLocation(hex)?: emptyList()
     }
 
     companion object {

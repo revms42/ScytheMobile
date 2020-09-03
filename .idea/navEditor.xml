@@ -79,6 +79,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="deepLink">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                           </map>
                         </option>
                       </LayoutPositions>
@@ -92,6 +97,15 @@
                             <option name="x" value="-195" />
                             <option name="y" value="962" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_nav_bolster_to_nav_pass_off">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>
@@ -133,6 +147,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_nav_deploy_to_nav_mech_deploy_choice">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                           </map>
                         </option>
                       </LayoutPositions>
@@ -149,6 +168,11 @@
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_nav_encounter_to_nav_mech_deploy_choice">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_nav_encounter_to_nav_move">
                               <value>
                                 <LayoutPositions />
@@ -192,6 +216,32 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="nav_mech_deploy_choice">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="909" />
+                            <option name="y" value="-648" />
+                          </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_nav_mech_deploy_choice_to_nav_deploy">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_mech_deploy_choice_to_nav_encounter">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="nav_move">
                     <value>
                       <LayoutPositions>
@@ -204,6 +254,11 @@
                         <option name="myPositions">
                           <map>
                             <entry key="action_nav_move_to_nav_encounter">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_move_to_nav_pass_off">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -227,6 +282,30 @@
                             <option name="y" value="504" />
                           </Point>
                         </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_nav_pass_off_to_nav_build">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_pass_off_to_nav_deploy">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_pass_off_to_nav_enlist">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_pass_off_to_nav_upgrade">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
                       </LayoutPositions>
                     </value>
                   </entry>
@@ -238,6 +317,15 @@
                             <option name="x" value="-191" />
                             <option name="y" value="656" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_nav_produce_to_nav_pass_off">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>
@@ -254,6 +342,11 @@
                         <option name="myPositions">
                           <map>
                             <entry key="action_nav_resolve_combat_to_nav_move">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="deepLink2">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -328,6 +421,15 @@
                             <option name="x" value="-184" />
                             <option name="y" value="347" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_nav_trade_to_nav_pass_off">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>

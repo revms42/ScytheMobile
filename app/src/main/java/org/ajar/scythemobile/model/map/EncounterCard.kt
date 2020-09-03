@@ -8,6 +8,7 @@ import org.ajar.scythemobile.R
 import org.ajar.scythemobile.Resource
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.turn.TurnHolder
@@ -24,32 +25,8 @@ sealed class EncounterAction {
     class GiveResource(private val resourceType: Resource, private val resourceCount: Int) : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
             when(resourceType) {
-                is NaturalResourceType -> {
-                    TurnHolder.updateResource(
-                            *ScytheDatabase.resourceDao()?.getUnclaimedResourcesOfType(resourceType.id)?.let { list ->
-                                if(list.size >= resourceCount) {
-                                    list.subList(0, resourceCount)
-                                } else {
-                                    list
-                                }
-                            }?.map { resource ->
-                                resource.loc = unit.pos
-                                resource
-                            }?.toTypedArray()!!
-                    )
-                }
-                CapitalResourceType.POWER -> {
-                    unit.controllingPlayer.power += resourceCount
-                }
-                CapitalResourceType.COINS -> {
-                    unit.controllingPlayer.drawCoins(resourceCount)
-                }
-                CapitalResourceType.CARDS -> {
-                    CombatCardDeck.currentDeck.drawCard(unit.controllingPlayer)
-                }
-                CapitalResourceType.POPULARITY -> {
-                    unit.controllingPlayer.popularity += resourceCount
-                }
+                is NaturalResourceType -> ScytheAction.GiveNaturalResource(unit.pos, resourceType, resourceCount).perform()
+                is CapitalResourceType -> ScytheAction.GiveCapitalResourceAction(unit.controllingPlayer, resourceType, resourceCount).perform()
             }
         }
     }
@@ -60,7 +37,7 @@ sealed class EncounterAction {
     }
     class DeployWorker : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            ScytheAction.GiveWorkerAction(unit.pos, unit.controllingPlayer, 1)
         }
     }
     class EnlistRecruit : EncounterAction() {

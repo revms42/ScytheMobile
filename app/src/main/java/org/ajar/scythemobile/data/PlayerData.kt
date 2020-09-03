@@ -65,14 +65,22 @@ data class PlayerData(
 
 data class FactionMatData(
         @ColumnInfo(name = COLUMN_MAT_ID) var matId: Int,
-        @ColumnInfo(name = COLUMN_UPGRADE_ONE) var upgradeOne: Boolean,
-        @ColumnInfo(name = COLUMN_UPGRADE_TWO) var upgradeTwo: Boolean,
-        @ColumnInfo(name = COLUMN_UPGRADE_THREE) var upgradeThree: Boolean,
-        @ColumnInfo(name = COLUMN_UPGRADE_FOUR) var upgradeFour: Boolean
+        @ColumnInfo(name = COLUMN_ENLIST_POWER) var enlistPower: Boolean = false,
+        @ColumnInfo(name = COLUMN_ENLIST_COINS) var enlistCoins: Boolean = false,
+        @ColumnInfo(name = COLUMN_ENLIST_POP) var enlistPop: Boolean = false,
+        @ColumnInfo(name = COLUMN_ENLIST_CARDS) var enlistCards: Boolean = false,
+        @ColumnInfo(name = COLUMN_UPGRADE_ONE) var upgradeOne: Boolean = false,
+        @ColumnInfo(name = COLUMN_UPGRADE_TWO) var upgradeTwo: Boolean = false,
+        @ColumnInfo(name = COLUMN_UPGRADE_THREE) var upgradeThree: Boolean = false,
+        @ColumnInfo(name = COLUMN_UPGRADE_FOUR) var upgradeFour: Boolean = false
 ) {
 
     companion object {
         const val COLUMN_MAT_ID = "faction_mat_id"
+        const val COLUMN_ENLIST_POWER = "enlist_pow"
+        const val COLUMN_ENLIST_COINS = "enlist_coins"
+        const val COLUMN_ENLIST_POP = "enlist_pop"
+        const val COLUMN_ENLIST_CARDS = "enlist_cards"
         const val COLUMN_UPGRADE_ONE = "upgrade_one"
         const val COLUMN_UPGRADE_TWO = "upgrade_two"
         const val COLUMN_UPGRADE_THREE = "upgrade_three"
@@ -112,7 +120,7 @@ data class ProduceSectionData(var territories: Int)
 data class BolsterSectionData(var powerGain: Int, var cardsGain: Int)
 data class MoveGainSectionData(var coinsGained: Int, var unitsMoved: Int)
 
-data class UpgradeSectionData(var oilCost: Int, val recruited: Boolean)
-data class DeploySectionData(var metalCost: Int, val recruited: Boolean)
-data class BuildSectionData(var woodCost: Int, val recruited: Boolean)
-data class EnlistSectionData(var foodCost: Int, val recruited: Boolean)
+data class UpgradeSectionData(var oilCost: Int, var recruited: Boolean)
+data class DeploySectionData(var metalCost: Int, var recruited: Boolean)
+data class BuildSectionData(var woodCost: Int, var recruited: Boolean)
+data class EnlistSectionData(var foodCost: Int, var recruited: Boolean)

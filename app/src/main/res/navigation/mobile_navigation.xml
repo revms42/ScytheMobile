@@ -51,6 +51,9 @@
         <action
             android:id="@+id/action_nav_encounter_to_nav_move"
             app:destination="@id/nav_move" />
+        <action
+            android:id="@+id/action_nav_encounter_to_nav_mech_deploy_choice"
+            app:destination="@id/nav_mech_deploy_choice" />
     </fragment>
 
     <fragment
@@ -113,6 +116,9 @@
         <action
             android:id="@+id/action_nav_deploy_to_nav_end"
             app:destination="@id/nav_end" />
+        <action
+            android:id="@+id/action_nav_deploy_to_nav_mech_deploy_choice"
+            app:destination="@id/nav_mech_deploy_choice" />
     </fragment>
 
     <fragment
@@ -179,5 +185,24 @@
         <action
             android:id="@+id/action_nav_bolster_to_nav_pass_off"
             app:destination="@id/nav_pass_off" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_mech_deploy_choice"
+        android:name="org.ajar.scythemobile.ui.choose.MechDeployChoiceFragment"
+        android:label="@string/menu_choice_mech"
+        tools:layout="@layout/fragment_slideshow">
+        <action
+            android:id="@+id/action_nav_mech_deploy_choice_to_nav_encounter"
+            app:destination="@id/nav_encounter" />
+        <action
+            android:id="@+id/action_nav_mech_deploy_choice_to_nav_deploy"
+            app:destination="@id/nav_deploy" />
+        <argument
+            android:name="deployFromUnitType"
+            app:argType="integer" />
+        <argument
+            android:name="requirePayment"
+            app:argType="boolean" />
     </fragment>
 </navigation>

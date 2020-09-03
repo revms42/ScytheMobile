@@ -31,14 +31,22 @@ class PlayerInstance private constructor(
     var popularity: Int
         get() = playerData.popularity
         set(value) {
-            playerData.popularity = value
+            playerData.popularity = when {
+                value > 18 -> 18
+                value < 0 -> 0
+                else -> value
+            }
             TurnHolder.updatePlayer(playerData)
         }
 
     var power: Int
         get() = playerData.power
         set(value) {
-            playerData.power = value
+            playerData.power = when {
+                value > 16 -> 16
+                value < 0 -> 0
+                else -> value
+            }
             TurnHolder.updatePlayer(playerData)
         }
 
@@ -158,7 +166,7 @@ class PlayerInstance private constructor(
             val playerData = PlayerData(0, playerName, playerMat!!.initialCoins, factionMat!!.initialPower, playerMat.initialPopularity,
                     ObjectiveCardDeck.currentDeck.drawCard().id,
                     ObjectiveCardDeck.currentDeck.drawCard().id,
-                    FactionMatData(factionMat.id, upgradeOne = false, upgradeTwo = false, upgradeThree = false, upgradeFour = false),
+                    FactionMatData(factionMat.id),
                     playerMat.createData(),
                     0,
                     0,

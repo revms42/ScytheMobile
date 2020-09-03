@@ -18,6 +18,10 @@ interface FactionMat {
     val color: Int
     val initialPower: Int
     val initialCombatCards: Int
+    val enlistPower: Int
+    val enlistCoins: Int
+    val enlistCards: Int
+    val enlistPopularity: Int
     val symbol: Int
     val matImage: Int
     val encounterSelections: Int
@@ -65,7 +69,11 @@ enum class StandardFactionMat(
         override val initialCombatCards: Int,
         override val symbol: Int,
         override val matImage: Int,
-        override val encounterSelections: Int = 1
+        override val encounterSelections: Int = 1,
+        override val enlistPower: Int = 2,
+        override val enlistCoins: Int = 2,
+        override val enlistCards: Int = 2,
+        override val enlistPopularity: Int = 2
 ) : FactionMat {
     NORDIC("Nordic Kingdoms", CharacterDescription.BJORN, DefaultFactionAbility.SWIM, 0x000000FF, 4, 1, 0, 0) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
@@ -198,6 +206,38 @@ class FactionMatInstance(val factionMat: FactionMat, val factionMatData: Faction
                 else -> false
             }
         }
+
+    fun unlockFactionAbility(ability: FactionAbility) : Boolean {
+        return factionMat.mechAbilities.indexOf(ability).takeIf { it > -1 }?.let {
+            when(it) {
+                0 -> factionMatData.upgradeOne = true
+                1 -> factionMatData.upgradeTwo = true
+                2 -> factionMatData.upgradeThree = true
+                3 -> factionMatData.upgradeFour = true
+            }
+            true
+        }?: false
+    }
+
+    fun getEnlistmentBonus(capitalResourceType: CapitalResourceType) : Int {
+        return when(capitalResourceType) {
+            CapitalResourceType.CARDS -> factionMat.enlistCards
+            CapitalResourceType.COINS -> factionMat.enlistCoins
+            CapitalResourceType.POPULARITY -> factionMat.enlistPopularity
+            CapitalResourceType.POWER -> factionMat.enlistPower
+        }
+    }
+
+    fun getEnlistmentBonusesAvailabe() : List<CapitalResourceType> {
+        return CapitalResourceType.values().filter {
+            !when(it) {
+                CapitalResourceType.CARDS -> factionMatData.enlistCards
+                CapitalResourceType.COINS -> factionMatData.enlistCoins
+                CapitalResourceType.POPULARITY -> factionMatData.enlistPop
+                CapitalResourceType.POWER -> factionMatData.enlistPower
+            }
+        }
+    }
 
     fun getMovementAbilities(type: UnitType) : Collection<MovementRule> {
         return unlockedFactionAbilities.filterIsInstance<MovementRule>().filter { it.validUnitType(type) } + standardMovementRules
