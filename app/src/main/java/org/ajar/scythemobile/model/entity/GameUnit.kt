@@ -83,9 +83,7 @@ enum class UnitType {
     }
 }
 
-open class GameUnit(val unitData: UnitData, val controllingPlayer: PlayerInstance, var image: Int = -1) : ResourceHolder {
-    override val heldMapResources: MutableList<Int> = ArrayList()
-
+open class GameUnit(val unitData: UnitData, val controllingPlayer: PlayerInstance, var image: Int = -1) {
     var pos: Int
         get() = unitData.loc
         set(value) {

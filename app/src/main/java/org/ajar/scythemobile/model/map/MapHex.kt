@@ -3,6 +3,7 @@ package org.ajar.scythemobile.model.map
 import org.ajar.scythemobile.data.MapHexData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.turn.TurnHolder
 
 open class MapHex(val data: MapHexData) {
 
@@ -25,6 +26,13 @@ open class MapHex(val data: MapHexData) {
 
     val terrain: TerrainFeature
         get() = TerrainFeature.valueOf(data.terrain)
+
+    var encounter: EncounterCard?
+        get() = data.encounter?.let { EncounterDeck.getCard(it) }
+        set(value) {
+            data.encounter = value?.id
+            TurnHolder.updateEncounter(data)
+        }
 
     private fun matchingNeighbors(riversBlock: Boolean, predicate: (MapHexData?) -> Boolean) : List<MapHex?> {
         return Direction.values().map { direction ->  neighbor(direction, riversBlock) }.filter { predicate(it?.data) }

@@ -268,4 +268,20 @@
     <string name="menu_resolve_combat">Resolve Combat</string>
 
     <string name="menu_choice_mech">Choose Mech To Deploy</string>
+    <string name="menu_choice_enlist">Choose Enlistment</string>
+    <string name="menu_choice_build">Choose Structure</string>
+    <string name="menu_choice_upgrade">Choose Sections to Upgrade</string>
+
+    <string name="menu_choice_res_payment">Choose Payment</string>
+    <string name="menu_choose_resources">Choose Resources</string>
+    <string name="menu_look_at_cards">Choose an Opponent to Look At</string>
+
+    <!-- Arguement Strings -->
+    <string name="arg_return_nav">returnNav</string>
+    <string name="arg_cost_paid">paid</string>
+    <string name="arg_require_payment">requirePayment</string>
+    <string name="arg_encounter_resolved">encounterResolved</string>
+    <string name="arg_amount">amount</string>
+    <string name="arg_cost_type">costType</string>
+    <string name="arg_deploy_from_unit">deployFromUnit</string>
 </resources>

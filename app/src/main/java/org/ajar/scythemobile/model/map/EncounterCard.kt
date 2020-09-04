@@ -2,16 +2,17 @@ package org.ajar.scythemobile.model.map
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
+import android.os.Bundle
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.NaturalResourceType
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.Resource
-import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.action.ScytheAction
-import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.entity.GameUnit
-import org.ajar.scythemobile.turn.TurnHolder
 
 interface EncounterOutcome {
     var title: String
@@ -30,39 +31,61 @@ sealed class EncounterAction {
             }
         }
     }
-    class DeployMech : EncounterAction() {
+    object DeployMech : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            activity.findNavController(R.id.nav_encounter).navigate(
+                    R.id.action_nav_encounter_to_nav_mech_deploy_choice,
+                    createPaidBundle(activity.resources, R.id.action_nav_mech_deploy_choice_to_nav_encounter)
+            )
         }
     }
-    class DeployWorker : EncounterAction() {
+    object DeployWorker : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
             ScytheAction.GiveWorkerAction(unit.pos, unit.controllingPlayer, 1)
         }
     }
-    class EnlistRecruit : EncounterAction() {
+    object EnlistRecruit : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            activity.findNavController(R.id.nav_encounter).navigate(
+                    R.id.action_nav_encounter_to_nav_enlist_choice,
+                    createPaidBundle(activity.resources, R.id.action_nav_enlist_choice_to_nav_encounter)
+            )
         }
     }
-    class BuildStructure : EncounterAction() {
+    object BuildStructure : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            activity.findNavController(R.id.nav_encounter).navigate(
+                    R.id.action_nav_encounter_to_nav_build_choice,
+                    createPaidBundle(activity.resources, R.id.action_nav_build_choice_to_nav_encounter)
+            )
         }
     }
-    class UpgradeMat : EncounterAction() {
+    object UpgradeMat : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            activity.findNavController(R.id.nav_encounter).navigate(
+                    R.id.action_nav_encounter_to_nav_upgrade_choice,
+                    createPaidBundle(activity.resources, R.id.action_nav_upgrade_choice_to_nav_encounter)
+            )
         }
     }
     class ChooseResources(private val count: Int) : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            val amount = activity.resources.getString(R.string.arg_amount)
+            val bundle = bundleOf(amount to count)
+            activity.findNavController(R.id.nav_encounter).navigate(
+                    R.id.action_nav_encounter_to_nav_choose_resources,
+                    bundle
+            )
         }
     }
     class LookAtOpponentsCombatCards(private val count: Int) : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            val amount = activity.resources.getString(R.string.arg_amount)
+            val bundle = bundleOf(amount to count)
+            activity.findNavController(R.id.nav_encounter).navigate(
+                    R.id.action_nav_encounter_to_nav_look_at_cards,
+                    bundle
+            )
         }
     }
     class HitchRide : EncounterAction() {
@@ -72,6 +95,12 @@ sealed class EncounterAction {
     }
 
     abstract fun performAction(activity: Activity, unit: GameUnit)
+
+    protected fun createPaidBundle(resources: Resources, navId: Int) : Bundle {
+        val paid = resources.getString(R.string.arg_cost_paid)
+        val returnNav = resources.getString(R.string.arg_return_nav)
+        return bundleOf(paid to true, returnNav to navId)
+    }
 }
 
 private fun loadDesc(array: Array<String>, target: Array<out EncounterOutcome>) {
@@ -163,35 +192,35 @@ sealed class StandardOutcome(override var title: String, override var descriptio
             private val all = arrayOf(
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 4)),
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.WOOD, 4)),
-                    Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 3), EncounterAction.DeployWorker()),
-                    Commercial("","", 3, EncounterAction.EnlistRecruit()),
-                    Commercial("","", 4, EncounterAction.DeployMech()),
-                    Commercial("","", 3, EncounterAction.EnlistRecruit()),
-                    Commercial("","", 2, EncounterAction.UpgradeMat()),
+                    Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 3), EncounterAction.DeployWorker),
+                    Commercial("","", 3, EncounterAction.EnlistRecruit),
+                    Commercial("","", 4, EncounterAction.DeployMech),
+                    Commercial("","", 3, EncounterAction.EnlistRecruit),
+                    Commercial("","", 2, EncounterAction.UpgradeMat),
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.OIL, 4)),
-                    Commercial("","", 3, EncounterAction.BuildStructure()),
-                    Commercial("","", 4, EncounterAction.DeployMech()),
+                    Commercial("","", 3, EncounterAction.BuildStructure),
+                    Commercial("","", 4, EncounterAction.DeployMech),
 
-                    Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 3), EncounterAction.DeployWorker()),
-                    Commercial("","", 3, EncounterAction.BuildStructure()),
+                    Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 3), EncounterAction.DeployWorker),
+                    Commercial("","", 3, EncounterAction.BuildStructure),
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POWER, 2), EncounterAction.GiveResource(CapitalResourceType.POPULARITY, 2)),
                     Commercial("","", 2, EncounterAction.ChooseResources(3)),
                     Commercial("","", 2, EncounterAction.ChooseResources(3)),
-                    Commercial("","", 2, EncounterAction.ChooseResources(2), EncounterAction.DeployWorker()),
+                    Commercial("","", 2, EncounterAction.ChooseResources(2), EncounterAction.DeployWorker),
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POWER, 2), EncounterAction.GiveResource(CapitalResourceType.CARDS, 2)),
                     Commercial("","", 2, EncounterAction.ChooseResources(3)),
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 4)),
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POPULARITY, 3)),
 
-                    Commercial("","", 4, EncounterAction.DeployMech()),
+                    Commercial("","", 4, EncounterAction.DeployMech),
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.METAL, 4)),
-                    Commercial("","", 3, EncounterAction.EnlistRecruit()),
+                    Commercial("","", 3, EncounterAction.EnlistRecruit),
                     Commercial("","", 2, EncounterAction.ChooseResources(3)),
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POWER, 4)),
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POPULARITY, 3)),
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.METAL, 4)),
-                    Commercial("","", 2, EncounterAction.ChooseResources(2), EncounterAction.DeployWorker()),
-                    Commercial("","", 3, EncounterAction.UpgradeMat()),
+                    Commercial("","", 2, EncounterAction.ChooseResources(2), EncounterAction.DeployWorker),
+                    Commercial("","", 3, EncounterAction.UpgradeMat),
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POWER, 4)),
 
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POPULARITY, 3)),
@@ -199,9 +228,9 @@ sealed class StandardOutcome(override var title: String, override var descriptio
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POWER, 2), EncounterAction.GiveResource(CapitalResourceType.CARDS, 2)),
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.METAL, 4)),
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.WOOD, 4)),
-                    Commercial("","", 4, EncounterAction.DeployMech()),
+                    Commercial("","", 4, EncounterAction.DeployMech),
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 2), EncounterAction.GiveResource(NaturalResourceType.OIL, 2)),
-                    Commercial("","", 4, EncounterAction.DeployMech()),
+                    Commercial("","", 4, EncounterAction.DeployMech),
                     Commercial("","", 2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 4)),
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POPULARITY, 3)),
 
@@ -227,51 +256,51 @@ sealed class StandardOutcome(override var title: String, override var descriptio
 
         companion object {
             private val all = arrayOf(
-                    Unpopular("","",2, EncounterAction.BuildStructure()),
-                    Unpopular("","",2, EncounterAction.EnlistRecruit()),
-                    Unpopular("","",3, EncounterAction.DeployMech()),
+                    Unpopular("","",2, EncounterAction.BuildStructure),
+                    Unpopular("","",2, EncounterAction.EnlistRecruit),
+                    Unpopular("","",3, EncounterAction.DeployMech),
                     Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.METAL, 4)),
                     Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 2), EncounterAction.GiveResource(NaturalResourceType.METAL, 2)),
                     Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 4)),
                     Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.OIL, 4)),
-                    Unpopular("","",2, EncounterAction.EnlistRecruit()),
+                    Unpopular("","",2, EncounterAction.EnlistRecruit),
                     Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.OIL, 4)),
                     Unpopular("","",2, EncounterAction.GiveResource(CapitalResourceType.COINS, 2), EncounterAction.ChooseResources(2)),
 
-                    Unpopular("","",2, EncounterAction.BuildStructure()),
-                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 3), EncounterAction.DeployWorker()),
+                    Unpopular("","",2, EncounterAction.BuildStructure),
+                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 3), EncounterAction.DeployWorker),
                     Unpopular("","",3, EncounterAction.ChooseResources(5)),
-                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.METAL, 3), EncounterAction.DeployWorker()),
+                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.METAL, 3), EncounterAction.DeployWorker),
                     Unpopular("","",3, EncounterAction.ChooseResources(5)),
-                    Unpopular("","",2, EncounterAction.EnlistRecruit()),
-                    Unpopular("","",3, EncounterAction.DeployMech()),
-                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.WOOD, 3), EncounterAction.DeployWorker()),
+                    Unpopular("","",2, EncounterAction.EnlistRecruit),
+                    Unpopular("","",3, EncounterAction.DeployMech),
+                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.WOOD, 3), EncounterAction.DeployWorker),
                     Unpopular("","",2, EncounterAction.GiveResource(CapitalResourceType.CARDS, 2), EncounterAction.GiveResource(CapitalResourceType.POWER, 3)),
                     Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.WOOD, 4)),
 
                     Unpopular("","",2, EncounterAction.GiveResource(CapitalResourceType.CARDS, 2), EncounterAction.GiveResource(CapitalResourceType.POWER, 3)),
-                    Unpopular("","",2, EncounterAction.BuildStructure()),
-                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 3), EncounterAction.DeployWorker()),
-                    Unpopular("","",3, EncounterAction.DeployMech()),
-                    Unpopular("","",2, EncounterAction.UpgradeMat(), EncounterAction.ChooseResources(2)),
-                    Unpopular("","",2, EncounterAction.BuildStructure()),
-                    Unpopular("","",3, EncounterAction.DeployMech()),
-                    Unpopular("","",2, EncounterAction.BuildStructure()),
+                    Unpopular("","",2, EncounterAction.BuildStructure),
+                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 3), EncounterAction.DeployWorker),
+                    Unpopular("","",3, EncounterAction.DeployMech),
+                    Unpopular("","",2, EncounterAction.UpgradeMat, EncounterAction.ChooseResources(2)),
+                    Unpopular("","",2, EncounterAction.BuildStructure),
+                    Unpopular("","",3, EncounterAction.DeployMech),
+                    Unpopular("","",2, EncounterAction.BuildStructure),
                     Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 1), EncounterAction.GiveResource(NaturalResourceType.OIL, 3)),
-                    Unpopular("","",2, EncounterAction.BuildStructure()),
+                    Unpopular("","",2, EncounterAction.BuildStructure),
 
                     Unpopular("","",2, EncounterAction.GiveResource(CapitalResourceType.CARDS, 3), EncounterAction.LookAtOpponentsCombatCards(1)),
-                    Unpopular("","",2, EncounterAction.UpgradeMat(), EncounterAction.ChooseResources(2)),
-                    Unpopular("","",2, EncounterAction.UpgradeMat(), EncounterAction.GiveResource(NaturalResourceType.FOOD, 2)),
-                    Unpopular("","",2, EncounterAction.EnlistRecruit()),
-                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.OIL, 3), EncounterAction.DeployWorker()),
-                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.OIL, 3), EncounterAction.DeployWorker()),
-                    Unpopular("","",2, EncounterAction.EnlistRecruit()),
+                    Unpopular("","",2, EncounterAction.UpgradeMat, EncounterAction.ChooseResources(2)),
+                    Unpopular("","",2, EncounterAction.UpgradeMat, EncounterAction.GiveResource(NaturalResourceType.FOOD, 2)),
+                    Unpopular("","",2, EncounterAction.EnlistRecruit),
+                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.OIL, 3), EncounterAction.DeployWorker),
+                    Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.OIL, 3), EncounterAction.DeployWorker),
+                    Unpopular("","",2, EncounterAction.EnlistRecruit),
                     Unpopular("","",2, EncounterAction.GiveResource(NaturalResourceType.FOOD, 4)),
                     Unpopular("","",2, EncounterAction.GiveResource(CapitalResourceType.POWER, 5)),
-                    Unpopular("","",2, EncounterAction.BuildStructure()),
+                    Unpopular("","",2, EncounterAction.BuildStructure),
 
-                    Unpopular("","",3, EncounterAction.EnlistRecruit(), EncounterAction.GiveResource(NaturalResourceType.WOOD, 2)),
+                    Unpopular("","",3, EncounterAction.EnlistRecruit, EncounterAction.GiveResource(NaturalResourceType.WOOD, 2)),
                     Unpopular("","",3, EncounterAction.ChooseResources(5))
             )
 
@@ -287,11 +316,13 @@ sealed class StandardOutcome(override var title: String, override var descriptio
 }
 
 interface EncounterCard {
+    val id: Int
     val popularOutcome: EncounterOutcome
     val commercialOutcome: EncounterOutcome
     val unpopularOutcome: EncounterOutcome
 }
 class StandardEncounter(
+        override val id: Int,
         override val popularOutcome: EncounterOutcome,
         override val commercialOutcome: EncounterOutcome,
         override val unpopularOutcome: EncounterOutcome
@@ -321,7 +352,9 @@ class EncounterDeck {
             StandardOutcome.Commercial.loadDesc(context)
             StandardOutcome.Unpopular.loadDesc(context)
         }
+        
+        fun getCard(number: Int): EncounterCard = currentDeck.deck[number]
 
-        private fun makeCard(number: Int) : EncounterCard = StandardEncounter(StandardOutcome.Popular[number], StandardOutcome.Commercial[number], StandardOutcome.Unpopular[number])
+        private fun makeCard(number: Int) : EncounterCard = StandardEncounter(number, StandardOutcome.Popular[number], StandardOutcome.Commercial[number], StandardOutcome.Unpopular[number])
     }
 }

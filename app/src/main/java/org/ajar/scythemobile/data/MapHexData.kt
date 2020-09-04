@@ -14,7 +14,7 @@ data class MapHexData(
         @Embedded val neighbors: Neighbors,
         @Embedded val rivers: Rivers = Rivers(),
 
-        @ColumnInfo(name = COLUMN_ENCOUNTER) val encounter: Int? = null, // Null = no encounter, Int >= 0 == encounter/untriggerd, Int < 0 == encounter/triggered
+        @ColumnInfo(name = COLUMN_ENCOUNTER) var encounter: Int? = null, // Null = no encounter, Int >= 0 == encounter/untriggerd, Int < 0 == encounter/triggered
         @ColumnInfo(name = COLUMN_TUNNEL) val tunnel: Boolean = false,
         @ColumnInfo(name = COLUMN_HOMEBASE) val faction: Int? = null
 ) {
