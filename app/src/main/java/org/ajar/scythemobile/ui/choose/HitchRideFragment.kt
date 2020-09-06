@@ -9,25 +9,22 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import org.ajar.scythemobile.R
 
-class LookAtCardsFragment : Fragment() {
+class HitchRideFragment : Fragment() {
 
-    private lateinit var lookAtCardsViewModel: LookAtCardsViewModel
-    private val navigationArgs: LookAtCardsFragmentArgs by navArgs()
+    private lateinit var hitchRideViewModel: HitchRideViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        lookAtCardsViewModel =
-                ViewModelProvider(requireActivity()).get(LookAtCardsViewModel::class.java)
-
-        lookAtCardsViewModel.amount = navigationArgs.amount
+        hitchRideViewModel =
+                ViewModelProvider(requireActivity()).get(HitchRideViewModel::class.java)
 
         return inflater.inflate(R.layout.fragment_gallery, container, false)
     }
 
     private fun returnToEncounter() {
-        LookAtCardsFragmentDirections.actionNavLookAtCardsToNavEncounter(true).also { lookAtCardsViewModel.reset() }
+        HitchRideFragmentDirections.actionNavHitchRideToNavEncounter(true).also { hitchRideViewModel.reset() }
     }
 }

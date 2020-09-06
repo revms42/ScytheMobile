@@ -275,6 +275,7 @@
     <string name="menu_choice_res_payment">Choose Payment</string>
     <string name="menu_choose_resources">Choose Resources</string>
     <string name="menu_look_at_cards">Choose an Opponent to Look At</string>
+    <string name="menu_choose_hitch_ride">Choose an Empty Hex</string>
 
     <!-- Arguement Strings -->
     <string name="arg_return_nav">returnNav</string>

@@ -73,6 +73,9 @@
         <action
             android:id="@+id/action_nav_encounter_to_nav_look_at_cards"
             app:destination="@id/nav_look_at_cards" />
+        <action
+            android:id="@+id/action_nav_encounter_to_nav_hitch_ride"
+            app:destination="@id/nav_hitch_ride" />
     </fragment>
 
     <fragment
@@ -366,6 +369,16 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_nav_look_at_cards_to_nav_encounter"
+            app:destination="@id/nav_encounter" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_hitch_ride"
+        android:name="org.ajar.scythemobile.ui.choose.HitchRideFragment"
+        android:label="@string/menu_choose_hitch_ride"
+        tools:layout="@layout/fragment_slideshow">
+        <action
+            android:id="@+id/action_nav_hitch_ride_to_nav_encounter"
             app:destination="@id/nav_encounter" />
     </fragment>
 

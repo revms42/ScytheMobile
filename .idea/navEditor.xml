@@ -271,6 +271,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_nav_encounter_to_nav_look_at_cards">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_nav_encounter_to_nav_mech_deploy_choice">
                               <value>
                                 <LayoutPositions />
@@ -360,6 +365,18 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="nav_hitch_ride">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="826" />
+                            <option name="y" value="-320" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="nav_look_at_cards">
                     <value>
                       <LayoutPositions>
@@ -368,6 +385,15 @@
                             <option name="x" value="634" />
                             <option name="y" value="-395" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_nav_look_at_cards_to_nav_encounter">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>

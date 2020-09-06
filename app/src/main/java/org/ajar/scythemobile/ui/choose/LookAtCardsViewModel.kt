@@ -28,4 +28,9 @@ class LookAtCardsViewModel : ViewModel() {
     fun getCards(): List<CombatCard> {
         return ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(CapitalResourceType.CARDS.id, chosenPlayer!!)?.map { CombatCard(it) }?: emptyList()
     }
+
+    fun reset() {
+        amount = null
+        chosenPlayer = null
+    }
 }

@@ -88,9 +88,11 @@ sealed class EncounterAction {
             )
         }
     }
-    class HitchRide : EncounterAction() {
+    object HitchRide : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            activity.findNavController(R.id.nav_encounter).navigate(
+                    R.id.action_nav_encounter_to_nav_hitch_ride
+            )
         }
     }
 
@@ -235,7 +237,7 @@ sealed class StandardOutcome(override var title: String, override var descriptio
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.POPULARITY, 3)),
 
                     Commercial("","", 2, EncounterAction.GiveResource(CapitalResourceType.CARDS, 4)),
-                    Commercial("","", 2, EncounterAction.HitchRide()
+                    Commercial("","", 2, EncounterAction.HitchRide
                 )
             )
 
