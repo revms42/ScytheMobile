@@ -48,7 +48,7 @@ enum class SpecialFeature : MapFeature {
     },
     ENCOUNTER {
         override fun applyToData(builder: MapHexBuilder) {
-            TODO("Encounter")
+            builder.encounter = EncounterDeck.currentDeck.drawCard()?.id
         }
     }
 }

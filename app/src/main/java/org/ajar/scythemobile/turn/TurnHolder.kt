@@ -3,6 +3,7 @@ package org.ajar.scythemobile.turn
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit
+import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.GameMap
 import java.lang.IllegalArgumentException
 
@@ -34,22 +35,22 @@ object TurnHolder {
     val currentPlayer: PlayerInstance
         get() = PlayerInstance.loadPlayer(currentTurn.playerId)
 
-    fun addCombat(hex: Int, gameUnits: List<Int>) {
+    fun addCombat(hex: Int, attacker: Int, gameUnits: List<Int>) {
         when {
             currentTurn.combatOne == null -> {
-                currentTurn.combatOne = createCombatRecord(hex, gameUnits)
+                currentTurn.combatOne = createCombatRecord(hex, attacker, gameUnits)
             }
             currentTurn.combatOne != null && currentTurn.combatOne!!.hex == hex -> {
                 currentTurn.combatOne!!.attackingUnits = currentTurn.combatOne!!.attackingUnits + gameUnits
             }
             currentTurn.combatTwo == null -> {
-                currentTurn.combatTwo = createCombatRecord(hex, gameUnits)
+                currentTurn.combatTwo = createCombatRecord(hex, attacker, gameUnits)
             }
             currentTurn.combatTwo != null && currentTurn.combatTwo!!.hex == hex -> {
                 currentTurn.combatTwo!!.attackingUnits = currentTurn.combatTwo!!.attackingUnits + gameUnits
             }
             currentTurn.combatThree == null -> {
-                currentTurn.combatThree = createCombatRecord(hex, gameUnits)
+                currentTurn.combatThree = createCombatRecord(hex, attacker, gameUnits)
             }
             currentTurn.combatThree != null && currentTurn.combatThree!!.hex == hex -> {
                 currentTurn.combatThree!!.attackingUnits = currentTurn.combatThree!!.attackingUnits + gameUnits
@@ -58,8 +59,14 @@ object TurnHolder {
         }
     }
 
-    private fun createCombatRecord(hex: Int, gameUnits: List<Int>) : CombatRecord =
-            CombatRecord(hex, gameUnits, GameMap.currentMap.unitsAtHex(hex).filter { it.owner != currentPlayer.playerId }.map { it.id } )
+    private fun createCombatRecord(hex: Int, attacker: Int, gameUnits: List<Int>) : CombatRecord {
+        var defenderId = -1
+        val defendingUnits = GameMap.currentMap.unitsAtHex(hex).filter {
+            it.owner != currentPlayer.playerId && UnitType.provokeUnits.contains(UnitType.valueOf(it.type))
+        }.map { if(defenderId == -1) defenderId = it.owner; it.id }
+        return CombatRecord(hex, attacker, defenderId, gameUnits, defendingUnits)
+    }
+
 
     fun updatePlayer(vararg playerData: PlayerData) {
         playerData.forEach { cachedPlayerUpdates[it.id] = it }

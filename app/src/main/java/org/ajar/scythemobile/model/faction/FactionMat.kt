@@ -3,13 +3,25 @@ package org.ajar.scythemobile.model.faction
 import android.util.SparseArray
 import androidx.core.util.set
 import org.ajar.scythemobile.CapitalResourceType
-import org.ajar.scythemobile.Resource
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.StarType
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.entity.*
-import org.ajar.scythemobile.old.model.faction.*
+
+enum class CharacterDescription(override val characterName: String) : HeroCharacter {
+    BJORN("Bjorn & Mox"),
+    GUNTER("Gunter, Nacht, & Tag"),
+    ANNA("Anna & Wojtek"),
+    ZERHA("Zerha & Kar"),
+    OLGA("Olga & Changa"),
+    CONNER("Conner & Max"),
+    AKIKO("Akiko & Jiro")
+}
+
+interface HeroCharacter {
+    val characterName: String
+}
 
 interface FactionMat {
     val matName: String

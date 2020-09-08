@@ -76,6 +76,14 @@
         <action
             android:id="@+id/action_nav_encounter_to_nav_hitch_ride"
             app:destination="@id/nav_hitch_ride" />
+        <argument
+            android:name="hex"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="card"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 
     <fragment

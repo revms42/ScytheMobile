@@ -17,9 +17,27 @@ private class Converters {
         return builder.toString()
     }
 
+
     @TypeConverter
     fun stringToIntList(value: String): List<Int>? {
         return value.split(",").map { it.toInt() }
+    }
+
+    @TypeConverter
+    fun stringListToString(value: List<String>): String? {
+        val builder = StringBuilder()
+        value.forEach {
+            if(builder.isNotEmpty()) {
+                builder.append(",")
+            }
+            builder.append(it)
+        }
+        return builder.toString()
+    }
+
+    @TypeConverter
+    fun stringToStringList(value: String): List<String>? {
+        return value.split(",")
     }
 }
 

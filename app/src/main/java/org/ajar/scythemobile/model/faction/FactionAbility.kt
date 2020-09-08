@@ -1,8 +1,9 @@
 package org.ajar.scythemobile.model.faction
 
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.combat.Battle
 import org.ajar.scythemobile.model.entity.UnitType
-import org.ajar.scythemobile.old.model.combat.CombatBoard
+import org.ajar.scythemobile.model.combat.CombatBoard
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.map.TerrainFeature
@@ -90,6 +91,7 @@ class TunnelMove : AbstractMovementRule(
 abstract class AbstractCombatRule(
         override val abilityName: String,
         override val description: String,
+        override val applyAutomatically: Boolean = true,
         override val appliesForAttack: Boolean = true,
         override val appliesForDefense: Boolean = true,
         override val appliesDuringUncontested: Boolean = false
@@ -103,8 +105,9 @@ interface CombatRule : FactionAbility {
     val appliesForAttack: Boolean
     val appliesForDefense : Boolean
     val appliesDuringUncontested: Boolean
+    val applyAutomatically : Boolean
     fun validCombatHex(player: PlayerInstance, combatBoard: CombatBoard) : Boolean
-    fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard)
+    fun applyEffect(player: PlayerInstance, battle: Battle)
 }
 
 abstract class AbstractMovementRule(

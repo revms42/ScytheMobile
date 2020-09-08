@@ -2,8 +2,9 @@ package org.ajar.scythemobile.model.faction
 
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.combat.Battle
 import org.ajar.scythemobile.model.map.GameMap
-import org.ajar.scythemobile.old.model.combat.CombatBoard
+import org.ajar.scythemobile.model.combat.CombatBoard
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.map.TerrainFeature
@@ -183,26 +184,27 @@ class Disarm : AbstractCombatRule(
 ) {
 
     override fun validCombatHex(player: PlayerInstance, combatBoard: CombatBoard): Boolean {
-        return combatBoard.combatHex.data.tunnel
+        return combatBoard.hex.data.tunnel
     }
 
-    override fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard) {
-        combatBoard.getOpposingBoard(player).power -= 2
+    override fun applyEffect(player: PlayerInstance, battle: Battle) {
+        battle.getOpposingBoard(player).playerPower -= 2
     }
 }
 
 class Artillery : AbstractCombatRule(
         "Artillery",
-        "Before you engage in combat, you may pay 1 power to force the combating opponent to lose 2 power."
+        "Before you engage in combat, you may pay 1 power to force the combating opponent to lose 2 power.",
+        applyAutomatically = false
 ) {
 
     override fun validCombatHex(player: PlayerInstance, combatBoard: CombatBoard): Boolean {
-        return combatBoard.getPlayerBoard(player).power > 0
+        return combatBoard.playerPower > 0
     }
 
-    override fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard) {
-        combatBoard.getOpposingBoard(player).power -= 2
-        combatBoard.getPlayerBoard(player).power--
+    override fun applyEffect(player: PlayerInstance, battle: Battle) {
+        battle.getOpposingBoard(player).playerPower -= 2
+        battle.getPlayerBoard(player).playerPower -= 1
     }
 }
 
@@ -221,11 +223,11 @@ class Suiton : AbstractCombatRule(
     override val allowsRetreat = false
 
     override fun validCombatHex(player: PlayerInstance, combatBoard: CombatBoard): Boolean {
-        return combatBoard.combatHex.data.terrain == TerrainFeature.LAKE.ordinal
+        return combatBoard.hex.data.terrain == TerrainFeature.LAKE.ordinal
     }
 
-    override fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard) {
-        combatBoard.getPlayerBoard(player).cardLimit++
+    override fun applyEffect(player: PlayerInstance, battle: Battle) {
+        battle.getPlayerBoard(player).cardLimit += 1
     }
 
     override fun validStartingHex(hex: MapHex): Boolean = true
@@ -242,11 +244,11 @@ class PeoplesArmy : AbstractCombatRule(
 ) {
 
     override fun validCombatHex(player: PlayerInstance, combatBoard: CombatBoard): Boolean {
-        return combatBoard.getPlayerBoard(player).unitsPresent.any { gameUnit -> gameUnit.type == UnitType.WORKER }
+        return combatBoard.unitsPresent.any { gameUnit -> gameUnit.type == UnitType.WORKER }
     }
 
-    override fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard) {
-        combatBoard.getPlayerBoard(player).cardLimit++
+    override fun applyEffect(player: PlayerInstance, battle: Battle) {
+        battle.getPlayerBoard(player).cardLimit += 1
     }
 
 }
@@ -256,11 +258,13 @@ class Scout : AbstractCombatRule(
         "Before you engage in combat, steal one of the opponent’s combat cards at random and add it to your hand"
 ) {
 
-    override fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard) {
-        val cards = combatBoard.getOpposingBoard(player).cardsAvailable
-        val cardToSteal = cards.toList()[(Math.random() * cards.size).toInt()]
-        cards.remove(cardToSteal)
-        combatBoard.getPlayerBoard(player).cardsAvailable.add(cardToSteal)
+    override fun applyEffect(player: PlayerInstance, battle: Battle) {
+        val opponent = battle.getOpposingBoard(player).playerInstance
+
+        opponent.takeCombatCards(1, false)?.also {
+            player.giveCombatCards(*it.toTypedArray())
+            battle.getPlayerBoard(player).playerCombatCards.addAll(it)
+        }
     }
 
 }
@@ -270,8 +274,8 @@ class Sword : AbstractCombatRule(
         "Before you engage in combat as the attacker, the defender loses 2 power.",
         appliesForDefense = false
 ) {
-    override fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard) {
-        combatBoard.getOpposingBoard(player).power -= 2
+    override fun applyEffect(player: PlayerInstance, battle: Battle) {
+        battle.getOpposingBoard(player).playerPower -= 2
     }
 
 }
@@ -282,8 +286,8 @@ class Shield : AbstractCombatRule(
         "gain 2 power.",
         appliesForAttack = false
 ) {
-    override fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard) {
-        combatBoard.getPlayerBoard(player).power += 2
+    override fun applyEffect(player: PlayerInstance, battle: Battle) {
+        battle.getPlayerBoard(player).playerPower += 2
     }
 }
 
@@ -295,11 +299,11 @@ class Ronin : AbstractCombatRule(
 ) {
 
     override fun validCombatHex(player: PlayerInstance, combatBoard: CombatBoard): Boolean {
-        return combatBoard.getPlayerBoard(player).unitsPresent.size == 1
+        return combatBoard.unitsPresent.size == 1
     }
 
-    override fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard) {
-        combatBoard.getPlayerBoard(player).power += 2
+    override fun applyEffect(player: PlayerInstance, battle: Battle) {
+        battle.getPlayerBoard(player).playerPower += 2
     }
 }
 
@@ -310,8 +314,8 @@ class Camaraderie : AbstractCombatRule(
     override val appliesDuringUncontested: Boolean = true
     override val appliesForDefense: Boolean = false
 
-    override fun applyEffect(player: PlayerInstance, combatBoard: CombatBoard) {
-        combatBoard.getPlayerBoard(player).camaraderie = true
+    override fun applyEffect(player: PlayerInstance, battle: Battle) {
+        battle.getPlayerBoard(player).camaraderie = true
     }
 
 }

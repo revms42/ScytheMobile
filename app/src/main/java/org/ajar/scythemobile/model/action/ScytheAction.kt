@@ -18,7 +18,7 @@ sealed class ScytheAction<R> {
     class MoveUnitAction(private val units: List<GameUnit>, private val to: MapHex) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
             if(to.provokesCombat && to.playerInControl != units[0].controllingPlayer.playerId) {
-                TurnHolder.addCombat(to.loc, units.map { it.id })
+                TurnHolder.addCombat(to.loc, units[0].controllingPlayer.playerId, units.map { it.id })
             }
             TurnHolder.updateMove(*units.map { it.pos = to.loc; it.unitData }.toTypedArray())
             return true

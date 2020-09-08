@@ -31,11 +31,15 @@ data class TurnData(
 
 data class CombatRecord(
         val hex: Int,
+        val attackingPlayer: Int,
+        val defendingPlayer: Int,
         var attackingUnits: List<Int>,
         val defendingUnits: List<Int>,
         var attackerPower: Int? = null,
         var attackerCards: List<Int>? = null,
+        var attackerAbilities: List<String>? = null,
         var defenderPower: Int? = null,
         var defenderCards: List<Int>? = null,
+        var defenderAbilities: List<String>? = null,
         var combatResolved: Boolean = false
 )

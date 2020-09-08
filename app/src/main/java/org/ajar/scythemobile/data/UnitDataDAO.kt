@@ -1,6 +1,7 @@
 package org.ajar.scythemobile.data
 
 import androidx.room.*
+import org.ajar.scythemobile.model.entity.UnitType
 
 @Dao
 interface UnitDataDAO {
@@ -15,6 +16,12 @@ interface UnitDataDAO {
 
     @Query("SELECT * FROM ${UnitData.TABLE_NAME} WHERE ${UnitData.COLUMN_LOCATION} = :loc")
     fun getUnitsAtLocation(loc: Int): List<UnitData>?
+
+    @Query("SELECT * FROM ${UnitData.TABLE_NAME} WHERE ${UnitData.COLUMN_LOCATION} = :loc AND ${UnitData.COLUMN_OWNER} = :owner AND ${UnitData.COLUMN_TYPE} IN (:types)")
+    fun getUnitsForCombat(loc: Int, owner: Int, types: List<Int> = listOf(UnitType.CHARACTER.ordinal, UnitType.MECH.ordinal, UnitType.WORKER.ordinal)): List<UnitData>?
+
+    @Query("SELECT * FROM ${UnitData.TABLE_NAME} WHERE ${UnitData.COLUMN_INDEX} IN (:ids)")
+    fun getUnitsFromList(ids: List<Int>): List<UnitData>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addUnit(vararg unit: UnitData)
