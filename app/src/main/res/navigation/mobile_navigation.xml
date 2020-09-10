@@ -25,25 +25,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_pass_off"
-        android:name="org.ajar.scythemobile.ui.PassOffFragment"
-        android:label="@string/menu_pass_off"
-        tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_nav_pass_off_to_nav_upgrade"
-            app:destination="@id/nav_upgrade" />
-        <action
-            android:id="@+id/action_nav_pass_off_to_nav_deploy"
-            app:destination="@id/nav_deploy" />
-        <action
-            android:id="@+id/action_nav_pass_off_to_nav_build"
-            app:destination="@id/nav_build" />
-        <action
-            android:id="@+id/action_nav_pass_off_to_nav_enlist"
-            app:destination="@id/nav_enlist" />
-    </fragment>
-
-    <fragment
         android:id="@+id/nav_encounter"
         android:label="@string/menu_encounter"
         android:name="org.ajar.scythemobile.ui.move.EncounterFragment"
@@ -52,21 +33,17 @@
             android:id="@+id/action_nav_encounter_to_nav_move"
             app:destination="@id/nav_move" />
         <action
-            android:id="@+id/action_nav_encounter_to_nav_mech_deploy_choice"
-            app:destination="@id/nav_deploy_choice" />
-        <argument
-            android:name="encounterResolved"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:id="@+id/action_nav_encounter_to_nav_mech_deploy"
+            app:destination="@id/nav_deploy" />
         <action
-            android:id="@+id/action_nav_encounter_to_nav_enlist_choice"
-            app:destination="@id/nav_enlist_choice" />
+            android:id="@+id/action_nav_encounter_to_nav_enlist"
+            app:destination="@id/nav_enlist" />
         <action
-            android:id="@+id/action_nav_encounter_to_nav_build_choice"
-            app:destination="@id/nav_build_choice" />
+            android:id="@+id/action_nav_encounter_to_nav_build"
+            app:destination="@id/nav_build" />
         <action
-            android:id="@+id/action_nav_encounter_to_nav_upgrade_choice"
-            app:destination="@id/nav_upgrade_choice" />
+            android:id="@+id/action_nav_encounter_to_nav_upgrade"
+            app:destination="@id/nav_upgrade" />
         <action
             android:id="@+id/action_nav_encounter_to_nav_choose_resources"
             app:destination="@id/nav_choose_resources" />
@@ -84,6 +61,10 @@
             android:name="card"
             app:argType="integer"
             android:defaultValue="-1" />
+        <argument
+            android:name="encounterResolved"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 
     <fragment
@@ -129,65 +110,22 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_upgrade"
-        android:name="org.ajar.scythemobile.ui.upgrade.UpgradeFragment"
-        android:label="@string/menu_upgrade"
-        tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_nav_upgrade_to_nav_end"
-            app:destination="@id/nav_end" />
-        <action
-            android:id="@+id/action_nav_upgrade_to_nav_upgrade_choice"
-            app:destination="@id/nav_upgrade_choice" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_deploy"
-        android:name="org.ajar.scythemobile.ui.deploy.DeployFragment"
-        android:label="@string/menu_deploy"
-        tools:layout="@layout/fragment_gallery" >
-        <action
-            android:id="@+id/action_nav_deploy_to_nav_end"
-            app:destination="@id/nav_end" />
-        <action
-            android:id="@+id/action_nav_deploy_to_nav_mech_deploy_choice"
-            app:destination="@id/nav_deploy_choice" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_enlist"
-        android:name="org.ajar.scythemobile.ui.enlist.EnlistFragment"
-        android:label="@string/menu_enlist"
-        tools:layout="@layout/fragment_slideshow" >
-        <action
-            android:id="@+id/action_nav_enlist_to_nav_end"
-            app:destination="@id/nav_end" />
-        <action
-            android:id="@+id/action_nav_enlist_to_nav_enlist_choice"
-            app:destination="@id/nav_enlist_choice" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_build"
-        android:name="org.ajar.scythemobile.ui.build.BuildFragment"
-        android:label="@string/menu_build"
-        tools:layout="@layout/fragment_slideshow" >
-        <action
-            android:id="@+id/action_nav_build_to_nav_end"
-            app:destination="@id/nav_end" />
-        <action
-            android:id="@+id/action_nav_build_to_nav_build_choice"
-            app:destination="@id/nav_build_choice" />
-    </fragment>
-
-    <fragment
         android:id="@+id/nav_trade"
         android:name="org.ajar.scythemobile.ui.trade.TradeFragment"
         android:label="@string/menu_trade"
         tools:layout="@layout/fragment_slideshow" >
         <action
-            android:id="@+id/action_nav_trade_to_nav_pass_off"
-            app:destination="@id/nav_pass_off" />
+            android:id="@+id/action_nav_trade_to_nav_upgrade"
+            app:destination="@id/nav_upgrade" />
+        <action
+            android:id="@+id/action_nav_trade_to_nav_deploy"
+            app:destination="@id/nav_deploy" />
+        <action
+            android:id="@+id/action_nav_trade_to_nav_build"
+            app:destination="@id/nav_build" />
+        <action
+            android:id="@+id/action_nav_trade_to_nav_enlist"
+            app:destination="@id/nav_enlist" />
     </fragment>
 
     <fragment
@@ -202,8 +140,17 @@
             android:id="@+id/action_nav_move_to_nav_start_combat"
             app:destination="@id/nav_start_combat" />
         <action
-            android:id="@+id/action_nav_move_to_nav_pass_off"
-            app:destination="@id/nav_pass_off" />
+            android:id="@+id/action_nav_move_to_nav_upgrade"
+            app:destination="@id/nav_upgrade" />
+        <action
+            android:id="@+id/action_nav_move_to_nav_deploy"
+            app:destination="@id/nav_deploy" />
+        <action
+            android:id="@+id/action_nav_move_to_nav_build"
+            app:destination="@id/nav_build" />
+        <action
+            android:id="@+id/action_nav_move_to_nav_enlist"
+            app:destination="@id/nav_enlist" />
     </fragment>
 
     <fragment
@@ -212,8 +159,17 @@
         android:label="@string/menu_produce"
         tools:layout="@layout/fragment_slideshow" >
         <action
-            android:id="@+id/action_nav_produce_to_nav_pass_off"
-            app:destination="@id/nav_pass_off" />
+            android:id="@+id/action_nav_produce_to_nav_upgrade"
+            app:destination="@id/nav_upgrade" />
+        <action
+            android:id="@+id/action_nav_produce_to_nav_deploy"
+            app:destination="@id/nav_deploy" />
+        <action
+            android:id="@+id/action_nav_produce_to_nav_build"
+            app:destination="@id/nav_build" />
+        <action
+            android:id="@+id/action_nav_produce_to_nav_enlist"
+            app:destination="@id/nav_enlist" />
     </fragment>
 
     <fragment
@@ -222,145 +178,165 @@
         android:label="@string/menu_bolster"
         tools:layout="@layout/fragment_slideshow" >
         <action
-            android:id="@+id/action_nav_bolster_to_nav_pass_off"
-            app:destination="@id/nav_pass_off" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_deploy_choice"
-        android:name="org.ajar.scythemobile.ui.deploy.DeployChoiceFragment"
-        android:label="@string/menu_choice_mech"
-        tools:layout="@layout/fragment_slideshow">
-        <action
-            android:id="@+id/action_nav_mech_deploy_choice_to_nav_encounter"
-            app:destination="@id/nav_encounter" />
-        <action
-            android:id="@+id/action_nav_mech_deploy_choice_to_nav_deploy"
-            app:destination="@id/nav_deploy" />
-        <action
-            android:id="@+id/action_nav_deploy_choice_to_nav_resource_payment_choice"
-            app:destination="@id/nav_resource_payment_choice" />
-        <argument
-            android:name="deployFromUnit"
-            app:argType="integer"
-            android:defaultValue="-1"/>
-        <argument
-            android:name="paid"
-            app:argType="boolean" />
-        <argument
-            android:name="costType"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="amount"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="returnNav"
-            app:argType="reference" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_enlist_choice"
-        android:name="org.ajar.scythemobile.ui.enlist.EnlistChoiceFragment"
-        android:label="@string/menu_choice_enlist"
-        tools:layout="@layout/fragment_slideshow">
-        <action
-            android:id="@+id/action_nav_enlist_choice_to_nav_encounter"
-            app:destination="@id/nav_encounter" />
-        <action
-            android:id="@+id/action_nav_enlist_choice_to_nav_enlist"
-            app:destination="@id/nav_enlist" />
-        <action
-            android:id="@+id/action_nav_enlist_choice_to_nav_resource_payment_choice"
-            app:destination="@id/nav_resource_payment_choice" />
-        <argument
-            android:name="paid"
-            app:argType="boolean" />
-        <argument
-            android:name="costType"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="amount"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="returnNav"
-            app:argType="reference" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_build_choice"
-        android:name="org.ajar.scythemobile.ui.build.BuildChoiceFragment"
-        android:label="@string/menu_choice_build"
-        tools:layout="@layout/fragment_slideshow">
-        <argument
-            android:name="deployFromUnit"
-            app:argType="integer"
-            android:defaultValue="-1"/>
-        <argument
-            android:name="paid"
-            app:argType="boolean" />
-        <argument
-            android:name="costType"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="amount"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="returnNav"
-            app:argType="reference" />
-        <action
-            android:id="@+id/action_nav_build_choice_to_nav_build"
-            app:destination="@id/nav_build" />
-        <action
-            android:id="@+id/action_nav_build_choice_to_nav_resource_payment_choice"
-            app:destination="@id/nav_resource_payment_choice" />
-        <action
-            android:id="@+id/action_nav_build_choice_to_nav_encounter"
-            app:destination="@id/nav_encounter" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_upgrade_choice"
-        android:name="org.ajar.scythemobile.ui.upgrade.UpgradeChoiceFragment"
-        android:label="@string/menu_choice_upgrade"
-        tools:layout="@layout/fragment_slideshow">
-        <argument
-            android:name="paid"
-            app:argType="boolean" />
-        <argument
-            android:name="costType"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="amount"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="returnNav"
-            app:argType="reference" />
-        <action
-            android:id="@+id/action_nav_upgrade_choice_to_nav_upgrade"
+            android:id="@+id/action_nav_bolster_to_nav_upgrade"
             app:destination="@id/nav_upgrade" />
         <action
-            android:id="@+id/action_nav_upgrade_choice_to_nav_encounter"
+            android:id="@+id/action_nav_bolster_to_nav_deploy"
+            app:destination="@id/nav_deploy" />
+        <action
+            android:id="@+id/action_nav_bolster_to_nav_build"
+            app:destination="@id/nav_build" />
+        <action
+            android:id="@+id/action_nav_bolster_to_nav_enlist"
+            app:destination="@id/nav_enlist" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_deploy"
+        android:name="org.ajar.scythemobile.ui.deploy.DeployFragment"
+        android:label="@string/menu_deploy"
+        tools:layout="@layout/fragment_slideshow">
+        <action
+            android:id="@+id/action_nav_mech_deploy_to_nav_encounter"
             app:destination="@id/nav_encounter" />
         <action
-            android:id="@+id/action_nav_upgrade_choice_to_nav_resource_payment_choice"
+            android:id="@+id/action_nav_deploy_to_nav_resource_payment_choice"
             app:destination="@id/nav_resource_payment_choice" />
+        <argument
+            android:name="deployFromUnit"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+        <argument
+            android:name="paid"
+            app:argType="boolean"
+            android:defaultValue="false"/>
+        <argument
+            android:name="costType"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="amount"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="returnNav"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+        <action
+            android:id="@+id/action_nav_deploy_to_nav_end"
+            app:destination="@id/nav_end" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_enlist"
+        android:name="org.ajar.scythemobile.ui.enlist.EnlistFragment"
+        android:label="@string/menu_enlist"
+        tools:layout="@layout/fragment_slideshow">
+        <action
+            android:id="@+id/action_nav_enlist_to_nav_encounter"
+            app:destination="@id/nav_encounter" />
+        <action
+            android:id="@+id/action_nav_enlist_to_nav_resource_payment_choice"
+            app:destination="@id/nav_resource_payment_choice" />
+        <argument
+            android:name="paid"
+            app:argType="boolean"
+            android:defaultValue="false"/>
+        <argument
+            android:name="costType"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="amount"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="returnNav"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+        <action
+            android:id="@+id/action_nav_enlist_to_nav_end"
+            app:destination="@id/nav_end" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_build"
+        android:name="org.ajar.scythemobile.ui.build.BuildFragment"
+        android:label="@string/menu_build"
+        tools:layout="@layout/fragment_slideshow">
+        <argument
+            android:name="deployFromUnit"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+        <argument
+            android:name="paid"
+            app:argType="boolean"
+            android:defaultValue="false"/>
+        <argument
+            android:name="costType"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="amount"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="returnNav"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+        <action
+            android:id="@+id/action_nav_build_to_nav_resource_payment_choice"
+            app:destination="@id/nav_resource_payment_choice" />
+        <action
+            android:id="@+id/action_nav_build_to_nav_encounter"
+            app:destination="@id/nav_encounter" />
+        <action
+            android:id="@+id/action_nav_build_to_nav_end"
+            app:destination="@id/nav_end" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_upgrade"
+        android:name="org.ajar.scythemobile.ui.upgrade.UpgradeFragment"
+        android:label="@string/menu_upgrade"
+        tools:layout="@layout/fragment_slideshow">
+        <argument
+            android:name="paid"
+            app:argType="boolean"
+            android:defaultValue="false"/>
+        <argument
+            android:name="costType"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="amount"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="returnNav"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+        <action
+            android:id="@+id/action_nav_upgrade_to_nav_encounter"
+            app:destination="@id/nav_encounter" />
+        <action
+            android:id="@+id/action_nav_upgrade_to_nav_resource_payment_choice"
+            app:destination="@id/nav_resource_payment_choice" />
+        <action
+            android:id="@+id/action_nav_upgrade_to_nav_end"
+            app:destination="@id/nav_end" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_choose_resources"
-        android:name="org.ajar.scythemobile.ui.choose.ChooseResourcesFragment"
+        android:name="org.ajar.scythemobile.ui.encounter.ChooseResourcesFragment"
         android:label="@string/menu_choose_resources"
         tools:layout="@layout/fragment_slideshow">
         <argument
             android:name="amount"
+            app:argType="integer" />
+        <argument
+            android:name="returnNav"
             app:argType="integer" />
         <action
             android:id="@+id/action_nav_choose_resources_to_nav_encounter"
@@ -369,7 +345,7 @@
 
     <fragment
         android:id="@+id/nav_look_at_cards"
-        android:name="org.ajar.scythemobile.ui.choose.LookAtCardsFragment"
+        android:name="org.ajar.scythemobile.ui.encounter.LookAtCardsFragment"
         android:label="@string/menu_choose_resources"
         tools:layout="@layout/fragment_slideshow">
         <argument
@@ -382,7 +358,7 @@
 
     <fragment
         android:id="@+id/nav_hitch_ride"
-        android:name="org.ajar.scythemobile.ui.choose.HitchRideFragment"
+        android:name="org.ajar.scythemobile.ui.encounter.HitchRideFragment"
         android:label="@string/menu_choose_hitch_ride"
         tools:layout="@layout/fragment_slideshow">
         <action
@@ -392,21 +368,21 @@
 
     <fragment
         android:id="@+id/nav_resource_payment_choice"
-        android:name="org.ajar.scythemobile.ui.choose.ResourcePaymentChoiceFragment"
+        android:name="org.ajar.scythemobile.ui.encounter.ResourcePaymentChoiceFragment"
         android:label="@string/menu_choice_res_payment"
         tools:layout="@layout/fragment_slideshow">
         <action
-            android:id="@+id/action_nav_resource_payment_choice_to_nav_deploy_choice"
-            app:destination="@id/nav_deploy_choice" />
+            android:id="@+id/action_nav_resource_payment_choice_to_nav_deploy"
+            app:destination="@id/nav_deploy" />
         <action
-            android:id="@+id/action_nav_resource_payment_choice_to_nav_enlist_choice"
-            app:destination="@id/nav_enlist_choice" />
+            android:id="@+id/action_nav_resource_payment_choice_to_nav_enlist"
+            app:destination="@id/nav_enlist" />
         <action
-            android:id="@+id/action_nav_resource_payment_choice_to_nav_build_choice"
-            app:destination="@id/nav_build_choice" />
+            android:id="@+id/action_nav_resource_payment_choice_to_nav_build"
+            app:destination="@id/nav_build" />
         <action
-            android:id="@+id/action_nav_resource_payment_choice_to_nav_upgrade_choice"
-            app:destination="@id/nav_upgrade_choice" />
+            android:id="@+id/action_nav_resource_payment_choice_to_nav_upgrade"
+            app:destination="@id/nav_upgrade" />
         <argument
             android:name="costType"
             app:argType="integer" />
@@ -415,6 +391,6 @@
             app:argType="integer" />
         <argument
             android:name="returnNav"
-            app:argType="reference" />
+            app:argType="integer" />
     </fragment>
 </navigation>

@@ -1,4 +1,4 @@
-package org.ajar.scythemobile.ui.choose
+package org.ajar.scythemobile.ui.encounter
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,6 +28,6 @@ class LookAtCardsFragment : Fragment() {
     }
 
     private fun returnToEncounter() {
-        LookAtCardsFragmentDirections.actionNavLookAtCardsToNavEncounter(true).also { lookAtCardsViewModel.reset() }
+        LookAtCardsFragmentDirections.actionNavLookAtCardsToNavEncounter(encounterResolved = true).also { lookAtCardsViewModel.reset() }
     }
 }

@@ -20,6 +20,9 @@ enum class TerrainFeature(var displayName: String, var desc: String, val resourc
         builder.terrain = this.ordinal
     }
 
+    val productionFeature: Boolean
+        get() = this.resource != null || this == VILLAGE
+
     companion object {
         fun valueOf(ordinal: Int): TerrainFeature {
             return values()[ordinal]

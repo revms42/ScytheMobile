@@ -4,6 +4,10 @@ import android.util.SparseArray
 import androidx.core.util.set
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.ui.bolster.BolsterFragmentDirections
+import org.ajar.scythemobile.ui.move.MoveFragmentDirections
+import org.ajar.scythemobile.ui.produce.ProduceFragmentDirections
+import org.ajar.scythemobile.ui.trade.TradeFragmentDirections
 
 interface PlayerMat {
 
@@ -95,10 +99,10 @@ enum class StandardPlayerMat(
 
         override fun makeSections(playerInstance: PlayerInstance): List<Section> {
             return listOf(
-                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins)),
-                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins)),
-                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins)),
-                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins))
+                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins), MoveFragmentDirections.actionNavMoveToNavUpgrade()),
+                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins), TradeFragmentDirections.actionNavTradeToNavDeploy()),
+                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins), ProduceFragmentDirections.actionNavProduceToNavBuild()),
+                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins), BolsterFragmentDirections.actionNavBolsterToNavEnlist())
             )
         }
 
@@ -122,10 +126,10 @@ enum class StandardPlayerMat(
 
         override fun makeSections(playerInstance: PlayerInstance): List<Section> {
             return listOf(
-                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins)),
-                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins)),
-                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins)),
-                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins))
+                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins), ProduceFragmentDirections.actionNavProduceToNavUpgrade()),
+                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins), TradeFragmentDirections.actionNavTradeToNavDeploy()),
+                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins), BolsterFragmentDirections.actionNavBolsterToNavBuild()),
+                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins), MoveFragmentDirections.actionNavMoveToNavEnlist())
             )
         }
     },
@@ -148,10 +152,10 @@ enum class StandardPlayerMat(
 
         override fun makeSections(playerInstance: PlayerInstance): List<Section> {
             return listOf(
-                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins)),
-                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins)),
-                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins)),
-                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins))
+                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins), BolsterFragmentDirections.actionNavBolsterToNavUpgrade()),
+                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins), ProduceFragmentDirections.actionNavProduceToNavDeploy()),
+                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins), MoveFragmentDirections.actionNavMoveToNavBuild()),
+                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins), TradeFragmentDirections.actionNavTradeToNavEnlist())
             )
         }
 
@@ -175,10 +179,10 @@ enum class StandardPlayerMat(
 
         override fun makeSections(playerInstance: PlayerInstance): List<Section> {
             return listOf(
-                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins)),
-                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins)),
-                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins)),
-                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins))
+                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins), TradeFragmentDirections.actionNavTradeToNavUpgrade()),
+                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins), BolsterFragmentDirections.actionNavBolsterToNavDeploy()),
+                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins), MoveFragmentDirections.actionNavMoveToNavBuild()),
+                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins), ProduceFragmentDirections.actionNavProduceToNavEnlist())
             )
         }
     },
@@ -201,10 +205,10 @@ enum class StandardPlayerMat(
 
         override fun makeSections(playerInstance: PlayerInstance): List<Section> {
             return listOf(
-                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins)),
-                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins)),
-                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins)),
-                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins))
+                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins), MoveFragmentDirections.actionNavMoveToNavUpgrade()),
+                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins), BolsterFragmentDirections.actionNavBolsterToNavDeploy()),
+                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins), TradeFragmentDirections.actionNavTradeToNavBuild()),
+                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins), ProduceFragmentDirections.actionNavProduceToNavEnlist())
             )
         }
     },
@@ -227,10 +231,10 @@ enum class StandardPlayerMat(
 
         override fun makeSections(playerInstance: PlayerInstance): List<Section> {
             return listOf(
-                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins)),
-                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins)),
-                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins)),
-                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins))
+                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins), BolsterFragmentDirections.actionNavBolsterToNavUpgrade()),
+                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins), MoveFragmentDirections.actionNavMoveToNavDeploy()),
+                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins), ProduceFragmentDirections.actionNavProduceToNavBuild()),
+                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins), TradeFragmentDirections.actionNavTradeToNavEnlist())
             )
         }
     },
@@ -253,10 +257,10 @@ enum class StandardPlayerMat(
 
         override fun makeSections(playerInstance: PlayerInstance): List<Section> {
             return listOf(
-                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins)),
-                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins)),
-                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins)),
-                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins))
+                    Section(TopRowAction.Trade(playerInstance), BottomRowAction.Upgrade(playerInstance, upgradeStart, upgradeBottom, upgradeCoins), TradeFragmentDirections.actionNavTradeToNavUpgrade()),
+                    Section(TopRowAction.Produce(playerInstance), BottomRowAction.Deploy(playerInstance, deployStart, deployBottom, deployCoins), ProduceFragmentDirections.actionNavProduceToNavDeploy()),
+                    Section(TopRowAction.Bolster(playerInstance), BottomRowAction.Build(playerInstance, buildStart, buildBottom, buildCoins), BolsterFragmentDirections.actionNavBolsterToNavBuild()),
+                    Section(TopRowAction.MoveOrGain(playerInstance), BottomRowAction.Enlist(playerInstance, enlistStart, enlistBottom, enlistCoins), MoveFragmentDirections.actionNavMoveToNavEnlist())
             )
         }
     };
@@ -278,6 +282,20 @@ class PlayerMatInstance(val playerMat: PlayerMat, val playerInstance: PlayerInst
     constructor(playerInstance: PlayerInstance) : this(PlayerMat[playerInstance.playerData.playerMat.matId]!!, playerInstance)
     
     val sections: List<Section> = playerMat.makeSections(playerInstance)
+
+    fun findSection(action: Class<out PlayerMatAction>): Section? {
+        return sections.firstOrNull { section ->
+            section.topRowAction::class.java == action || section.bottomRowAction::class.java == action
+        }
+    }
+
+    fun <A: TopRowAction> findTopRowAction(action: Class<A>): A? {
+        return findSection(action)?.topRowAction as A?
+    }
+
+    fun <A: BottomRowAction> findBottomRowAction(action: Class<A>): A? {
+        return findSection(action)?.bottomRowAction as A?
+    }
 
     fun initialize(playerInstance: PlayerInstance) {
         playerInstance.drawCoins(playerMat.initialCoins)

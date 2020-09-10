@@ -1,4 +1,4 @@
-package org.ajar.scythemobile.ui.choose
+package org.ajar.scythemobile.ui.encounter
 
 import android.os.Bundle
 import android.view.LayoutInflater

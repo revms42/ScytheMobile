@@ -1,13 +1,48 @@
 package org.ajar.scythemobile.ui.deploy
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.model.action.ScytheAction
+import org.ajar.scythemobile.model.faction.FactionAbility
+import org.ajar.scythemobile.model.map.GameMap
+import org.ajar.scythemobile.model.map.MapHex
+import org.ajar.scythemobile.model.player.BottomRowAction
+import org.ajar.scythemobile.turn.TurnHolder
+import org.ajar.scythemobile.ui.BottomRowViewModel
 
-class DeployViewModel : ViewModel() {
+class DeployViewModel : BottomRowViewModel<BottomRowAction.Deploy>() {
+    private var _action: BottomRowAction.Deploy? = null
+    override val action: BottomRowAction.Deploy
+        get() {
+            if(_action == null) {
+                _action = TurnHolder.currentPlayer.playerMat.findBottomRowAction(BottomRowAction.Deploy::class.java)
+            }
+            return _action!!
+        }
+    var unitType: Int? = null
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is gallery Fragment"
+    var selectedAbility: FactionAbility? = null
+    var selectedHex: MapHex? = null
+
+    var returnNav: Int? = null
+
+    fun getSelectableAbilities() = TurnHolder.currentPlayer.factionMat.lockedFactionAbilities
+
+    fun getValidLocations(): List<MapHex>? {
+        return ScytheDatabase.unitDao()?.getUnitsForPlayer(TurnHolder.currentPlayer.playerId, unitType!!)?.map { unit -> unit.loc }?.filter { it != -1 }?.mapNotNull { GameMap.currentMap.findHexAtIndex(it) }
     }
-    val text: LiveData<String> = _text
+
+    fun performDeploy(): Boolean {
+        return if(selectedAbility != null && selectedHex != null) {
+            ScytheAction.DeployMech(TurnHolder.currentPlayer, selectedHex!!, selectedAbility!!).perform()
+        } else {
+            false
+        }
+    }
+
+    fun reset() {
+        unitType = null
+        selectedAbility = null
+        selectedHex = null
+        returnNav = null
+    }
 }

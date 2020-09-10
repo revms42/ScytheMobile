@@ -45,13 +45,12 @@ class ScytheTurnViewModel : ViewModel() {
                     TurnHolder.currentTurn.combatOne?.combatResolved == false -> MoveFragmentDirections.actionNavMoveToNavStartCombat()
                     TurnHolder.currentTurn.combatTwo?.combatResolved == false -> MoveFragmentDirections.actionNavMoveToNavStartCombat()
                     TurnHolder.currentTurn.combatThree?.combatResolved == false -> MoveFragmentDirections.actionNavMoveToNavStartCombat()
-                    else -> currentSection!!.topRowAction.actionOutOf
-                }
+                    else -> currentSection!!.moveTopToBottom
+                }.also { TurnHolder.commitChanges() }
             }
             R.id.nav_start_combat -> StartCombatFragmentDirections.actionNavStartCombatToNavAnswerCombat()
             R.id.nav_answer_combat -> AnswerCombatFragmentDirections.actionNavAnswerCombatToNavResolveCombat()
             R.id.nav_resolve_combat -> ResolveCombatFragmentDirections.actionNavResolveCombatToNavMove()
-            R.id.nav_pass_off -> currentSection!!.bottomRowAction.actionInto.also { TurnHolder.commitChanges() }
             currentSection!!.bottomRowAction.fragmentNav -> currentSection!!.bottomRowAction.actionOutOf.also { TurnHolder.commitChanges() }
             else -> null
         }

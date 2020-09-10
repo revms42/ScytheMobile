@@ -27,6 +27,9 @@ open class MapHex(val data: MapHexData) {
     val terrain: TerrainFeature
         get() = TerrainFeature.valueOf(data.terrain)
 
+    val producesResource: Boolean
+        get() = terrain.productionFeature
+
     var encounter: EncounterCard?
         get() = data.encounter?.let { EncounterDeck.getCard(it) }
         set(value) {

@@ -21,11 +21,6 @@ class BolsterFragment : Fragment() {
     ): View? {
         bolsterViewModel =
                 ViewModelProvider(requireActivity()).get(BolsterViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
-        bolsterViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-        return root
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 }

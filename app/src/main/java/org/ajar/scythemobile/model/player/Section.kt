@@ -8,24 +8,19 @@ import org.ajar.scythemobile.Resource
 import org.ajar.scythemobile.data.PlayerMatData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
-import org.ajar.scythemobile.ui.PassOffFragmentDirections
+import org.ajar.scythemobile.turn.TurnHolder
 import org.ajar.scythemobile.ui.StartTurnFragmentDirections
-import org.ajar.scythemobile.ui.bolster.BolsterFragmentDirections
 import org.ajar.scythemobile.ui.build.BuildFragmentDirections
 import org.ajar.scythemobile.ui.deploy.DeployFragmentDirections
 import org.ajar.scythemobile.ui.enlist.EnlistFragmentDirections
-import org.ajar.scythemobile.ui.move.MoveFragmentDirections
-import org.ajar.scythemobile.ui.produce.ProduceFragmentDirections
-import org.ajar.scythemobile.ui.trade.TradeFragmentDirections
 import org.ajar.scythemobile.ui.upgrade.UpgradeFragmentDirections
 
-class Section(val topRowAction: TopRowAction, val bottomRowAction: BottomRowAction)
+class Section(val topRowAction: TopRowAction, val bottomRowAction: BottomRowAction, val moveTopToBottom: NavDirections)
 
 interface PlayerMatAction {
     val fragmentNav: Int
-    val actionInto: NavDirections
-    val actionOutOf: NavDirections
     val playerInstance: PlayerInstance
     val playerMatData: PlayerMatData
         get() = playerInstance.playerData.playerMat
@@ -38,7 +33,6 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
     class MoveOrGain(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
         override val fragmentNav: Int = R.id.nav_move
         override val actionInto: NavDirections = StartTurnFragmentDirections.actionNavStartToNavMove()
-        override val actionOutOf: NavDirections = MoveFragmentDirections.actionNavMoveToNavPassOff()
 
         private val data = playerMatData.moveGainSection
 
@@ -71,7 +65,6 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
     class Trade(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
         override val fragmentNav: Int = R.id.nav_trade
         override val actionInto: NavDirections = StartTurnFragmentDirections.actionNavStartToNavTrade()
-        override val actionOutOf: NavDirections = TradeFragmentDirections.actionNavTradeToNavPassOff()
 
         private val data = playerMatData.tradeSection
 
@@ -82,6 +75,12 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
 
         override val canUpgrade: Boolean
             get() = upgrades < 1
+
+        val popularityGain: Int
+            get() = data.popularityGain
+
+        val resourceGain: Int
+            get() = data.resourceGain
 
         override fun upgradeLeading(): Boolean {
             return false
@@ -99,7 +98,6 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
     class Produce(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
         override val fragmentNav: Int = R.id.nav_produce
         override val actionInto: NavDirections = StartTurnFragmentDirections.actionNavStartToNavProduce()
-        override val actionOutOf: NavDirections = ProduceFragmentDirections.actionNavProduceToNavPassOff()
 
         private val data = playerMatData.produceSection
 
@@ -135,7 +133,6 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
     class Bolster(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
         override val fragmentNav: Int = R.id.nav_bolster
         override val actionInto: NavDirections = StartTurnFragmentDirections.actionNavStartToNavBolster()
-        override val actionOutOf: NavDirections = BolsterFragmentDirections.actionNavBolsterToNavPassOff()
 
         private val data = playerMatData.bolsterSection
 
@@ -146,6 +143,12 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
             get() = upgrades < 2
 
         override val cost: List<Resource> = listOf(CapitalResourceType.COINS)
+
+        val cardsGain: Int
+            get() = data.cardsGain
+
+        val powerGain: Int
+            get() = data.powerGain
 
         override fun upgradeLeading(): Boolean {
             return if(data.powerGain < 3) {
@@ -168,13 +171,13 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
 
     abstract fun upgradeLeading() : Boolean
     abstract fun upgradeFollowing() : Boolean
+    abstract val actionInto: NavDirections
 }
 
 sealed class BottomRowAction(override val playerInstance: PlayerInstance, val startingCost: Int, val costBottom: Int, val coins: Int) : PlayerMatAction {
     class Upgrade(playerInstance: PlayerInstance, startingCost: Int, costBottom: Int, coins: Int) : BottomRowAction(playerInstance, startingCost, costBottom, coins) {
         override val fragmentNav: Int = R.id.nav_upgrade
-        override val actionInto: NavDirections = PassOffFragmentDirections.actionNavPassOffToNavUpgrade()
-        override val actionOutOf: NavDirections = UpgradeFragmentDirections.actionNavUpgradeToNavEnd()
+        override val actionOutOf: Int = R.id.action_nav_upgrade_to_nav_end
 
         private val data = playerMatData.upgradeSection
 
@@ -200,8 +203,7 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
     }
     class Deploy(playerInstance: PlayerInstance, startingCost: Int, costBottom: Int, coins: Int) : BottomRowAction(playerInstance, startingCost, costBottom, coins) {
         override val fragmentNav: Int = R.id.nav_deploy
-        override val actionInto: NavDirections = PassOffFragmentDirections.actionNavPassOffToNavDeploy()
-        override val actionOutOf: NavDirections = DeployFragmentDirections.actionNavDeployToNavEnd()
+        override val actionOutOf: Int = R.id.action_nav_deploy_to_nav_end
 
         private val data = playerMatData.deploySection
 
@@ -227,8 +229,7 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
     }
     class Build(playerInstance: PlayerInstance, startingCost: Int, costBottom: Int, coins: Int) : BottomRowAction(playerInstance, startingCost, costBottom, coins) {
         override val fragmentNav: Int = R.id.nav_build
-        override val actionInto: NavDirections = PassOffFragmentDirections.actionNavPassOffToNavBuild()
-        override val actionOutOf: NavDirections = BuildFragmentDirections.actionNavBuildToNavEnd()
+        override val actionOutOf: Int = R.id.action_nav_build_to_nav_end
 
         private val data = playerMatData.buildSection
 
@@ -248,14 +249,21 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
         override val cost: List<Resource>
             get() = (1..data.woodCost).map { NaturalResourceType.WOOD }
 
+        fun getBuildableStructures() : List<GameUnit>? {
+            return listOf(UnitType.MILL, UnitType.ARMORY, UnitType.MONUMENT, UnitType.MINE).flatMap { unitType ->
+                ScytheDatabase.unitDao()?.getUnitsForPlayer(playerInstance.playerId, unitType.ordinal)?.map { unitData ->
+                    GameUnit(unitData, playerInstance)
+                }?: emptyList()
+            }.filter { it.pos == -1 }
+        }
+
         override fun upgrade() {
             data.woodCost -= 1
         }
     }
     class Enlist(playerInstance: PlayerInstance, startingCost: Int, costBottom: Int, coins: Int) : BottomRowAction(playerInstance, startingCost, costBottom, coins) {
         override val fragmentNav: Int = R.id.nav_enlist
-        override val actionInto: NavDirections = PassOffFragmentDirections.actionNavPassOffToNavEnlist()
-        override val actionOutOf: NavDirections = EnlistFragmentDirections.actionNavEnlistToNavEnd()
+        override val actionOutOf: Int = R.id.action_nav_enlist_to_nav_end
 
         private val data = playerMatData.enlistSection
 
@@ -281,6 +289,7 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
     }
 
     abstract val recruitResource: Resource
+    abstract val actionOutOf: Int
     abstract var recruited: Boolean
     abstract fun upgrade()
 }

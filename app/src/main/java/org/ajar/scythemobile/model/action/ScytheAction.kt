@@ -68,6 +68,28 @@ sealed class ScytheAction<R> {
             return true
         }
     }
+    class SpendPopularityAction(private val player: PlayerInstance, private val amount: Int) : ScytheAction<Boolean>() {
+        override fun perform(): Boolean {
+            return if(player.popularity >= amount) {
+                player.popularity -= amount
+                TurnHolder.updatePlayer(player.playerData)
+                true
+            } else {
+                false
+            }
+        }
+    }
+    class SpendPowerAction(private val player: PlayerInstance, private val amount: Int) : ScytheAction<Boolean>() {
+        override fun perform(): Boolean {
+            return if(player.power >= amount) {
+                player.power -= amount
+                TurnHolder.updatePlayer(player.playerData)
+                true
+            } else {
+                false
+            }
+        }
+    }
     class GiveCapitalResourceAction(private val player: PlayerInstance, private val type: CapitalResourceType, private val amount: Int) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
             repeat(amount) { type.plus(player) }

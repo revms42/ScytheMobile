@@ -1,13 +1,46 @@
 package org.ajar.scythemobile.ui.bolster
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.model.action.ScytheAction
+import org.ajar.scythemobile.model.combat.CombatCardDeck
+import org.ajar.scythemobile.model.player.TopRowAction
+import org.ajar.scythemobile.turn.TurnHolder
+import org.ajar.scythemobile.ui.TopRowViewModel
 
-class BolsterViewModel : ViewModel() {
+class BolsterViewModel : TopRowViewModel<TopRowAction.Bolster>() {
+    private var _action: TopRowAction.Bolster? = null
+    override val action: TopRowAction.Bolster
+        get() {
+            if(_action == null) {
+                _action = TopRowAction.Bolster(TurnHolder.currentPlayer)
+            }
+            return _action!!
+        }
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    val cardsGain: Int
+        get() = action.cardsGain
+
+    val powerGain: Int
+        get() = action.powerGain
+
+    var obtainCards: Boolean = false
+
+    val cost: Int
+        get() = action.cost.size
+
+
+    fun performBolster() {
+        TurnHolder.currentPlayer.takeCoins(cost, true)?.also {
+            it.forEach { resource -> ScytheAction.SpendResourceAction(resource.resourceData).perform() }
+            if(obtainCards) {
+                repeat(cardsGain) { CombatCardDeck.currentDeck.drawCard(TurnHolder.currentPlayer) }
+            } else {
+                ScytheAction.GiveCapitalResourceAction(TurnHolder.currentPlayer, CapitalResourceType.POWER, powerGain).perform()
+            }
+        }
     }
-    val text: LiveData<String> = _text
+
+    fun reset() {
+        obtainCards = false
+    }
 }

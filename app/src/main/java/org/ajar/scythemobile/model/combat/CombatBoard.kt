@@ -15,7 +15,7 @@ class CombatBoard(val playerInstance: PlayerInstance, val hex: MapHex, val attac
     val playerCombatCards: MutableList<CombatCard> = (playerInstance.combatCards?: emptyList()).toMutableList()
     var cardLimit: Int = unitsPresent.count { it.type == UnitType.MECH || it.type == UnitType.CHARACTER }
     val availableAbilities: List<CombatRule> = playerInstance.getCombatRules().filter { if(attacker) it.appliesForAttack else it.appliesForDefense }
-    //val unitsPresent: List<GameUnit> = ScytheDatabase.unitDao()?.getUnitsForCombat(hex.loc, playerInstance.playerId)?.map { GameUnit(it, playerInstance) }!!
+    //val unitsPresent: List<GameUnit> = ScytheDatabase.unitDao()?.getSpecificUnitsAtLoc(hex.loc, playerInstance.playerId)?.map { GameUnit(it, playerInstance) }!!
 
     var selectedPower: Int = 0
     val selectedCards: MutableList<CombatCard> = ArrayList()

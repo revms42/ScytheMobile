@@ -3,6 +3,7 @@ package org.ajar.scythemobile.model
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.data.FactionMatData
 import org.ajar.scythemobile.data.PlayerData
+import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.entity.GameUnit

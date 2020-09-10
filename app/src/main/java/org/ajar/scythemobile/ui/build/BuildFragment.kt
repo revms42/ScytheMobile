@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import org.ajar.scythemobile.R
-import org.ajar.scythemobile.ui.upgrade.UpgradeViewModel
 
 class BuildFragment : Fragment() {
 
-    private lateinit var buildViewModel: UpgradeViewModel
+    private lateinit var buildViewModel: BuildViewModel
+    private val navigationArgs: BuildFragmentArgs by navArgs()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -21,12 +21,35 @@ class BuildFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         buildViewModel =
-                ViewModelProvider(requireActivity()).get(UpgradeViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
-        buildViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-        return root
+                ViewModelProvider(requireActivity()).get(BuildViewModel::class.java)
+
+        if(buildViewModel.unitType == null && navigationArgs.deployFromUnit != -1) buildViewModel.unitType = navigationArgs.deployFromUnit
+        if(buildViewModel.returnNav == null && navigationArgs.returnNav != -1) buildViewModel.returnNav = navigationArgs.returnNav
+
+        return inflater.inflate(R.layout.fragment_gallery, container, false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(!navigationArgs.paid){
+            val cost = if(navigationArgs.amount == -1) {
+                buildViewModel.cost.size
+            } else {
+                navigationArgs.amount
+            }
+
+            val type = if(navigationArgs.costType == -1) {
+                buildViewModel.cost[0].id
+            } else {
+                navigationArgs.costType
+            }
+            BuildFragmentDirections.actionNavBuildToNavResourcePaymentChoice(type, cost, R.id.action_nav_resource_payment_choice_to_nav_build)
+        } else {
+            TODO("Actually make this build somewhere")
+        }
+    }
+
+    private fun navigateOut() {
+        view?.findNavController()?.navigate(buildViewModel.returnNav?:buildViewModel.navigateOut).also { buildViewModel.reset() }
     }
 }

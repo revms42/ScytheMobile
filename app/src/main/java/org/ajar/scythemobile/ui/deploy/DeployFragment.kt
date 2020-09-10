@@ -4,15 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import org.ajar.scythemobile.R
 
 class DeployFragment : Fragment() {
 
     private lateinit var deployViewModel: DeployViewModel
+    private val navigationArgs: DeployFragmentArgs by navArgs()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -21,11 +22,34 @@ class DeployFragment : Fragment() {
     ): View? {
         deployViewModel =
                 ViewModelProvider(requireActivity()).get(DeployViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_gallery, container, false)
-        val textView: TextView = root.findViewById(R.id.text_gallery)
-        deployViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-        return root
+
+        if(deployViewModel.unitType == null && navigationArgs.deployFromUnit != -1) deployViewModel.unitType = navigationArgs.deployFromUnit
+        if(deployViewModel.returnNav == null && navigationArgs.returnNav != -1) deployViewModel.returnNav = navigationArgs.returnNav
+
+        return inflater.inflate(R.layout.fragment_gallery, container, false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(!navigationArgs.paid){
+            val cost = if(navigationArgs.amount == -1) {
+                deployViewModel.cost.size
+            } else {
+                navigationArgs.amount
+            }
+
+            val type = if(navigationArgs.costType == -1) {
+                deployViewModel.cost[0].id
+            } else {
+                navigationArgs.costType
+            }
+            DeployFragmentDirections.actionNavDeployToNavResourcePaymentChoice(type, cost, R.id.action_nav_resource_payment_choice_to_nav_deploy)
+        } else {
+            TODO("Actually make this deploy somewhere")
+        }
+    }
+
+    private fun navigateOut() {
+        view?.findNavController()?.navigate(deployViewModel.returnNav?: deployViewModel.navigateOut).also { deployViewModel.reset() }
     }
 }

@@ -34,8 +34,8 @@ sealed class EncounterAction {
     object DeployMech : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
             activity.findNavController(R.id.nav_encounter).navigate(
-                    R.id.action_nav_encounter_to_nav_mech_deploy_choice,
-                    createPaidBundle(activity.resources, R.id.action_nav_mech_deploy_choice_to_nav_encounter)
+                    R.id.action_nav_encounter_to_nav_mech_deploy,
+                    createPaidBundle(activity.resources, R.id.action_nav_mech_deploy_to_nav_encounter)
             )
         }
     }
@@ -47,24 +47,24 @@ sealed class EncounterAction {
     object EnlistRecruit : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
             activity.findNavController(R.id.nav_encounter).navigate(
-                    R.id.action_nav_encounter_to_nav_enlist_choice,
-                    createPaidBundle(activity.resources, R.id.action_nav_enlist_choice_to_nav_encounter)
+                    R.id.action_nav_encounter_to_nav_enlist,
+                    createPaidBundle(activity.resources, R.id.action_nav_enlist_to_nav_encounter)
             )
         }
     }
     object BuildStructure : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
             activity.findNavController(R.id.nav_encounter).navigate(
-                    R.id.action_nav_encounter_to_nav_build_choice,
-                    createPaidBundle(activity.resources, R.id.action_nav_build_choice_to_nav_encounter)
+                    R.id.action_nav_encounter_to_nav_build,
+                    createPaidBundle(activity.resources, R.id.action_nav_build_to_nav_encounter)
             )
         }
     }
     object UpgradeMat : EncounterAction() {
         override fun performAction(activity: Activity, unit: GameUnit) {
             activity.findNavController(R.id.nav_encounter).navigate(
-                    R.id.action_nav_encounter_to_nav_upgrade_choice,
-                    createPaidBundle(activity.resources, R.id.action_nav_upgrade_choice_to_nav_encounter)
+                    R.id.action_nav_encounter_to_nav_upgrade,
+                    createPaidBundle(activity.resources, R.id.action_nav_upgrade_to_nav_encounter)
             )
         }
     }

@@ -21,11 +21,6 @@ class ProduceFragment : Fragment() {
     ): View? {
         produceViewModel =
                 ViewModelProvider(requireActivity()).get(ProduceViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
-        produceViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-        return root
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 }

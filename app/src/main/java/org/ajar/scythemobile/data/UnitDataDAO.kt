@@ -18,7 +18,7 @@ interface UnitDataDAO {
     fun getUnitsAtLocation(loc: Int): List<UnitData>?
 
     @Query("SELECT * FROM ${UnitData.TABLE_NAME} WHERE ${UnitData.COLUMN_LOCATION} = :loc AND ${UnitData.COLUMN_OWNER} = :owner AND ${UnitData.COLUMN_TYPE} IN (:types)")
-    fun getUnitsForCombat(loc: Int, owner: Int, types: List<Int> = listOf(UnitType.CHARACTER.ordinal, UnitType.MECH.ordinal, UnitType.WORKER.ordinal)): List<UnitData>?
+    fun getSpecificUnitsAtLoc(loc: Int, owner: Int, types: List<Int> = listOf(UnitType.CHARACTER.ordinal, UnitType.MECH.ordinal, UnitType.WORKER.ordinal)): List<UnitData>?
 
     @Query("SELECT * FROM ${UnitData.TABLE_NAME} WHERE ${UnitData.COLUMN_INDEX} IN (:ids)")
     fun getUnitsFromList(ids: List<Int>): List<UnitData>?
