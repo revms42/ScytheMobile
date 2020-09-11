@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import org.ajar.scythemobile.R
+import org.ajar.scythemobile.Resource
 
 class ResourcePaymentChoiceFragment : Fragment() {
 
@@ -24,8 +25,7 @@ class ResourcePaymentChoiceFragment : Fragment() {
         payViewModel =
                 ViewModelProvider(requireActivity()).get(ResourcePaymentChoiceViewModel::class.java)
 
-        payViewModel.amount = navigationArgs.amount
-        payViewModel.resourceType = navigationArgs.costType
+        payViewModel.cost = navigationArgs.cost.map { Resource.valueOf(it)!! }
 
         return inflater.inflate(R.layout.fragment_gallery, container, false)
     }

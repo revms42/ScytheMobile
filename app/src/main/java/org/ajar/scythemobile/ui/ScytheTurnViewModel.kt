@@ -37,20 +37,20 @@ class ScytheTurnViewModel : ViewModel() {
             }
         }
 
-    fun finishSection(current: Int): NavDirections? {
+    fun finishSection(current: Int): Int? {
         return when(current) {
             R.id.nav_start -> currentSection!!.topRowAction.actionInto
             currentSection!!.topRowAction.fragmentNav -> {
                 when {
-                    TurnHolder.currentTurn.combatOne?.combatResolved == false -> MoveFragmentDirections.actionNavMoveToNavStartCombat()
-                    TurnHolder.currentTurn.combatTwo?.combatResolved == false -> MoveFragmentDirections.actionNavMoveToNavStartCombat()
-                    TurnHolder.currentTurn.combatThree?.combatResolved == false -> MoveFragmentDirections.actionNavMoveToNavStartCombat()
+                    TurnHolder.currentTurn.combatOne?.combatResolved == false -> R.id.action_nav_move_to_nav_start_combat
+                    TurnHolder.currentTurn.combatTwo?.combatResolved == false -> R.id.action_nav_move_to_nav_start_combat
+                    TurnHolder.currentTurn.combatThree?.combatResolved == false -> R.id.action_nav_move_to_nav_start_combat
                     else -> currentSection!!.moveTopToBottom
                 }.also { TurnHolder.commitChanges() }
             }
-            R.id.nav_start_combat -> StartCombatFragmentDirections.actionNavStartCombatToNavAnswerCombat()
-            R.id.nav_answer_combat -> AnswerCombatFragmentDirections.actionNavAnswerCombatToNavResolveCombat()
-            R.id.nav_resolve_combat -> ResolveCombatFragmentDirections.actionNavResolveCombatToNavMove()
+            R.id.nav_start_combat -> R.id.action_nav_start_combat_to_nav_answer_combat
+            R.id.nav_answer_combat -> R.id.action_nav_answer_combat_to_nav_resolve_combat
+            R.id.nav_resolve_combat -> R.id.action_nav_resolve_combat_to_nav_move
             currentSection!!.bottomRowAction.fragmentNav -> currentSection!!.bottomRowAction.actionOutOf.also { TurnHolder.commitChanges() }
             else -> null
         }

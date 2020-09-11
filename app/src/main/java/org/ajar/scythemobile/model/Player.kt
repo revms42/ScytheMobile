@@ -61,7 +61,7 @@ class PlayerInstance private constructor(
 
     val combatCards: List<CombatCard>?
         //TODO: This may cause issues if it's not in sync with the turn holder.
-        get() = ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(CapitalResourceType.CARDS.id, playerId)?.map { CombatCard(it) }
+        get() = ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(playerId, listOf(CapitalResourceType.CARDS.id))?.map { CombatCard(it) }
 
     fun takeCombatCards(number: Int, requireExactChange: Boolean = false): List<CombatCard>? {
         val cards = this.combatCards
@@ -90,7 +90,7 @@ class PlayerInstance private constructor(
     }
 
     val coins: List<Coin>?
-        get() = ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(CapitalResourceType.COINS.id, playerId)?.map { Coin(it) }
+        get() = ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(playerId, listOf(CapitalResourceType.COINS.id))?.map { Coin(it) }
 
     fun takeCoins(number: Int, requireExactChange: Boolean = false): List<Coin>? {
         val coins = this.coins
@@ -119,7 +119,7 @@ class PlayerInstance private constructor(
     }
 
     fun drawCoins(number: Int) {
-        ScytheDatabase.resourceDao()!!.getOwnedResourcesOfType(CapitalResourceType.COINS.id, -1)?.also { list ->
+        ScytheDatabase.resourceDao()!!.getOwnedResourcesOfType( -1, listOf(CapitalResourceType.COINS.id))?.also { list ->
             val total = if(list.size < number) list.size else number
             TurnHolder.updateResource(*list.subList(0, total).map { coin -> coin.owner = playerId; coin }.toTypedArray())
         }

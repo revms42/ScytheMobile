@@ -16,8 +16,8 @@ interface ResourceDataDAO {
     @Query("SELECT * FROM ${ResourceData.TABLE_NAME} WHERE ${ResourceData.COLUMN_TYPE} = :type")
     fun getResourcesOfType(type: Int): List<ResourceData>?
 
-    @Query("SELECT * FROM ${ResourceData.TABLE_NAME} WHERE ${ResourceData.COLUMN_TYPE} = :type AND ${ResourceData.COLUMN_OWNER} = :owner")
-    fun getOwnedResourcesOfType(type: Int, owner: Int): List<ResourceData>?
+    @Query("SELECT * FROM ${ResourceData.TABLE_NAME} WHERE ${ResourceData.COLUMN_TYPE} IN (:type) AND ${ResourceData.COLUMN_OWNER} = :owner")
+    fun getOwnedResourcesOfType(owner: Int, type: List<Int>): List<ResourceData>?
 
     @Query("SELECT * FROM ${ResourceData.TABLE_NAME} WHERE ${ResourceData.COLUMN_TYPE} = :type AND ${ResourceData.COLUMN_OWNER} = -1 AND ${ResourceData.COLUMN_POSITION} = -1")
     fun getUnclaimedResourcesOfType(type: Int): List<ResourceData>?

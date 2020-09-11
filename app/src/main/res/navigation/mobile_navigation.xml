@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_nav_start_to_nav_move"
             app:destination="@id/nav_move" />
+        <action
+            android:id="@+id/action_nav_start_to_nav_factory"
+            app:destination="@id/nav_factory" />
     </fragment>
 
     <fragment
@@ -170,6 +173,30 @@
         <action
             android:id="@+id/action_nav_produce_to_nav_enlist"
             app:destination="@id/nav_enlist" />
+        <argument
+            android:name="numberOfHexes"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="cost"
+            app:argType="integer[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="paid"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <action
+            android:id="@+id/action_nav_produce_to_nav_resource_payment_choice"
+            app:destination="@id/nav_resource_payment_choice" />
+        <argument
+            android:name="returnNav"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="ignoreMill"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 
     <fragment
@@ -211,13 +238,10 @@
             app:argType="boolean"
             android:defaultValue="false"/>
         <argument
-            android:name="costType"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="amount"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            android:name="cost"
+            app:argType="integer[]"
+            android:defaultValue="@null"
+            app:nullable="true" />
         <argument
             android:name="returnNav"
             app:argType="integer"
@@ -243,13 +267,10 @@
             app:argType="boolean"
             android:defaultValue="false"/>
         <argument
-            android:name="costType"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="amount"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            android:name="cost"
+            app:argType="integer[]"
+            android:defaultValue="@null"
+            app:nullable="true" />
         <argument
             android:name="returnNav"
             app:argType="integer"
@@ -273,13 +294,10 @@
             app:argType="boolean"
             android:defaultValue="false"/>
         <argument
-            android:name="costType"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="amount"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            android:name="cost"
+            app:argType="integer[]"
+            android:defaultValue="@null"
+            app:nullable="true" />
         <argument
             android:name="returnNav"
             app:argType="integer"
@@ -305,13 +323,10 @@
             app:argType="boolean"
             android:defaultValue="false"/>
         <argument
-            android:name="costType"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="amount"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            android:name="cost"
+            app:argType="integer[]"
+            android:defaultValue="@null"
+            app:nullable="true" />
         <argument
             android:name="returnNav"
             app:argType="integer"
@@ -341,6 +356,13 @@
         <action
             android:id="@+id/action_nav_choose_resources_to_nav_encounter"
             app:destination="@id/nav_encounter" />
+        <action
+            android:id="@+id/action_nav_choose_resources_to_nav_factory"
+            app:destination="@id/nav_factory" />
+        <argument
+            android:name="deployFromUnit"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 
     <fragment
@@ -384,13 +406,39 @@
             android:id="@+id/action_nav_resource_payment_choice_to_nav_upgrade"
             app:destination="@id/nav_upgrade" />
         <argument
-            android:name="costType"
-            app:argType="integer" />
-        <argument
-            android:name="amount"
-            app:argType="integer" />
+            android:name="cost"
+            app:argType="integer[]" />
         <argument
             android:name="returnNav"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_nav_resource_payment_choice_to_nav_produce"
+            app:destination="@id/nav_produce" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_factory"
+        android:name="org.ajar.scythemobile.ui.factory.FactoryFragment"
+        android:label="@string/menu_factory"
+        tools:layout="@layout/fragment_slideshow">
+
+        <action
+            android:id="@+id/action_nav_factory_to_nav_enlist"
+            app:destination="@id/nav_enlist" />
+        <action
+            android:id="@+id/action_nav_factory_to_nav_produce"
+            app:destination="@id/nav_produce" />
+        <action
+            android:id="@+id/action_nav_factory_to_nav_build"
+            app:destination="@id/nav_build" />
+        <action
+            android:id="@+id/action_nav_factory_to_nav_deploy"
+            app:destination="@id/nav_deploy" />
+        <action
+            android:id="@+id/action_nav_factory_to_nav_upgrade"
+            app:destination="@id/nav_upgrade" />
+        <action
+            android:id="@+id/action_nav_factory_to_nav_choose_resources"
+            app:destination="@id/nav_choose_resources" />
     </fragment>
 </navigation>

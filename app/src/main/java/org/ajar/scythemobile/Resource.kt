@@ -12,7 +12,11 @@ interface Resource {
     var image: Int
 
     companion object {
-        val list = arrayOf(*NaturalResourceType.values(), *CapitalResourceType.values())
+        val list: Array<out Resource> = arrayOf(*NaturalResourceType.values(), *CapitalResourceType.values())
+
+        fun valueOf(id: Int) : Resource? {
+            return list.firstOrNull { resource -> resource.id == id }
+        }
     }
 }
 
@@ -57,7 +61,9 @@ enum class NaturalResourceType(override var displayName: String, override var im
     WOOD("Wood"),
     FOOD("Food"),
     OIL("Oil"),
-    METAL("Metal");
+    METAL("Metal"),
+    ANY("(Any)"),
+    ANY_DISSIMILAR("(Dissimilar)");
 
     companion object {
         fun loadNames(context: Context) {

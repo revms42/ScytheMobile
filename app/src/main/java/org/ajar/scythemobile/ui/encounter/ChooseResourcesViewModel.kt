@@ -9,7 +9,12 @@ import org.ajar.scythemobile.turn.TurnHolder
 
 class ChooseResourcesViewModel : ViewModel() {
 
+    var returnNav: Int? = null
+
     var amount: Int? = null
+
+    var unitType: Int? = null
+
     val hex: Int = ScytheDatabase.unitDao()!!.getUnitsForPlayer(TurnHolder.currentPlayer.playerId, UnitType.CHARACTER.ordinal)!![0].loc
 
     private val woodCap = ScytheDatabase.resourceDao()?.getUnclaimedResourcesOfType(NaturalResourceType.WOOD.id)?.size?:0
@@ -50,6 +55,7 @@ class ChooseResourcesViewModel : ViewModel() {
     }
 
     fun reset() {
+        returnNav = null
         woodSelected = 0
         foodSelected = 0
         metalSelected = 0

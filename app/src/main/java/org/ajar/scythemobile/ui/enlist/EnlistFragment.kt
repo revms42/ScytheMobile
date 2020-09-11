@@ -31,18 +31,12 @@ class EnlistFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if(!navigationArgs.paid){
-            val cost = if(navigationArgs.amount == -1) {
-                enlistViewModel.cost.size
+            val cost = if(navigationArgs.cost == null) {
+                enlistViewModel.cost.map { it.id }.toIntArray()
             } else {
-                navigationArgs.amount
-            }
-
-            val type = if(navigationArgs.costType == -1) {
-                enlistViewModel.cost[0].id
-            } else {
-                navigationArgs.costType
-            }
-            EnlistFragmentDirections.actionNavEnlistToNavResourcePaymentChoice(type, cost, R.id.action_nav_resource_payment_choice_to_nav_enlist)
+                navigationArgs.cost
+            }?: IntArray(0)
+            EnlistFragmentDirections.actionNavEnlistToNavResourcePaymentChoice(cost, R.id.action_nav_resource_payment_choice_to_nav_enlist)
         } else {
             TODO("Actually make this enlist somewhere")
         }

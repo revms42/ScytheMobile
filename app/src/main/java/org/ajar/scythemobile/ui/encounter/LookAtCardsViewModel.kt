@@ -16,7 +16,7 @@ class LookAtCardsViewModel : ViewModel() {
         get() = ScytheDatabase.playerDao()?.getPlayers()?.filter { it.id != TurnHolder.currentPlayer.playerId }?: emptyList()
 
     fun getCards(): List<CombatCard> {
-        return ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(CapitalResourceType.CARDS.id, chosenPlayer!!)?.map { CombatCard(it) }?: emptyList()
+        return ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(chosenPlayer!!, listOf(CapitalResourceType.CARDS.id))?.map { CombatCard(it) }?: emptyList()
     }
 
     fun reset() {

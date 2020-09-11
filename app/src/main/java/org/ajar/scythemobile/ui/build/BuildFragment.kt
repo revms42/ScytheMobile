@@ -32,18 +32,12 @@ class BuildFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if(!navigationArgs.paid){
-            val cost = if(navigationArgs.amount == -1) {
-                buildViewModel.cost.size
+            val cost = if(navigationArgs.cost == null) {
+                buildViewModel.cost.map { it.id }.toIntArray()
             } else {
-                navigationArgs.amount
-            }
-
-            val type = if(navigationArgs.costType == -1) {
-                buildViewModel.cost[0].id
-            } else {
-                navigationArgs.costType
-            }
-            BuildFragmentDirections.actionNavBuildToNavResourcePaymentChoice(type, cost, R.id.action_nav_resource_payment_choice_to_nav_build)
+                navigationArgs.cost
+            }?: IntArray(0)
+            BuildFragmentDirections.actionNavBuildToNavResourcePaymentChoice(cost, R.id.action_nav_resource_payment_choice_to_nav_build)
         } else {
             TODO("Actually make this build somewhere")
         }

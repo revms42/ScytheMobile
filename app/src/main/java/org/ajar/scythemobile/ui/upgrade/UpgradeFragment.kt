@@ -31,18 +31,12 @@ class UpgradeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if(!navigationArgs.paid){
-            val cost = if(navigationArgs.amount == -1) {
-                upgradeViewModel.cost.size
+            val cost = if(navigationArgs.cost == null) {
+                upgradeViewModel.cost.map { it.id }.toIntArray()
             } else {
-                navigationArgs.amount
-            }
-
-            val type = if(navigationArgs.costType == -1) {
-                upgradeViewModel.cost[0].id
-            } else {
-                navigationArgs.costType
-            }
-            UpgradeFragmentDirections.actionNavUpgradeToNavResourcePaymentChoice(type, cost, R.id.action_nav_resource_payment_choice_to_nav_upgrade)
+                navigationArgs.cost
+            }?: IntArray(0)
+            UpgradeFragmentDirections.actionNavUpgradeToNavResourcePaymentChoice(cost, R.id.action_nav_resource_payment_choice_to_nav_upgrade)
         } else {
             TODO("Actually make this enlist somewhere")
         }

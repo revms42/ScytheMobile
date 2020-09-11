@@ -1,6 +1,5 @@
 package org.ajar.scythemobile.model.player
 
-import androidx.navigation.NavDirections
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.NaturalResourceType
 import org.ajar.scythemobile.R
@@ -10,14 +9,8 @@ import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
-import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.StartTurnFragmentDirections
-import org.ajar.scythemobile.ui.build.BuildFragmentDirections
-import org.ajar.scythemobile.ui.deploy.DeployFragmentDirections
-import org.ajar.scythemobile.ui.enlist.EnlistFragmentDirections
-import org.ajar.scythemobile.ui.upgrade.UpgradeFragmentDirections
 
-class Section(val topRowAction: TopRowAction, val bottomRowAction: BottomRowAction, val moveTopToBottom: NavDirections)
+class Section(val topRowAction: TopRowAction, val bottomRowAction: BottomRowAction, val moveTopToBottom: Int)
 
 interface PlayerMatAction {
     val fragmentNav: Int
@@ -32,7 +25,7 @@ interface PlayerMatAction {
 sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerMatAction {
     class MoveOrGain(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
         override val fragmentNav: Int = R.id.nav_move
-        override val actionInto: NavDirections = StartTurnFragmentDirections.actionNavStartToNavMove()
+        override val actionInto: Int = R.id.action_nav_start_to_nav_move
 
         private val data = playerMatData.moveGainSection
 
@@ -64,7 +57,7 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
     }
     class Trade(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
         override val fragmentNav: Int = R.id.nav_trade
-        override val actionInto: NavDirections = StartTurnFragmentDirections.actionNavStartToNavTrade()
+        override val actionInto: Int = R.id.action_nav_start_to_nav_trade
 
         private val data = playerMatData.tradeSection
 
@@ -97,7 +90,7 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
     }
     class Produce(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
         override val fragmentNav: Int = R.id.nav_produce
-        override val actionInto: NavDirections = StartTurnFragmentDirections.actionNavStartToNavProduce()
+        override val actionInto: Int = R.id.action_nav_start_to_nav_produce
 
         private val data = playerMatData.produceSection
 
@@ -106,6 +99,9 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
 
         override val canUpgrade: Boolean
             get() = upgrades < 1
+
+        val numberOfHexes: Int
+            get() = data.territories
 
         override val cost: List<Resource>
             get() {
@@ -132,7 +128,7 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
     }
     class Bolster(playerInstance: PlayerInstance) : TopRowAction(playerInstance) {
         override val fragmentNav: Int = R.id.nav_bolster
-        override val actionInto: NavDirections = StartTurnFragmentDirections.actionNavStartToNavBolster()
+        override val actionInto: Int = R.id.action_nav_start_to_nav_bolster
 
         private val data = playerMatData.bolsterSection
 
@@ -171,7 +167,7 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
 
     abstract fun upgradeLeading() : Boolean
     abstract fun upgradeFollowing() : Boolean
-    abstract val actionInto: NavDirections
+    abstract val actionInto: Int
 }
 
 sealed class BottomRowAction(override val playerInstance: PlayerInstance, val startingCost: Int, val costBottom: Int, val coins: Int) : PlayerMatAction {

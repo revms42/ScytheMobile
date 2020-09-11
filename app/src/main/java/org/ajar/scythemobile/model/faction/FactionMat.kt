@@ -57,7 +57,7 @@ interface FactionMat {
     }
 
     fun placeableTokens(player: PlayerInstance): List<GameUnit>?
-    fun controlledResource(player: PlayerInstance, type: Int): List<ResourceData>?
+    fun controlledResource(player: PlayerInstance, type: List<Int>): List<ResourceData>?
 
     fun initializePlayer(player: PlayerInstance)
 
@@ -119,10 +119,10 @@ enum class StandardFactionMat(
                 RiverWalk.FARM_TUNDRA, Wayfare(), Speed.singleton, Scout()
         )
 
-        override fun controlledResource(player: PlayerInstance, type: Int): List<ResourceData>? {
+        override fun controlledResource(player: PlayerInstance, type: List<Int>): List<ResourceData>? {
             val default = super.controlledResource(player, type)?.toMutableList()
             if(!player.playerData.flagCoercion) {
-                val card = ScytheDatabase.resourceDao()!!.getOwnedResourcesOfType(CapitalResourceType.CARDS.id, player.playerId)?.minBy {
+                val card = ScytheDatabase.resourceDao()!!.getOwnedResourcesOfType(player.playerId, listOf(CapitalResourceType.CARDS.id))?.minBy {
                     it.value
                 }
                 if(card != null) default?.add(card)
@@ -178,8 +178,8 @@ enum class StandardFactionMat(
     }
 
     override fun placeableTokens(player: PlayerInstance): List<GameUnit>? = null
-    override fun controlledResource(player: PlayerInstance, type: Int): List<ResourceData>? {
-        return ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(type, player.playerId)?: emptyList()
+    override fun controlledResource(player: PlayerInstance, type: List<Int>): List<ResourceData>? {
+        return ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(player.playerId, type)?: emptyList()
     }
 
     companion object {
