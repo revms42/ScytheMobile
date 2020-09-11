@@ -12,7 +12,7 @@ class BolsterViewModel : TopRowViewModel<TopRowAction.Bolster>() {
     override val action: TopRowAction.Bolster
         get() {
             if(_action == null) {
-                _action = TopRowAction.Bolster(TurnHolder.currentPlayer)
+                _action = TurnHolder.currentPlayer.playerMat.findTopRowAction(TopRowAction.Bolster::class.java)
             }
             return _action!!
         }

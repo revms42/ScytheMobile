@@ -11,12 +11,11 @@ import org.ajar.scythemobile.turn.TurnHolder
 import org.ajar.scythemobile.ui.TopRowViewModel
 
 class ProduceViewModel : TopRowViewModel<TopRowAction.Produce>() {
-    //TODO: For all these view models, rather than spinning a new one up we should grab the existing one now that the methods exist.
     private var _action: TopRowAction.Produce? = null
     override val action: TopRowAction.Produce
         get() {
             if(_action == null) {
-                _action = TopRowAction.Produce(TurnHolder.currentPlayer)
+                _action = TurnHolder.currentPlayer.playerMat.findTopRowAction(TopRowAction.Produce::class.java)
             }
             return _action!!
         }

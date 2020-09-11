@@ -3,6 +3,7 @@ package org.ajar.scythemobile.model.factory
 import android.util.SparseArray
 import androidx.core.util.set
 import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.NaturalResourceType
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.Resource
 import org.ajar.scythemobile.model.PlayerInstance
@@ -124,7 +125,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
 
         private fun performOne() {
             if(ScytheAction.SpendPopularityAction(playerInstance, cost.size).perform()) {
-                performDeploy(true, UnitType.WORKER)
+                performDeploy(true)
             } else {
                 //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
@@ -132,7 +133,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
 
         private fun performTwo() {
             if(ScytheAction.SpendPopularityAction(playerInstance, cost.size).perform()) {
-                performBuild(true, UnitType.WORKER)
+                performBuild(true)
             } else {
                 //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
@@ -146,10 +147,149 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
 
         private fun perform() {
             if(payCapital()) {
-                performChooseResources(true, 3)
+                FactoryFragmentDirections.actionNavFactoryToNavChooseResources(
+                        amount = 3,
+                        deployFromUnit = UnitType.WORKER.ordinal,
+                        returnNav = -1 //TODO: R.id.action_nav_choose_resources_to_nav_factory_move
+                )
             } else {
                 //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
+        }
+    }
+    class CoinsForUpgradeAndPopularity(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Upgrade and Gain Popularity" to ::perform
+        )
+        override val cost: List<Resource> = listOf(CapitalResourceType.COINS, CapitalResourceType.COINS)
+
+        private fun perform() {
+            if(payCapital()) {
+                ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POPULARITY, 1)
+                performUpgrade(true)
+            } else {
+                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+            }
+        }
+    }
+    class CoinsForDeployAndPower(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Deploy and Gain Power" to ::perform
+        )
+        override val cost: List<Resource> = listOf(CapitalResourceType.COINS, CapitalResourceType.COINS)
+
+        private fun perform() {
+            if(payCapital()) {
+                ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POWER, 1)
+                performDeploy(true)
+            } else {
+                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+            }
+        }
+    }
+    class CoinsForBuildAndPopularity(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Build and Gain Popularity" to ::perform
+        )
+        override val cost: List<Resource> = listOf(CapitalResourceType.COINS, CapitalResourceType.COINS)
+
+        private fun perform() {
+            if(payCapital()) {
+                ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POPULARITY, 1)
+                performBuild(true)
+            } else {
+                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+            }
+        }
+    }
+    class CoinsForEnlistAndPower(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Enlist and Gain Power" to ::perform
+        )
+        override val cost: List<Resource> = listOf(CapitalResourceType.COINS, CapitalResourceType.COINS)
+
+        private fun perform() {
+            if(payCapital()) {
+                ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POWER, 1)
+                performEnlist(true)
+            } else {
+                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+            }
+        }
+    }
+    class DissimilarForBuildOrDeploy(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Deploy a Mech" to ::performOne,
+                "Build a Structure" to ::performTwo
+        )
+        override val cost: List<Resource> = listOf(NaturalResourceType.ANY_DISSIMILAR, NaturalResourceType.ANY_DISSIMILAR)
+
+        private fun performOne() {
+            performDeploy(false)
+        }
+
+        private fun performTwo() {
+            performBuild(false)
+        }
+    }
+    class CardForWorkerAndCoins(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Conscript Worker and Gain Coins" to ::perform
+        )
+        override val cost: List<Resource> = listOf(CapitalResourceType.CARDS)
+
+        private fun perform() {
+            TODO("This one is special")
+        }
+    }
+    class AnyResourceForCardAndPower(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Gain a Combat Card and Power" to ::perform
+        )
+        override val cost: List<Resource> = listOf(NaturalResourceType.ANY)
+
+        private fun perform() {
+            TODO("This one needs a way to choose any resource")
+        }
+    }
+    class AnyResourceForPowerCoinAndPopularity(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Gain a Power, Popularity, and a Coin" to ::perform
+        )
+        override val cost: List<Resource> = listOf(NaturalResourceType.ANY)
+
+        private fun perform() {
+            TODO("This one needs a way to choose any resource")
+        }
+    }
+    class CombatCardForPowerAndUpgrade(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Upgrade and Gain Power" to ::perform
+        )
+        override val cost: List<Resource> = listOf(CapitalResourceType.CARDS)
+
+        private fun perform() {
+            if(payCapital()) {
+                ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POWER, 1)
+                performUpgrade(true)
+            } else {
+                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+            }
+        }
+    }
+    class DissimilarForEnlistOrUpgrade(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
+        override val choices: Map<String, () -> Unit> = mapOf(
+                "Enlist a Recruit" to ::performOne,
+                "Upgrade a Section" to ::performTwo
+        )
+        override val cost: List<Resource> = listOf(NaturalResourceType.ANY_DISSIMILAR, NaturalResourceType.ANY_DISSIMILAR)
+
+        private fun performOne() {
+            performEnlist(false)
+        }
+
+        private fun performTwo() {
+            performUpgrade(false)
         }
     }
 
@@ -175,27 +315,21 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
         )
     }
 
-    protected fun performBuild(paid: Boolean, unitType: UnitType) {
+    protected fun performBuild(paid: Boolean) {
         FactoryFragmentDirections.actionNavFactoryToNavBuild(
                 paid = paid,
-                deployFromUnit = unitType.ordinal,
+                cost = cost.map { it.id }.toIntArray(),
+                deployFromUnit = UnitType.WORKER.ordinal,
                 returnNav = -1 //TODO: R.id.action_nav_build_to_nav_factory_move
         )
     }
 
-    protected fun performDeploy(paid: Boolean, unitType: UnitType) {
+    protected fun performDeploy(paid: Boolean) {
         FactoryFragmentDirections.actionNavFactoryToNavDeploy(
                 paid = paid,
-                deployFromUnit = unitType.ordinal,
-                returnNav = -1 //TODO: R.id.action_nav_deploy_to_nav_factory_move
-        )
-    }
-
-    protected fun performChooseResources(paid: Boolean, amount: Int) {
-        FactoryFragmentDirections.actionNavFactoryToNavChooseResources(
-                amount = amount,
+                cost = cost.map { it.id }.toIntArray(),
                 deployFromUnit = UnitType.WORKER.ordinal,
-                returnNav = -1 //TODO: R.id.action_nav_choose_resources_to_nav_factory_move
+                returnNav = -1 //TODO: R.id.action_nav_deploy_to_nav_factory_move
         )
     }
 
@@ -233,14 +367,24 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
 
     companion object {
         init {
-            FactoryCard[1] = StandardGainFactoryCard::ProduceOnTwoHexes
-            FactoryCard[2] = StandardGainFactoryCard::UpgradeOrEnlistForPop
-            FactoryCard[3] = StandardGainFactoryCard::CombatCardForPop
-            FactoryCard[4] = StandardGainFactoryCard::CombatCardForCash
-            FactoryCard[5] = StandardGainFactoryCard::PowerForPopularity
-            FactoryCard[6] = StandardGainFactoryCard::PowerForCoins
-            FactoryCard[7] = StandardGainFactoryCard::PopularityForDeployOrBuild
-            FactoryCard[8] = StandardGainFactoryCard::CombatCardForResourceChoice
+            FactoryCard[1]  = StandardGainFactoryCard::ProduceOnTwoHexes
+            FactoryCard[2]  = StandardGainFactoryCard::UpgradeOrEnlistForPop
+            FactoryCard[3]  = StandardGainFactoryCard::CombatCardForPop
+            FactoryCard[4]  = StandardGainFactoryCard::CombatCardForCash
+            FactoryCard[5]  = StandardGainFactoryCard::PowerForPopularity
+            FactoryCard[6]  = StandardGainFactoryCard::PowerForCoins
+            FactoryCard[7]  = StandardGainFactoryCard::PopularityForDeployOrBuild
+            FactoryCard[8]  = StandardGainFactoryCard::CombatCardForResourceChoice
+            FactoryCard[9]  = StandardGainFactoryCard::CoinsForUpgradeAndPopularity
+            FactoryCard[10] = StandardGainFactoryCard::CoinsForDeployAndPower
+            FactoryCard[11] = StandardGainFactoryCard::CoinsForBuildAndPopularity
+            FactoryCard[12] = StandardGainFactoryCard::CoinsForEnlistAndPower
+            FactoryCard[13] = StandardGainFactoryCard::DissimilarForBuildOrDeploy
+            FactoryCard[14] = StandardGainFactoryCard::CardForWorkerAndCoins
+            FactoryCard[15] = StandardGainFactoryCard::AnyResourceForCardAndPower
+            FactoryCard[16] = StandardGainFactoryCard::AnyResourceForPowerCoinAndPopularity
+            FactoryCard[17] = StandardGainFactoryCard::CombatCardForPowerAndUpgrade
+            FactoryCard[18] = StandardGainFactoryCard::DissimilarForEnlistOrUpgrade
         }
     }
 }

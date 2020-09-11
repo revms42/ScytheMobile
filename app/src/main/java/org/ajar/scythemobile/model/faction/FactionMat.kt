@@ -219,6 +219,8 @@ class FactionMatInstance(val factionMat: FactionMat, val factionMatData: Faction
             }
         }
 
+    val defaultFactionAbility: DefaultFactionAbility = factionMat.factionAbility as DefaultFactionAbility
+
     fun unlockFactionAbility(ability: FactionAbility) : Boolean {
         return factionMat.mechAbilities.indexOf(ability).takeIf { it > -1 }?.let {
             when(it) {

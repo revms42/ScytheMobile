@@ -16,7 +16,7 @@ class TradeViewModel : TopRowViewModel<TopRowAction.Trade>() {
     override val action: TopRowAction.Trade
         get() {
             if(_action == null) {
-                _action = TopRowAction.Trade(TurnHolder.currentPlayer)
+                _action = TurnHolder.currentPlayer.playerMat.findTopRowAction(TopRowAction.Trade::class.java)
             }
             return _action!!
         }
