@@ -31,8 +31,7 @@ interface FactoryCard : PlayerMatAction {
 }
 
 class FactoryMoveAction(override val playerInstance: PlayerInstance) : PlayerMatAction {
-    override val fragmentNav: Int
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val fragmentNav: Int = R.id.nav_factory_move
     override val upgrades: Int = 0
     override val canUpgrade: Boolean = false
     override val cost: List<Resource> = emptyList()
@@ -48,7 +47,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                     numberOfHexes = 2,
                     cost = cost.map { it.id }.toIntArray(),
                     paid = false,
-                    returnNav = -1, //TODO: R.id.action_nav_produce_to_nav_factory_move,
+                    returnNav = R.id.action_nav_produce_to_nav_factory_move,
                     ignoreMill = true
             )
         }
@@ -64,7 +63,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
             if(ScytheAction.SpendPopularityAction(playerInstance, cost.size).perform()) {
                 performEnlist(true)
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
 
@@ -72,7 +71,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
             if(ScytheAction.SpendPopularityAction(playerInstance, cost.size).perform()) {
                 performUpgrade(true)
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
     }
@@ -127,7 +126,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
             if(ScytheAction.SpendPopularityAction(playerInstance, cost.size).perform()) {
                 performDeploy(true)
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
 
@@ -135,7 +134,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
             if(ScytheAction.SpendPopularityAction(playerInstance, cost.size).perform()) {
                 performBuild(true)
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
     }
@@ -150,10 +149,10 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                 FactoryFragmentDirections.actionNavFactoryToNavChooseResources(
                         amount = 3,
                         deployFromUnit = UnitType.WORKER.ordinal,
-                        returnNav = -1 //TODO: R.id.action_nav_choose_resources_to_nav_factory_move
+                        returnNav = R.id.action_nav_choose_resources_to_nav_factory_move
                 )
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
     }
@@ -168,7 +167,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                 ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POPULARITY, 1)
                 performUpgrade(true)
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
     }
@@ -183,7 +182,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                 ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POWER, 1)
                 performDeploy(true)
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
     }
@@ -198,7 +197,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                 ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POPULARITY, 1)
                 performBuild(true)
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
     }
@@ -213,7 +212,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                 ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POWER, 1)
                 performEnlist(true)
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
     }
@@ -239,7 +238,12 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
         override val cost: List<Resource> = listOf(CapitalResourceType.CARDS)
 
         private fun perform() {
-            TODO("This one is special")
+            if(payCapital()) {
+                ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.COINS, 2)
+                performDeployWorkerFromMech()
+            } else {
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+            }
         }
     }
     class AnyResourceForCardAndPower(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
@@ -249,7 +253,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
         override val cost: List<Resource> = listOf(NaturalResourceType.ANY)
 
         private fun perform() {
-            TODO("This one needs a way to choose any resource")
+            performChooseAnyResourceForBenefit(listOf(CapitalResourceType.CARDS, CapitalResourceType.POWER))
         }
     }
     class AnyResourceForPowerCoinAndPopularity(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
@@ -259,7 +263,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
         override val cost: List<Resource> = listOf(NaturalResourceType.ANY)
 
         private fun perform() {
-            TODO("This one needs a way to choose any resource")
+            performChooseAnyResourceForBenefit(listOf(CapitalResourceType.COINS, CapitalResourceType.POPULARITY))
         }
     }
     class CombatCardForPowerAndUpgrade(playerInstance: PlayerInstance) : StandardGainFactoryCard(playerInstance) {
@@ -273,7 +277,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                 ScytheAction.GiveCapitalResourceAction(playerInstance, CapitalResourceType.POWER, 1)
                 performUpgrade(true)
             } else {
-                //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+                FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
             }
         }
     }
@@ -303,7 +307,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
         FactoryFragmentDirections.actionNavFactoryToNavEnlist(
                 paid = paid,
                 cost = cost.map { it.id }.toIntArray(),
-                returnNav = -1 //TODO: R.id.action_nav_enlist_to_nav_factory_move
+                returnNav = R.id.action_nav_enlist_to_nav_factory_move
         )
     }
 
@@ -311,7 +315,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
         FactoryFragmentDirections.actionNavFactoryToNavUpgrade(
                 paid = paid,
                 cost = cost.map { it.id }.toIntArray(),
-                returnNav = -1 //TODO: R.id.action_nav_upgrade_to_nav_factory_move
+                returnNav = R.id.action_nav_upgrade_to_nav_factory_move
         )
     }
 
@@ -320,7 +324,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                 paid = paid,
                 cost = cost.map { it.id }.toIntArray(),
                 deployFromUnit = UnitType.WORKER.ordinal,
-                returnNav = -1 //TODO: R.id.action_nav_build_to_nav_factory_move
+                returnNav = R.id.action_nav_build_to_nav_factory_move
         )
     }
 
@@ -329,8 +333,19 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                 paid = paid,
                 cost = cost.map { it.id }.toIntArray(),
                 deployFromUnit = UnitType.WORKER.ordinal,
-                returnNav = -1 //TODO: R.id.action_nav_deploy_to_nav_factory_move
+                returnNav = R.id.action_nav_deploy_to_nav_factory_move
         )
+    }
+
+    protected fun performChooseAnyResourceForBenefit(benefit: List<Resource>) {
+        FactoryFragmentDirections.actionNavFactoryToNavResourceChoicePayment(
+                cost = cost.map { it.id }.toIntArray(),
+                reward = benefit.map { it.id }.toIntArray()
+        )
+    }
+
+    protected fun performDeployWorkerFromMech() {
+        TODO("Deploy a worker from a mech")
     }
 
     protected fun payCapital(): Boolean {
@@ -362,7 +377,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
         if(payCapital()) {
             ScytheAction.GiveCapitalResourceAction(playerInstance, type, amount)
         }
-        //TODO: FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
+        FactoryFragmentDirections.actionNavFactoryToNavFactoryMove()
     }
 
     companion object {

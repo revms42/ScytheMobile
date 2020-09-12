@@ -104,6 +104,9 @@
         <deepLink
             android:id="@+id/deepLink2"
             app:uri="scythemobile://combat/resolve/{id}?power={power}&amp;cards={cards}" />
+        <action
+            android:id="@+id/action_nav_resolve_combat_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
     </fragment>
 
     <fragment
@@ -197,6 +200,9 @@
             android:name="ignoreMill"
             app:argType="boolean"
             android:defaultValue="false" />
+        <action
+            android:id="@+id/action_nav_produce_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
     </fragment>
 
     <fragment
@@ -249,6 +255,9 @@
         <action
             android:id="@+id/action_nav_deploy_to_nav_end"
             app:destination="@id/nav_end" />
+        <action
+            android:id="@+id/action_nav_deploy_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
     </fragment>
 
     <fragment
@@ -278,6 +287,9 @@
         <action
             android:id="@+id/action_nav_enlist_to_nav_end"
             app:destination="@id/nav_end" />
+        <action
+            android:id="@+id/action_nav_enlist_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
     </fragment>
 
     <fragment
@@ -311,6 +323,9 @@
         <action
             android:id="@+id/action_nav_build_to_nav_end"
             app:destination="@id/nav_end" />
+        <action
+            android:id="@+id/action_nav_build_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
     </fragment>
 
     <fragment
@@ -340,6 +355,9 @@
         <action
             android:id="@+id/action_nav_upgrade_to_nav_end"
             app:destination="@id/nav_end" />
+        <action
+            android:id="@+id/action_nav_upgrade_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
     </fragment>
 
     <fragment
@@ -363,6 +381,9 @@
             android:name="deployFromUnit"
             app:argType="integer"
             android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_nav_choose_resources_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
     </fragment>
 
     <fragment
@@ -440,5 +461,40 @@
         <action
             android:id="@+id/action_nav_factory_to_nav_choose_resources"
             app:destination="@id/nav_choose_resources" />
+        <action
+            android:id="@+id/action_nav_factory_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
+        <action
+            android:id="@+id/action_nav_factory_to_nav_resource_choice_payment"
+            app:destination="@id/nav_resource_choice_payment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_factory_move"
+        android:name="org.ajar.scythemobile.ui.factory.FactoryMoveFragment"
+        android:label="@string/menu_factory_move"
+        tools:layout="@layout/fragment_slideshow">
+        <action
+            android:id="@+id/action_nav_factory_move_to_nav_start_combat"
+            app:destination="@id/nav_start_combat" />
+        <action
+            android:id="@+id/action_nav_factory_move_to_nav_end"
+            app:destination="@id/nav_end" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_resource_choice_payment"
+        android:name="org.ajar.scythemobile.ui.factory.ResourceChoicePaymentFragment"
+        android:label="@string/menu_resource_choice_payment"
+        tools:layout="@layout/fragment_slideshow">
+        <action
+            android:id="@+id/action_nav_resource_choice_payment_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
+        <argument
+            android:name="cost"
+            app:argType="integer[]" />
+        <argument
+            android:name="reward"
+            app:argType="integer[]" />
     </fragment>
 </navigation>

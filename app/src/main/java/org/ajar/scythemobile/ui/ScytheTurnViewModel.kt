@@ -1,17 +1,12 @@
 package org.ajar.scythemobile.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavDirections
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.CombatRecord
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.player.Section
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.move.AnswerCombatFragmentDirections
-import org.ajar.scythemobile.ui.move.MoveFragmentDirections
-import org.ajar.scythemobile.ui.move.ResolveCombatFragmentDirections
-import org.ajar.scythemobile.ui.move.StartCombatFragmentDirections
 
 class ScytheTurnViewModel : ViewModel() {
 

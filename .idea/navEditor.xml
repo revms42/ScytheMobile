@@ -68,8 +68,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="-6" />
-                            <option name="y" value="-781" />
+                            <option name="x" value="466" />
+                            <option name="y" value="211" />
                           </Point>
                         </option>
                         <option name="myPositions">
@@ -146,6 +146,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_nav_build_to_nav_factory_move">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_nav_build_to_nav_resource_payment_choice">
                               <value>
                                 <LayoutPositions />
@@ -177,6 +182,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_nav_choose_resources_to_nav_factory_move">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                           </map>
                         </option>
                       </LayoutPositions>
@@ -194,6 +204,11 @@
                         <option name="myPositions">
                           <map>
                             <entry key="action_nav_deploy_to_nav_end">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_deploy_to_nav_factory_move">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -302,6 +317,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_nav_enlist_to_nav_factory_move">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_nav_enlist_to_nav_resource_payment_choice">
                               <value>
                                 <LayoutPositions />
@@ -317,8 +337,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="92" />
-                            <option name="y" value="1266" />
+                            <option name="x" value="-24" />
+                            <option name="y" value="1412" />
                           </Point>
                         </option>
                         <option name="myPositions">
@@ -343,12 +363,43 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_nav_factory_to_nav_factory_move">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_nav_factory_to_nav_produce">
                               <value>
                                 <LayoutPositions />
                               </value>
                             </entry>
                             <entry key="action_nav_factory_to_nav_upgrade">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="nav_factory_move">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="548" />
+                            <option name="y" value="1408" />
+                          </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_nav_factory_move_to_nav_end">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_factory_move_to_nav_start_combat">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -472,6 +523,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_nav_produce_to_nav_factory_move">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_nav_produce_to_nav_resource_payment_choice">
                               <value>
                                 <LayoutPositions />
@@ -492,12 +548,17 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="235" />
-                            <option name="y" value="-481" />
+                            <option name="x" value="707" />
+                            <option name="y" value="511" />
                           </Point>
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_nav_resolve_combat_to_nav_factory_move">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_nav_resolve_combat_to_nav_move">
                               <value>
                                 <LayoutPositions />
@@ -509,6 +570,18 @@
                               </value>
                             </entry>
                           </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="nav_resource_choice_payment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="268" />
+                            <option name="y" value="1604" />
+                          </Point>
                         </option>
                       </LayoutPositions>
                     </value>
@@ -600,8 +673,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="-159" />
-                            <option name="y" value="-490" />
+                            <option name="x" value="313" />
+                            <option name="y" value="502" />
                           </Point>
                         </option>
                         <option name="myPositions">
@@ -669,6 +742,11 @@
                               </value>
                             </entry>
                             <entry key="action_nav_upgrade_to_nav_end">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_upgrade_to_nav_factory_move">
                               <value>
                                 <LayoutPositions />
                               </value>
