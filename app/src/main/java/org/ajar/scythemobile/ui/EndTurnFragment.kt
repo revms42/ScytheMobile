@@ -21,7 +21,7 @@ class EndTurnFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(ScytheTurnViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
-        // TODO: look up the selectable sections, then make someone select one.
+        // TODO: end the turn, save the data, prompt the next person (hotseat) or make a DB diff message (PBE)
         return root
     }
 }

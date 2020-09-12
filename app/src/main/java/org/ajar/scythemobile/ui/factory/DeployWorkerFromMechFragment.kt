@@ -17,9 +17,12 @@ class DeployWorkerFromMechFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        TODO("Figure this out.")
         viewModel =
                 ViewModelProvider(requireActivity()).get(DeployWorkerFromMechViewModel::class.java)
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    private fun navigateOut() {
+        DeployWorkerFromMechFragmentDirections.actionNavDeployWorkerFromMechToNavFactoryMove()
     }
 }

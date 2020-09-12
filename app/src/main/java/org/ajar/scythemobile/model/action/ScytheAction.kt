@@ -43,14 +43,19 @@ sealed class ScytheAction<R> {
                             fun(list: List<ResourceData>) = TurnHolder.updateResource(*list.toTypedArray())
                     )
                 TerrainFeature.VILLAGE ->
-                    removeFreeAndUpdateLocation(
-                            hex.loc,
-                            amount,
-                            fun(): List<UnitData>? = ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.WORKER.ordinal),
-                            fun(list: List<UnitData>) = TurnHolder.updateMove(*list.toTypedArray())
-                    )
+                    DeployWorker(player, hex, amount).perform()
                 else -> false
             }
+        }
+    }
+    class DeployWorker(private val player: PlayerInstance, private val hex: MapHex, private val amount: Int = 1) : ScytheAction<Boolean>() {
+        override fun perform(): Boolean {
+            return removeFreeAndUpdateLocation(
+                    hex.loc,
+                    amount,
+                    fun(): List<UnitData>? = ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.WORKER.ordinal),
+                    fun(list: List<UnitData>) = TurnHolder.updateMove(*list.toTypedArray())
+            )
         }
     }
     class MoveNaturalResourceAction(private val resource: ResourceData, private val to: MapHex) : ScytheAction<Boolean>() {
