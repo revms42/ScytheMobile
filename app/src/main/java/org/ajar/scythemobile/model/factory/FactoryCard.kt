@@ -345,7 +345,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
     }
 
     protected fun performDeployWorkerFromMech() {
-        TODO("Deploy a worker from a mech")
+        FactoryFragmentDirections.actionNavFactoryToNavDeployWorkerFromMech()
     }
 
     protected fun payCapital(): Boolean {

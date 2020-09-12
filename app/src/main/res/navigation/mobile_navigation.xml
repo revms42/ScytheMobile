@@ -467,6 +467,9 @@
         <action
             android:id="@+id/action_nav_factory_to_nav_resource_choice_payment"
             app:destination="@id/nav_resource_choice_payment" />
+        <action
+            android:id="@+id/action_nav_factory_to_nav_deploy_worker_from_mech"
+            app:destination="@id/nav_deploy_worker_from_mech" />
     </fragment>
 
     <fragment
@@ -496,5 +499,15 @@
         <argument
             android:name="reward"
             app:argType="integer[]" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_deploy_worker_from_mech"
+        android:name="org.ajar.scythemobile.ui.factory.DeployWorkerFromMechFragment"
+        android:label="@string/menu_deploy_worker_from_mech"
+        tools:layout="@layout/fragment_slideshow">
+        <action
+            android:id="@+id/action_nav_deploy_worker_from_mech_to_nav_factory_move"
+            app:destination="@id/nav_factory_move" />
     </fragment>
 </navigation>

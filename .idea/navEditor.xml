@@ -228,6 +228,18 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="nav_deploy_worker_from_mech">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="463" />
+                            <option name="y" value="1767" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="nav_encounter">
                     <value>
                       <LayoutPositions>
@@ -369,6 +381,11 @@
                               </value>
                             </entry>
                             <entry key="action_nav_factory_to_nav_produce">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_factory_to_nav_resource_choice_payment">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -582,6 +599,15 @@
                             <option name="x" value="268" />
                             <option name="y" value="1604" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_nav_resource_choice_payment_to_nav_factory_move">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>

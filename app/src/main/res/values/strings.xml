@@ -280,6 +280,7 @@
     <string name="menu_factory">Factory Action</string>
     <string name="menu_factory_move">Factory Move</string>
     <string name="menu_resource_choice_payment">Choose Resources for Payment</string>
+    <string name="menu_deploy_worker_from_mech">Deploy Worker From Mech</string>
 
     <!-- Arguement Strings -->
     <string name="arg_return_nav">returnNav</string>
