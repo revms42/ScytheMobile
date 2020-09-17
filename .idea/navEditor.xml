@@ -237,6 +237,15 @@
                             <option name="y" value="1767" />
                           </Point>
                         </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_nav_deploy_worker_from_mech_to_nav_factory_move">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
                       </LayoutPositions>
                     </value>
                   </entry>
@@ -366,6 +375,11 @@
                               </value>
                             </entry>
                             <entry key="action_nav_factory_to_nav_deploy">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_nav_factory_to_nav_deploy_worker_from_mech">
                               <value>
                                 <LayoutPositions />
                               </value>

@@ -3,4 +3,31 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="colorMetalPrimary">#909090</color>
+    <color name="colorMetalSecondary">#4c4c4c</color>
+
+    <color name="colorFoodPrimary">#D0D000</color>
+    <color name="colorFoodSecondary">#6c6c00</color>
+
+    <color name="colorOilPrimary">#2a4aFF</color>
+    <color name="colorOilSecondary">#0000D0</color>
+
+    <color name="colorWoodPrimary">#604020</color>
+    <color name="colorWoodSecondary">#402010</color>
+
+    <color name="colorLakePrimary">#0000F0</color>
+    <color name="colorTundraPrimary">#DFDFDF</color>
+    <color name="colorFieldPrimary">#D0D000</color>
+    <color name="colorForestPrimary">#005000</color>
+    <color name="colorMountainPrimary">#505050</color>
+    <color name="colorTownPrimary">#905000</color>
+    <color name="colorFactoryPrimary">#900000</color>
+
+    <color name="colorTunnelPrimary">#000000</color>
+    <color name="colorTunnelSecondary">#404040</color>
+    <color name="colorEncounterPrimary">#006000</color>
+    <color name="colorEncounterSecondary">#707000</color>
+    <color name="colorFactorySecondary">#000000</color>
+    <color name="colorRiverPrimary">#0000F0</color>
 </resources>

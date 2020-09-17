@@ -9,7 +9,7 @@ class GameMap(list: List<MapHexData>) {
 
     constructor(desc: MapDesc) : this(desc.mapHexDesc.map { it.createMapData() })
 
-    private val mapHexes: List<MapHex> = list.map { MapHex(it) }
+    val mapHexes: List<MapHex> = list.map { MapHex(it) }
 
     private var _startingHexes: List<MapHex>? = null
     val startingHexes: List<MapHex>
