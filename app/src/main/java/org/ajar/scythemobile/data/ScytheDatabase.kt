@@ -47,7 +47,7 @@ abstract class ScytheDatabase : RoomDatabase() {
     abstract fun playerDao(): PlayerDataDAO
     abstract fun unitDao(): UnitDataDAO
     abstract fun resourceDao(): ResourceDataDAO
-    abstract fun mapDao(): MapHexDao
+    abstract fun mapDao(): MapHexDAO
     abstract fun turnDao(): TurnDataDAO
 
     companion object {
@@ -64,7 +64,7 @@ abstract class ScytheDatabase : RoomDatabase() {
         fun playerDao(): PlayerDataDAO? = instance?.playerDao()
         fun unitDao(): UnitDataDAO? = instance?.unitDao()
         fun resourceDao(): ResourceDataDAO? = instance?.resourceDao()
-        fun mapDao(): MapHexDao? = instance?.mapDao()
+        fun mapDao(): MapHexDAO? = instance?.mapDao()
         fun turnDao(): TurnDataDAO? = instance?.turnDao()
 
         fun init(context: Context, name: String = DATABASE_NAME): Boolean {

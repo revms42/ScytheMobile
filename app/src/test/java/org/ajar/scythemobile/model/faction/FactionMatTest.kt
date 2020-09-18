@@ -1,27 +1,27 @@
-package org.ajar.scythemobile.old.model.faction
+package org.ajar.scythemobile.model.faction
 
-import org.ajar.scythemobile.model.faction.CombatRule
-import org.ajar.scythemobile.model.faction.MovementRule
+import org.ajar.scythemobile.data.FactionMatData
 import org.ajar.scythemobile.model.entity.UnitType
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class FactionMatInstanceTest {
+class FactionMatTest {
 
     private lateinit var factionMat: FactionMatInstance
 
     @Before
     fun setup() {
-        factionMat = FactionMatInstance(FactionMat.CRIMEA)
+        val factionMatData = FactionMatData(StandardFactionMat.CRIMEA.id)
+        factionMat = FactionMatInstance(factionMatData)
     }
 
     @Test
     fun testUnlockMechAbilities() {
-        val abilities= factionMat.model.mechAbilities
+        val abilities= factionMat.lockedFactionAbilities
 
         abilities.forEach {
-            factionMat.unlockMechAbility(it.abilityName)
+            factionMat.unlockFactionAbility(it)
 
             when {
                 CombatRule::class.java.isAssignableFrom(it::class.java) -> assertTrue("${it.abilityName} did not unlock!", factionMat.getCombatAbilities().contains(it))
@@ -29,7 +29,7 @@ class FactionMatInstanceTest {
                     assertTrue("${it.abilityName} did not unlock!", factionMat.getMovementAbilities(UnitType.CHARACTER).contains(it))
                     assertTrue("${it.abilityName} did not unlock!", factionMat.getMovementAbilities(UnitType.MECH).contains(it))
                 }
-                else -> assertTrue("${it.abilityName} did not unlock!", factionMat.unlockedMechAbility.contains(it))
+                else -> assertTrue("${it.abilityName} did not unlock!", factionMat.unlockedFactionAbilities.contains(it))
             }
         }
     }

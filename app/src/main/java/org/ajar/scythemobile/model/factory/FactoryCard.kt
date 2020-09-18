@@ -1,7 +1,7 @@
 package org.ajar.scythemobile.model.factory
 
-import android.util.SparseArray
-import androidx.core.util.set
+import androidx.collection.SparseArrayCompat
+import androidx.collection.set
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.NaturalResourceType
 import org.ajar.scythemobile.R
@@ -16,7 +16,7 @@ import org.ajar.scythemobile.ui.factory.FactoryFragmentDirections
 interface FactoryCard : PlayerMatAction {
 
     companion object {
-        private val factoryCards = SparseArray<(PlayerInstance) -> FactoryCard>()
+        private val factoryCards = SparseArrayCompat<(PlayerInstance) -> FactoryCard>()
 
         operator fun set(id: Int, mat: (PlayerInstance) -> FactoryCard) {
             factoryCards[id] = mat

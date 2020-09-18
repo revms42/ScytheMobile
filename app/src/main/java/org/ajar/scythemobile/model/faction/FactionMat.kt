@@ -1,7 +1,7 @@
 package org.ajar.scythemobile.model.faction
 
-import android.util.SparseArray
-import androidx.core.util.set
+import androidx.collection.SparseArrayCompat
+import androidx.collection.set
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
@@ -62,13 +62,15 @@ interface FactionMat {
     fun initializePlayer(player: PlayerInstance)
 
     companion object {
-        private val factionMats = SparseArray<FactionMat>()
+        private val factionMats = SparseArrayCompat<FactionMat>()
 
         operator fun set(id: Int, mat: FactionMat) {
             factionMats[id] = mat
         }
 
         operator fun get(id: Int): FactionMat? = factionMats[id]
+
+
     }
 }
 

@@ -3,7 +3,7 @@ package org.ajar.scythemobile.data
 import androidx.room.*
 
 @Dao
-interface MapHexDao {
+interface MapHexDAO {
     @Query("SELECT * FROM ${MapHexData.TABLE_NAME}")
     fun getMap(): List<MapHexData>?
 

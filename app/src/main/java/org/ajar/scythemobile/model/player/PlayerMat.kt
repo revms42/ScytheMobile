@@ -1,14 +1,10 @@
 package org.ajar.scythemobile.model.player
 
-import android.util.SparseArray
-import androidx.core.util.set
+import androidx.collection.SparseArrayCompat
+import androidx.collection.set
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
-import org.ajar.scythemobile.ui.bolster.BolsterFragmentDirections
-import org.ajar.scythemobile.ui.move.MoveFragmentDirections
-import org.ajar.scythemobile.ui.produce.ProduceFragmentDirections
-import org.ajar.scythemobile.ui.trade.TradeFragmentDirections
 
 interface PlayerMat {
 
@@ -64,7 +60,7 @@ interface PlayerMat {
     fun makeSections(playerInstance: PlayerInstance): List<Section>
 
     companion object {
-        private val playerMats = SparseArray<PlayerMat>()
+        private val playerMats = SparseArrayCompat<PlayerMat>()
 
         operator fun set(id: Int, mat: PlayerMat) {
             playerMats[id] = mat

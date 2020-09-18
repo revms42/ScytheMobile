@@ -1,9 +1,10 @@
 package org.ajar.scythemobile.model.objective
 
 import android.content.Context
-import android.util.SparseArray
 import android.util.SparseBooleanArray
 import android.util.SparseIntArray
+import androidx.collection.SparseArrayCompat
+import androidx.collection.set
 import androidx.core.util.set
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.ScytheDatabase
@@ -58,7 +59,7 @@ interface Objective {
         private lateinit var names: Array<String>
         private lateinit var descriptions: Array<String>
         
-        private val objectives = SparseArray<Objective>()
+        private val objectives = SparseArrayCompat<Objective>()
 
         operator fun set(id: Int, obj: Objective) {
             objectives[id] = obj

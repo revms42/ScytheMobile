@@ -43,12 +43,12 @@ sealed class ScytheAction<R> {
                             fun(list: List<ResourceData>) = TurnHolder.updateResource(*list.toTypedArray())
                     )
                 TerrainFeature.VILLAGE ->
-                    DeployWorker(player, hex, amount).perform()
+                    DeployWorkerAction(player, hex, amount).perform()
                 else -> false
             }
         }
     }
-    class DeployWorker(private val player: PlayerInstance, private val hex: MapHex, private val amount: Int = 1) : ScytheAction<Boolean>() {
+    class DeployWorkerAction(private val player: PlayerInstance, private val hex: MapHex, private val amount: Int = 1) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
             return removeFreeAndUpdateLocation(
                     hex.loc,

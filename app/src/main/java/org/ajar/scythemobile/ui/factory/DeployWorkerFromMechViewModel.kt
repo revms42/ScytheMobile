@@ -20,7 +20,7 @@ class DeployWorkerFromMechViewModel : ViewModel() {
             get() = ScytheDatabase.unitDao()?.getUnitsForPlayer(TurnHolder.currentPlayer.playerId, UnitType.WORKER.ordinal)?.any { it.loc == -1 }?: false
 
     fun perform() {
-        ScytheAction.DeployWorker(TurnHolder.currentPlayer, chosenHex!!).perform()
+        ScytheAction.DeployWorkerAction(TurnHolder.currentPlayer, chosenHex!!).perform()
     }
 
     fun reset() {
