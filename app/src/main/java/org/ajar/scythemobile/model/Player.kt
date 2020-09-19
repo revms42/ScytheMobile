@@ -3,8 +3,8 @@ package org.ajar.scythemobile.model
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.data.FactionMatData
 import org.ajar.scythemobile.data.PlayerData
-import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.faction.CombatRule
@@ -12,6 +12,7 @@ import org.ajar.scythemobile.model.faction.FactionMatInstance
 import org.ajar.scythemobile.model.faction.MovementRule
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.faction.FactionMat
+import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.player.*
 import org.ajar.scythemobile.model.objective.Objective
 import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
@@ -155,9 +156,23 @@ class PlayerInstance private constructor(
         }
     }
 
-    fun initialize() {
-        factionMat.initializePlayer(this)
-        //TODO("Initialize Units")
+    private fun initializePlayer() {
+        playerMat.initialize(this)
+    }
+
+    private fun initializeUnits() {
+        ScytheDatabase.unitDao()!!.addUnit(UnitData(0, this.playerId, GameMap.currentMap.findHomeBase(this)!!.loc, UnitType.CHARACTER.ordinal))
+        repeat(8) {
+            val pos = if(it < 2) GameMap.currentMap.findHomeBase(this)!!.loc else -1
+            ScytheDatabase.unitDao()!!.addUnit(UnitData(0, this.playerId, pos, UnitType.WORKER.ordinal))
+        }
+        repeat(4) {
+            ScytheDatabase.unitDao()!!.addUnit(UnitData(0, this.playerId, -1, UnitType.MECH.ordinal))
+        }
+        UnitType.structures.forEach {
+            ScytheDatabase.unitDao()!!.addUnit(UnitData(0, this.playerId, -1, it.ordinal))
+        }
+        factionMat.initialize(this)
     }
 
     companion object {
@@ -184,9 +199,10 @@ class PlayerInstance private constructor(
                     factoryCard = null
             )
             val playerInstance = PlayerInstance(playerData)
-            playerInstance.initialize()
+            playerInstance.initializePlayer()
 
             ScytheDatabase.playerDao()!!.addPlayer(playerData)
+            playerInstance.initializeUnits()
 
             return playerInstance
         }

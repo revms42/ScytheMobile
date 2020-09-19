@@ -16,7 +16,7 @@ class SpendPopularityActionTest {
     lateinit var playerInstance: PlayerInstance
 
     @Before
-    fun makePlayerInstance() {
+    fun setup() {
         ScytheTestDatabase.setTestingDatabase()
         playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.CRIMEA.id)
     }

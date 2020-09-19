@@ -20,7 +20,7 @@ class ResourceTestDataDAO : ResourceDataDAO {
     }
 
     override fun getOwnedResourcesOfType(owner: Int, type: List<Int>): List<ResourceData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return this.resourceData.filter { it.owner == owner && type.contains(it.type) }
     }
 
     override fun getUnclaimedResourcesOfType(type: Int): List<ResourceData>? {
@@ -32,7 +32,7 @@ class ResourceTestDataDAO : ResourceDataDAO {
     }
 
     override fun addResource(vararg resourceData: ResourceData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        resourceData.forEach { newResource -> if(newResource.id <= 0) newResource.id = this.resourceData.size; this.resourceData.add(newResource) }
     }
 
     override fun removeResource(vararg setting: ResourceData) {

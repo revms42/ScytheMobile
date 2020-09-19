@@ -175,6 +175,6 @@ sealed class ScytheAction<R> {
             }
         }
 
-        return changed?.let { update(it); true }?: false
+        return if(changed?.isNotEmpty() == true) changed.let { update(it); true }?: false else false
     }
 }

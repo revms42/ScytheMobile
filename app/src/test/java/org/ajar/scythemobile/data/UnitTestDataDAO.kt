@@ -12,7 +12,7 @@ class UnitTestDataDAO : UnitDataDAO {
     }
 
     override fun getUnitsForPlayer(owner: Int, type: Int): List<UnitData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return unitData.filter { it.type == type && it.owner == owner }
     }
 
     override fun getUnitsAtLocation(loc: Int): List<UnitData>? {
@@ -28,11 +28,11 @@ class UnitTestDataDAO : UnitDataDAO {
     }
 
     override fun addUnit(vararg unit: UnitData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        unit.forEach { newUnit -> if(newUnit.id <= 0) newUnit.id = this.unitData.size; this.unitData.add(newUnit) }
     }
 
     override fun removeUnit(vararg unit: UnitData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        unit.forEach { remove -> this.unitData.removeIf { it.id == remove.id } }
     }
 
     override fun updateUnit(vararg unit: UnitData) {

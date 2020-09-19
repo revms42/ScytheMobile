@@ -68,7 +68,7 @@ class GameMap(list: List<MapHexData>) {
             get() {
                 if(_currentMap == null) {
                     val saved = ScytheDatabase.mapDao()?.getMap()
-                    _currentMap = if(saved == null) {
+                    _currentMap = if(saved.isNullOrEmpty()) {
                         val map = GameMap(MapDesc())
                         map.mapHexes.map { it.data }.toTypedArray().also { ScytheDatabase.mapDao()?.addMapHex(*it) }
                         map

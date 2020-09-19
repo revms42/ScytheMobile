@@ -267,7 +267,7 @@ class FactionMatInstance(val factionMat: FactionMat, val factionMatData: Faction
 
     fun selectableSections(playerData: PlayerData) = factionMat.selectableSections(playerData)
 
-    fun initializePlayer(player: PlayerInstance) = factionMat.initializePlayer(player)
+    fun initialize(playerInstance: PlayerInstance) = factionMat.initializePlayer(playerInstance)
 
     companion object {
         private val standardMovementRules : List<MovementRule> = listOf(StandardMove(), TunnelMove())

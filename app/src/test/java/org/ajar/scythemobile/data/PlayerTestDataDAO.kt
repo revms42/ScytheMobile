@@ -6,7 +6,7 @@ class PlayerTestDataDAO : PlayerDataDAO {
     private val playerData = ArrayList<PlayerData>()
 
     override fun getPlayers(): List<PlayerData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return playerData
     }
 
     override fun observePlayer(name: String): LiveData<PlayerData?> {
@@ -26,6 +26,7 @@ class PlayerTestDataDAO : PlayerDataDAO {
     }
 
     override fun addPlayer(playerData: PlayerData) {
+        if(playerData.id <= 0) playerData.id = this.playerData.size
         this.playerData.add(playerData)
     }
 

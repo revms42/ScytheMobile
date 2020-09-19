@@ -14,7 +14,7 @@ class SpendResourceActionTest {
     private lateinit var resourceData: ResourceData
 
     @Before
-    fun setupResources() {
+    fun setup() {
         resourceData = ResourceData(1, 1, 1, NaturalResourceType.FOOD.id, 1)
     }
 

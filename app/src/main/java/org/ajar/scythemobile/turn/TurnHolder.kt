@@ -108,4 +108,14 @@ object TurnHolder {
             else -> false
         }
     }
+
+    fun isAnyUpdateQueued(obj: Class<out Any>): Boolean {
+        return when(obj) {
+            PlayerData::class.java -> cachedPlayerUpdates.isNotEmpty()
+            MapHexData::class.java -> cachedEncounterUpdates.isNotEmpty()
+            ResourceData::class.java -> cachedResourceUpdates.isNotEmpty()
+            UnitData::class.java -> cachedMoves.isNotEmpty()
+            else -> false
+        }
+    }
 }

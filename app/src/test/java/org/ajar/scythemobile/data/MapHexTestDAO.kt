@@ -4,7 +4,7 @@ class MapHexTestDAO : MapHexDAO {
     private val mapHexData = ArrayList<MapHexData>()
 
     override fun getMap(): List<MapHexData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return mapHexData
     }
 
     override fun getMapHex(loc: Int): MapHexData? {
@@ -24,7 +24,7 @@ class MapHexTestDAO : MapHexDAO {
     }
 
     override fun addMapHex(vararg hex: MapHexData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        hex.forEach { newHex -> this.mapHexData.add(newHex) }
     }
 
     override fun removeMapHex(vararg hex: MapHexData) {

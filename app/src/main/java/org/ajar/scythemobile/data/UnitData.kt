@@ -10,8 +10,8 @@ data class UnitData(
         @ColumnInfo(name = COLUMN_OWNER) override var owner: Int,
         @ColumnInfo(name = COLUMN_LOCATION) override var loc: Int,
         @ColumnInfo(name = COLUMN_TYPE) var type: Int,
-        @ColumnInfo(name = COLUMN_STATE) var state: Int,
-        @ColumnInfo(name = COLUMN_SUB_TYPE) var subType: Int
+        @ColumnInfo(name = COLUMN_STATE) var state: Int = -1,
+        @ColumnInfo(name = COLUMN_SUB_TYPE) var subType: Int = -1
 ) : Mappable {
 
     companion object {
