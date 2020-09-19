@@ -98,4 +98,14 @@ object TurnHolder {
             cachedMoves.clear()
         }
     }
+
+    fun isUpdateQueued(obj: Any): Boolean {
+        return when(obj) {
+            is PlayerData -> cachedPlayerUpdates.containsKey(obj.id)
+            is MapHexData -> cachedEncounterUpdates.containsKey(obj.loc)
+            is ResourceData -> cachedResourceUpdates.containsKey(obj.id)
+            is UnitData -> cachedMoves.containsKey(obj.id)
+            else -> false
+        }
+    }
 }

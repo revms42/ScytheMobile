@@ -1,6 +1,8 @@
 package org.ajar.scythemobile.data
 
 class MapHexTestDAO : MapHexDAO {
+    private val mapHexData = ArrayList<MapHexData>()
+
     override fun getMap(): List<MapHexData>? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -30,6 +32,6 @@ class MapHexTestDAO : MapHexDAO {
     }
 
     override fun updateMapHex(vararg hex: MapHexData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        hex.forEach { update -> this.mapHexData.removeIf { it.loc == update.loc }; this.mapHexData.add(update) }
     }
 }

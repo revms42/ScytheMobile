@@ -16,9 +16,9 @@ import kotlin.math.roundToInt
 class ObjectiveCardDeck(private val objectives: MutableList<Objective>) {
 
     init {
-        for(i in 0..objectives.size) {
-            val first = (Math.random() * objectives.size).roundToInt()
-            val second = (Math.random() * objectives.size).roundToInt()
+        for(i in 0 until objectives.size) {
+            val first = (Math.random() * (objectives.size-1)).roundToInt()
+            val second = (Math.random() * (objectives.size-1)).roundToInt()
 
             val firstObj = objectives[first]
             val secondObj = objectives[second]

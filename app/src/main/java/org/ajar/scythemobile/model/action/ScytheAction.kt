@@ -67,15 +67,17 @@ sealed class ScytheAction<R> {
     }
     class SpendResourceAction(private val resource: ResourceData) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            resource.loc = -1
-            resource.owner = -1
-            TurnHolder.updateResource(resource)
-            return true
+            return if(resource.loc != -1 || resource.owner != -1) {
+                resource.loc = -1
+                resource.owner = -1
+                TurnHolder.updateResource(resource)
+                true
+            } else false
         }
     }
     class SpendPopularityAction(private val player: PlayerInstance, private val amount: Int) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            return if(player.popularity >= amount) {
+            return if(amount > 0 && player.popularity >= amount) {
                 player.popularity -= amount
                 TurnHolder.updatePlayer(player.playerData)
                 true
@@ -86,7 +88,7 @@ sealed class ScytheAction<R> {
     }
     class SpendPowerAction(private val player: PlayerInstance, private val amount: Int) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            return if(player.power >= amount) {
+            return if(amount > 0 && player.power >= amount) {
                 player.power -= amount
                 TurnHolder.updatePlayer(player.playerData)
                 true

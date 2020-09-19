@@ -3,6 +3,8 @@ package org.ajar.scythemobile.data
 import androidx.lifecycle.LiveData
 
 class PlayerTestDataDAO : PlayerDataDAO {
+    private val playerData = ArrayList<PlayerData>()
+
     override fun getPlayers(): List<PlayerData>? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -24,15 +26,15 @@ class PlayerTestDataDAO : PlayerDataDAO {
     }
 
     override fun addPlayer(playerData: PlayerData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        this.playerData.add(playerData)
     }
 
     override fun removePlayer(vararg setting: PlayerData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        setting.forEach { remove -> this.playerData.removeIf { it.id == remove.id } }
     }
 
     override fun updatePlayer(vararg setting: PlayerData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        setting.forEach { update -> this.playerData.removeIf { it.id == update.id }; this.playerData.add(update) }
     }
 
 }

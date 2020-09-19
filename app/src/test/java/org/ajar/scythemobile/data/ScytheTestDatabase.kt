@@ -3,6 +3,7 @@ package org.ajar.scythemobile.data
 import androidx.room.DatabaseConfiguration
 import androidx.room.InvalidationTracker
 import androidx.sqlite.db.SupportSQLiteOpenHelper
+import org.mockito.Mockito
 
 class ScytheTestDatabase : ScytheDatabase() {
     private val playerDataDAO: PlayerDataDAO by lazy { PlayerTestDataDAO() }
@@ -23,7 +24,9 @@ class ScytheTestDatabase : ScytheDatabase() {
 
     // Room Database
     override fun createOpenHelper(config: DatabaseConfiguration?): SupportSQLiteOpenHelper { TODO("not implemented") }
-    override fun createInvalidationTracker(): InvalidationTracker { TODO("not implemented") }
+    override fun createInvalidationTracker(): InvalidationTracker {
+        return Mockito.mock(InvalidationTracker::class.java)
+    }
     override fun clearAllTables() { TODO("not implemented") }
 
     companion object {

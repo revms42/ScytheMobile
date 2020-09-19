@@ -1,6 +1,8 @@
 package org.ajar.scythemobile.data
 
 class ResourceTestDataDAO : ResourceDataDAO {
+    private val resourceData = ArrayList<ResourceData>()
+
     override fun getResources(): List<ResourceData>? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -34,10 +36,11 @@ class ResourceTestDataDAO : ResourceDataDAO {
     }
 
     override fun removeResource(vararg setting: ResourceData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        setting.forEach { update -> this.resourceData.removeIf { it.id == update.id } }
+
     }
 
     override fun updateResource(vararg setting: ResourceData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        setting.forEach { update -> this.resourceData.removeIf { it.id == update.id }; this.resourceData.add(update) }
     }
 }

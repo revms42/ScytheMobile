@@ -1,6 +1,8 @@
 package org.ajar.scythemobile.data
 
 class UnitTestDataDAO : UnitDataDAO {
+    private val unitData = ArrayList<UnitData>()
+
     override fun getUnits(): List<UnitData>? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -34,6 +36,6 @@ class UnitTestDataDAO : UnitDataDAO {
     }
 
     override fun updateUnit(vararg unit: UnitData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        unit.forEach { update -> this.unitData.removeIf { it.id == update.id }; this.unitData.add(update) }
     }
 }

@@ -157,7 +157,7 @@ class PlayerInstance private constructor(
 
     fun initialize() {
         factionMat.initializePlayer(this)
-        TODO("Initialize Units")
+        //TODO("Initialize Units")
     }
 
     companion object {
