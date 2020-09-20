@@ -19,6 +19,7 @@ class SpendPowerActionTest {
     fun setup() {
         ScytheTestDatabase.setTestingDatabase()
         playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.CRIMEA.id)
+        TurnHolder.commitChanges()
     }
 
     @After

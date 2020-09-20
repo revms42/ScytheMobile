@@ -4,6 +4,7 @@ import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.data.ScytheTestDatabase
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.faction.StandardFactionMat
+import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
 import org.ajar.scythemobile.model.player.StandardPlayerMat
 import org.ajar.scythemobile.turn.TurnHolder
 import org.junit.After
@@ -19,12 +20,14 @@ class SpendPopularityActionTest {
     fun setup() {
         ScytheTestDatabase.setTestingDatabase()
         playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.CRIMEA.id)
+        TurnHolder.commitChanges()
     }
 
     @After
     fun cleanUp() {
         TurnHolder.commitChanges()
         ScytheDatabase.playerDao()?.removePlayer(playerInstance.playerData)
+        ObjectiveCardDeck.resetDeck()
     }
 
     @Test

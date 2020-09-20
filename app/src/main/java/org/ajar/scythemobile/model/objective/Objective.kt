@@ -41,6 +41,11 @@ class ObjectiveCardDeck(private val objectives: MutableList<Objective>) {
                 }
                 return _currentDeck!!
             }
+
+        fun resetDeck(): ObjectiveCardDeck {
+            _currentDeck = null
+            return currentDeck
+        }
     }
 }
 

@@ -105,12 +105,12 @@ sealed class ScytheAction<R> {
     }
     class GiveWorkerAction(private val hex: Int, private val player: PlayerInstance, private val amount: Int) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            return removeFreeAndUpdateLocation(
+            return if(hex > 0 && !GameMap.currentMap.startingHexes.contains(GameMap.currentMap.findHexAtIndex(hex))) removeFreeAndUpdateLocation(
                     hex,
                     amount,
                     fun(): List<UnitData>? = ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.WORKER.ordinal),
                     fun(list: List<UnitData>) = TurnHolder.updateMove(*list.toTypedArray())
-            )
+            ) else false
         }
     }
     class UpgradeSection(private val from: TopRowAction, private val leading: Boolean, private val to: BottomRowAction) : ScytheAction<Boolean>() {
@@ -125,13 +125,14 @@ sealed class ScytheAction<R> {
     }
     class DeployMech(private val player: PlayerInstance, private val hex: MapHex, private val ability: FactionAbility) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            return if(player.factionMat.unlockFactionAbility(ability)) {
-                return ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.MECH.ordinal)?.firstOrNull { it.loc == -1 }?.let {
-                    it.loc = hex.loc
-                    TurnHolder.updateMove(it)
+            val mech = player.selectUnits(UnitType.MECH)?.firstOrNull { it.pos == -1 }
+            return if(mech != null && !GameMap.currentMap.startingHexes.contains(hex) && player.factionMat.lockedFactionAbilities.contains(ability) && player.factionMat.unlockFactionAbility(ability)) {
+                return mech.let {
+                    it.pos = hex.loc
+                    TurnHolder.updateMove(it.unitData)
                     TurnHolder.updatePlayer(player.playerData)
                     true
-                }?: false
+                }
             } else {
                 false
             }
@@ -157,9 +158,11 @@ sealed class ScytheAction<R> {
     }
     class BuildStructure(private val hex: MapHex, private val structure: GameUnit) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            structure.pos = hex.loc
-            TurnHolder.updateMove(structure.unitData)
-            return true
+            return if(!(structure.pos > 0 || hex.terrain == TerrainFeature.FACTORY || hex.terrain == TerrainFeature.LAKE || GameMap.currentMap.startingHexes.contains(hex))) {
+                structure.pos = hex.loc
+                TurnHolder.updateMove(structure.unitData)
+                true
+            } else false
         }
     }
 
