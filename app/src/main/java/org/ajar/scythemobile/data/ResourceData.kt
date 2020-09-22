@@ -19,7 +19,7 @@ data class ResourceData(
         const val COLUMN_INDEX = "id"
         const val COLUMN_POSITION = "pos"
         const val COLUMN_OWNER = "own" // Each resource will have either a position or an owner but not both.
-        const val COLUMN_TYPE = "loc"
+        const val COLUMN_TYPE = "type"
         const val COLUMN_VALUE = "val"
     }
 }

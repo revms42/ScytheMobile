@@ -97,6 +97,17 @@ sealed class ScytheAction<R> {
             }
         }
     }
+    class SpendCoinsAction(private val player: PlayerInstance, private val amount: Int) : ScytheAction<Boolean>() {
+        override fun perform(): Boolean {
+            return if(amount > 0 && player.coins >= amount) {
+                player.coins -= amount
+                TurnHolder.updatePlayer(player.playerData)
+                true
+            } else {
+                false
+            }
+        }
+    }
     class GiveCapitalResourceAction(private val player: PlayerInstance, private val type: CapitalResourceType, private val amount: Int) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
             repeat(amount) { type.plus(player) }
@@ -140,12 +151,12 @@ sealed class ScytheAction<R> {
     }
     class GiveNaturalResource(private val hex: Int, private val resource: NaturalResourceType, private val amount: Int) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            return removeFreeAndUpdateLocation(
+            return if(hex > 0 && !GameMap.currentMap.startingHexes.contains(GameMap.currentMap.findHexAtIndex(hex)))removeFreeAndUpdateLocation(
                     hex,
                     amount,
                     fun(): List<ResourceData>? = ScytheDatabase.resourceDao()?.getUnclaimedResourcesOfType(resource.id),
                     fun(list: List<ResourceData>) = TurnHolder.updateResource(*list.toTypedArray())
-            )
+            ) else false
         }
     }
     class EnlistSection(private val player: PlayerInstance, private val action: BottomRowAction, private val capitalResourceType: CapitalResourceType) : ScytheAction<Boolean>() {

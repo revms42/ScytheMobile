@@ -52,6 +52,16 @@ class PlayerInstance private constructor(
             TurnHolder.updatePlayer(playerData)
         }
 
+    var coins: Int
+        get() = playerData.coins
+        set(value) {
+            when {
+                value > playerData.coins -> Bank.addCoins(playerData,value - playerData.coins)
+                value < playerData.coins -> Bank.removeCoins(playerData, playerData.coins - value)
+            }
+            TurnHolder.updatePlayer(playerData)
+        }
+
     var playerId: Int = playerData.id
 
     val recruits: Int
@@ -88,42 +98,6 @@ class PlayerInstance private constructor(
 
     fun giveCombatCards(vararg combatCard: CombatCard) {
         TurnHolder.updateResource(*combatCard.map { it.resourceData.owner = playerId; it.resourceData }.toTypedArray())
-    }
-
-    val coins: List<Coin>?
-        get() = ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(playerId, listOf(CapitalResourceType.COINS.id))?.map { Coin(it) }
-
-    fun takeCoins(number: Int, requireExactChange: Boolean = false): List<Coin>? {
-        val coins = this.coins
-        return if(!coins.isNullOrEmpty()) {
-            if(requireExactChange) {
-                if(coins.size >= number) {
-                    val sublist = coins.subList(0, number)
-                    TurnHolder.updateResource(*sublist.map { it.resourceData.owner = -1; it.resourceData }.toTypedArray())
-                    sublist
-                } else {
-                    null
-                }
-            } else {
-                val total = if(number > coins.size) coins.size else number
-                val sublist = coins.subList(0, total)
-                TurnHolder.updateResource(*sublist.map { it.resourceData.owner = -1; it.resourceData }.toTypedArray())
-                sublist
-            }
-        } else {
-            null
-        }
-    }
-
-    fun giveCoins(vararg coin: Coin) {
-        TurnHolder.updateResource(*coin.map { it.resourceData.owner = playerId; it.resourceData }.toTypedArray())
-    }
-
-    fun drawCoins(number: Int) {
-        ScytheDatabase.resourceDao()!!.getOwnedResourcesOfType( -1, listOf(CapitalResourceType.COINS.id))?.also { list ->
-            val total = if(list.size < number) list.size else number
-            TurnHolder.updateResource(*list.subList(0, total).map { coin -> coin.owner = playerId; coin }.toTypedArray())
-        }
     }
 
     val stars: Int

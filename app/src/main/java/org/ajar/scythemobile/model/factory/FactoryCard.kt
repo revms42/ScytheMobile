@@ -364,7 +364,7 @@ sealed class StandardGainFactoryCard(override val playerInstance: PlayerInstance
                         ScytheAction.SpendPowerAction(playerInstance, 1).perform()
                     }
                     CapitalResourceType.COINS -> {
-                        playerInstance.takeCoins(1, true)?.isNotEmpty()?: false
+                        ScytheAction.SpendCoinsAction(playerInstance, 1).perform()
                     }
                 }
             } else {

@@ -316,12 +316,12 @@ sealed class PlayerQualityObjective(override val id: Int = -1, override var imag
     }
     class AtLeastCoins(private val threshold: Int, id: Int = -1, image: Int = -1) : PlayerQualityObjective(id, image) {
         override fun evaluate(playerInstance: PlayerInstance): Boolean {
-            return playerInstance.coins?.size?: 0 >= threshold
+            return playerInstance.coins >= threshold
         }
     }
     class AtMostCoins(private val threshold: Int) : PlayerQualityObjective() {
         override fun evaluate(playerInstance: PlayerInstance): Boolean {
-            return playerInstance.coins?.size?: 0 <= threshold
+            return playerInstance.coins <= threshold
         }
     }
     class AtLeastPop(private val threshold: Int) : PlayerQualityObjective() {

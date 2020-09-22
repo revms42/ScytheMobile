@@ -4,7 +4,7 @@ class ResourceTestDataDAO : ResourceDataDAO {
     private val resourceData = ArrayList<ResourceData>()
 
     override fun getResources(): List<ResourceData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return resourceData
     }
 
     override fun getResource(id: Int): ResourceData? {
@@ -12,11 +12,11 @@ class ResourceTestDataDAO : ResourceDataDAO {
     }
 
     override fun getResourcesAt(loc: Int): List<ResourceData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return this.resourceData.filter { it.loc == loc }
     }
 
     override fun getResourcesOfType(type: Int): List<ResourceData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return this.resourceData.filter {it.type == type}
     }
 
     override fun getOwnedResourcesOfType(owner: Int, type: List<Int>): List<ResourceData>? {
@@ -24,7 +24,7 @@ class ResourceTestDataDAO : ResourceDataDAO {
     }
 
     override fun getUnclaimedResourcesOfType(type: Int): List<ResourceData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return this.resourceData.filter { it.owner == -1 && it.type == type }
     }
 
     override fun getResourcesAtPosOfType(loc: Int, type: Int): List<ResourceData>? {

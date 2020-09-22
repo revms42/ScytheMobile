@@ -2,6 +2,7 @@ package org.ajar.scythemobile.model.entity
 
 import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.player.Bank
 import org.ajar.scythemobile.turn.TurnHolder
 
 enum class TrapType(var description: String, var sprungPicture: Int = -1) {
@@ -12,7 +13,7 @@ enum class TrapType(var description: String, var sprungPicture: Int = -1) {
     },
     MAIFUKU_LOSE_MONEY("Lose $4"){
         override fun applyToPlayer(player: PlayerInstance) {
-            player.takeCoins(4)
+            Bank.removeCoins(player.playerData, 4)
         }
     },
     MAIFUKU_LOSE_POWER("Lose 3 power") {

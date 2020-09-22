@@ -295,7 +295,7 @@ class PlayerMatInstance(val playerMat: PlayerMat, val playerInstance: PlayerInst
     }
 
     fun initialize(playerInstance: PlayerInstance) {
-        playerInstance.drawCoins(playerMat.initialCoins)
+        playerInstance.coins = playerMat.initialCoins
         playerInstance.popularity = playerMat.initialPopularity
     }
 }

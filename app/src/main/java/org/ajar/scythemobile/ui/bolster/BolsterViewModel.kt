@@ -3,6 +3,7 @@ package org.ajar.scythemobile.ui.bolster
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.combat.CombatCardDeck
+import org.ajar.scythemobile.model.player.Bank
 import org.ajar.scythemobile.model.player.TopRowAction
 import org.ajar.scythemobile.turn.TurnHolder
 import org.ajar.scythemobile.ui.TopRowViewModel
@@ -30,8 +31,8 @@ class BolsterViewModel : TopRowViewModel<TopRowAction.Bolster>() {
 
 
     fun performBolster() {
-        TurnHolder.currentPlayer.takeCoins(cost, true)?.also {
-            it.forEach { resource -> ScytheAction.SpendResourceAction(resource.resourceData).perform() }
+        if(TurnHolder.currentPlayer.coins >= cost) {
+            Bank.removeCoins(TurnHolder.currentPlayer.playerData, cost)
             if(obtainCards) {
                 repeat(cardsGain) { CombatCardDeck.currentDeck.drawCard(TurnHolder.currentPlayer) }
             } else {

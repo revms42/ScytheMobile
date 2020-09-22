@@ -3,6 +3,7 @@ package org.ajar.scythemobile
 import android.content.Context
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.combat.CombatCardDeck
+import org.ajar.scythemobile.model.player.Bank
 
 
 interface Resource {
@@ -30,8 +31,8 @@ enum class CapitalResourceType(override var displayName: String, override var im
         override fun minus(playerInstance: PlayerInstance) { playerInstance.popularity -= 1 }
     },
     COINS("Coins"){
-        override fun plus(playerInstance: PlayerInstance) { playerInstance.drawCoins(1)}
-        override fun minus(playerInstance: PlayerInstance) { playerInstance.takeCoins(1)}
+        override fun plus(playerInstance: PlayerInstance) { Bank.addCoins(playerInstance.playerData, 1)}
+        override fun minus(playerInstance: PlayerInstance) { Bank.removeCoins(playerInstance.playerData, 1)}
     },
     CARDS("Combat Cards"){
         override fun plus(playerInstance: PlayerInstance) {

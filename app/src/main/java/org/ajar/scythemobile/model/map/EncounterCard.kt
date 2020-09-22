@@ -13,6 +13,7 @@ import org.ajar.scythemobile.Resource
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.entity.GameUnit
+import org.ajar.scythemobile.model.player.Bank
 
 interface EncounterOutcome {
     var title: String
@@ -182,12 +183,12 @@ sealed class StandardOutcome(override var title: String, override var descriptio
     }
     class Commercial(title: String, description: String, private val coinCost: Int, vararg encounterAction: EncounterAction) : StandardOutcome(title, description, *encounterAction) {
         override fun applyOutcome(activity: Activity, unit: GameUnit) {
-            unit.controllingPlayer.takeCoins(coinCost, true)
+            Bank.removeCoins(unit.controllingPlayer.playerData, coinCost)
             super.applyOutcome(activity, unit)
         }
 
         override fun canMeetCost(player: PlayerInstance): Boolean {
-           return player.coins?.size?: 0 >= coinCost
+           return player.coins >= coinCost
         }
 
         companion object {

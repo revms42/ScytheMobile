@@ -6,6 +6,7 @@ import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.player.Bank
 import org.ajar.scythemobile.model.player.TopRowAction
 import org.ajar.scythemobile.turn.TurnHolder
 import org.ajar.scythemobile.ui.TopRowViewModel
@@ -52,8 +53,8 @@ class TradeViewModel : TopRowViewModel<TopRowAction.Trade>() {
             get() = TurnHolder.currentPlayer.selectUnits(UnitType.ARMORY)?.isNotEmpty()?:false
 
     fun performTrade() {
-        TurnHolder.currentPlayer.takeCoins(cost, true)?.also {
-            it.forEach { resource -> ScytheAction.SpendResourceAction(resource.resourceData).perform() }
+        if(TurnHolder.currentPlayer.coins >= cost){
+            Bank.removeCoins(TurnHolder.currentPlayer.playerData, cost)
             if(gainResources) {
                 resourceDistrubution.forEach { (unit, list) ->  list.forEach { resource -> ScytheAction.GiveNaturalResource(unit.pos, resource, 1) } }
             } else {
