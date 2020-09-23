@@ -16,7 +16,7 @@ class UnitTestDataDAO : UnitDataDAO {
     }
 
     override fun getUnitsAtLocation(loc: Int): List<UnitData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return unitData.filter { it.loc == loc}
     }
 
     override fun getSpecificUnitsAtLoc(loc: Int, owner: Int, types: List<Int>): List<UnitData>? {

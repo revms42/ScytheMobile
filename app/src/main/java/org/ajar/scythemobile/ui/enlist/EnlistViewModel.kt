@@ -1,8 +1,6 @@
 package org.ajar.scythemobile.ui.enlist
 
-import androidx.lifecycle.ViewModel
 import org.ajar.scythemobile.CapitalResourceType
-import org.ajar.scythemobile.Resource
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.player.BottomRowAction
 import org.ajar.scythemobile.turn.TurnHolder
@@ -21,7 +19,7 @@ class EnlistViewModel : BottomRowViewModel<BottomRowAction.Enlist>() {
     var returnNav: Int? = null
 
     val unrecruited: List<BottomRowAction>
-        get() = TurnHolder.currentPlayer.playerMat.sections.map { it.bottomRowAction }.filter { !it.recruited }
+        get() = TurnHolder.currentPlayer.playerMat.sections.map { it.bottomRowAction }.filter { !it.enlisted }
 
     val oneTimeBenefist: List<CapitalResourceType>
         get() = TurnHolder.currentPlayer.factionMat.getEnlistmentBonusesAvailabe()

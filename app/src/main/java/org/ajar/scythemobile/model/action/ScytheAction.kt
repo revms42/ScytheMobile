@@ -43,19 +43,9 @@ sealed class ScytheAction<R> {
                             fun(list: List<ResourceData>) = TurnHolder.updateResource(*list.toTypedArray())
                     )
                 TerrainFeature.VILLAGE ->
-                    DeployWorkerAction(player, hex, amount).perform()
+                    GiveWorkerAction(hex.loc, player, amount).perform()
                 else -> false
             }
-        }
-    }
-    class DeployWorkerAction(private val player: PlayerInstance, private val hex: MapHex, private val amount: Int = 1) : ScytheAction<Boolean>() {
-        override fun perform(): Boolean {
-            return removeFreeAndUpdateLocation(
-                    hex.loc,
-                    amount,
-                    fun(): List<UnitData>? = ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.WORKER.ordinal),
-                    fun(list: List<UnitData>) = TurnHolder.updateMove(*list.toTypedArray())
-            )
         }
     }
     class MoveNaturalResourceAction(private val resource: ResourceData, private val to: MapHex) : ScytheAction<Boolean>() {
@@ -161,10 +151,18 @@ sealed class ScytheAction<R> {
     }
     class EnlistSection(private val player: PlayerInstance, private val action: BottomRowAction, private val capitalResourceType: CapitalResourceType) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            action.recruited = true
-            repeat(player.factionMat.getEnlistmentBonus(capitalResourceType)) { capitalResourceType.plus(player) }
-            TurnHolder.updatePlayer(player.playerData)
-            return true
+            return if(!action.enlisted && player.factionMat.getEnlistmentBonusesAvailabe().contains(capitalResourceType)) {
+                action.enlisted = true
+                repeat(player.factionMat.getEnlistmentBonus(capitalResourceType)) { capitalResourceType.plus(player) }
+                when (capitalResourceType) {
+                    CapitalResourceType.COINS -> player.playerData.factionMat.enlistCoins = true
+                    CapitalResourceType.POPULARITY -> player.playerData.factionMat.enlistPop = true
+                    CapitalResourceType.POWER -> player.playerData.factionMat.enlistPower = true
+                    CapitalResourceType.CARDS -> player.playerData.factionMat.enlistCards = true
+                }
+                TurnHolder.updatePlayer(player.playerData)
+                true
+            } else false
         }
     }
     class BuildStructure(private val hex: MapHex, private val structure: GameUnit) : ScytheAction<Boolean>() {

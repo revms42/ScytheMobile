@@ -184,10 +184,10 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
             get() = data.oilCost > costBottom
 
         override val recruitResource: Resource = CapitalResourceType.POWER
-        override var recruited: Boolean
-            get() = data.recruited
+        override var enlisted: Boolean
+            get() = data.enlisted
             set(value) {
-                data.recruited = value
+                data.enlisted = value
             }
 
         override val cost: List<Resource>
@@ -210,10 +210,10 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
             get() = data.metalCost > costBottom
 
         override val recruitResource: Resource = CapitalResourceType.COINS
-        override var recruited: Boolean
-            get() = data.recruited
+        override var enlisted: Boolean
+            get() = data.enlisted
             set(value) {
-                data.recruited = value
+                data.enlisted = value
             }
 
         override val cost: List<Resource>
@@ -236,10 +236,10 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
             get() = data.woodCost > costBottom
 
         override val recruitResource: Resource = CapitalResourceType.POPULARITY
-        override var recruited: Boolean
-            get() = data.recruited
+        override var enlisted: Boolean
+            get() = data.enlisted
             set(value) {
-                data.recruited = value
+                data.enlisted = value
             }
 
         override val cost: List<Resource>
@@ -270,10 +270,10 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
             get() = data.foodCost > costBottom
 
         override val recruitResource: Resource = CapitalResourceType.CARDS
-        override var recruited: Boolean
-            get() = data.recruited
+        override var enlisted: Boolean
+            get() = data.enlisted
             set(value) {
-                data.recruited = value
+                data.enlisted = value
             }
 
         override val cost: List<Resource>
@@ -286,6 +286,6 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
 
     abstract val recruitResource: Resource
     abstract val actionOutOf: Int
-    abstract var recruited: Boolean
+    abstract var enlisted: Boolean
     abstract fun upgrade()
 }

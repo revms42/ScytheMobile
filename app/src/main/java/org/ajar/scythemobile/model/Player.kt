@@ -65,7 +65,7 @@ class PlayerInstance private constructor(
     var playerId: Int = playerData.id
 
     val recruits: Int
-        get() = playerMat.sections.count { section -> section.bottomRowAction.recruited }
+        get() = playerMat.sections.count { section -> section.bottomRowAction.enlisted }
 
     val upgrades: Int
         get() = playerMat.sections.sumBy { section -> section.bottomRowAction.upgrades + section.topRowAction.upgrades }
