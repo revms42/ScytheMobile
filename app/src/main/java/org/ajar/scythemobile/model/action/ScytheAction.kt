@@ -50,9 +50,11 @@ sealed class ScytheAction<R> {
     }
     class MoveNaturalResourceAction(private val resource: ResourceData, private val to: MapHex) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            resource.loc = to.loc
-            TurnHolder.updateResource(resource)
-            return true
+            return if(to.loc > 0 && !GameMap.currentMap.startingHexes.contains(to)) {
+                resource.loc = to.loc
+                TurnHolder.updateResource(resource)
+                true
+            } else false
         }
     }
     class SpendResourceAction(private val resource: ResourceData) : ScytheAction<Boolean>() {
@@ -116,12 +118,14 @@ sealed class ScytheAction<R> {
     }
     class UpgradeSection(private val from: TopRowAction, private val leading: Boolean, private val to: BottomRowAction) : ScytheAction<Boolean>() {
         override fun perform(): Boolean {
-            val ok = if(leading) from.upgradeLeading() else from.upgradeFollowing()
-            if(ok) {
-                to.upgrade()
-                TurnHolder.updatePlayer(from.playerInstance.playerData)
-            }
-            return ok
+            return if(from.canUpgrade && to.canUpgrade) {
+                val ok = if(leading) from.upgradeLeading() else from.upgradeFollowing()
+                if(ok) {
+                    to.upgrade()
+                    TurnHolder.updatePlayer(from.playerInstance.playerData)
+                }
+                ok
+            } else false
         }
     }
     class DeployMech(private val player: PlayerInstance, private val hex: MapHex, private val ability: FactionAbility) : ScytheAction<Boolean>() {

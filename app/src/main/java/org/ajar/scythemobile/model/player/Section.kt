@@ -37,6 +37,12 @@ sealed class TopRowAction(override val playerInstance: PlayerInstance) : PlayerM
         override val canUpgrade: Boolean
             get() = upgrades < 2
 
+        val unitsMoved: Int
+            get() = data.unitsMoved
+
+        val coinsGained: Int
+            get() = data.coinsGained
+
         override fun upgradeLeading(): Boolean {
             return if(data.unitsMoved < 3) {
                 data.unitsMoved = 3
