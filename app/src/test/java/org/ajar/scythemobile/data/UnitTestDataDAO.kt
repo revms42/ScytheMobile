@@ -4,7 +4,7 @@ class UnitTestDataDAO : UnitDataDAO {
     private val unitData = ArrayList<UnitData>()
 
     override fun getUnits(): List<UnitData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return unitData
     }
 
     override fun getUnit(id: Int): UnitData? {

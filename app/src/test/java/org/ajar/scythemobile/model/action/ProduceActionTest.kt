@@ -19,7 +19,6 @@ import org.junit.Test
 
 class ProduceActionTest {
     private lateinit var playerInstance: PlayerInstance
-    private val workers = ArrayList<UnitData>()
 
     @Before
     fun setup() {
@@ -37,7 +36,7 @@ class ProduceActionTest {
     fun cleanUp() {
         TurnHolder.commitChanges()
         ScytheDatabase.playerDao()?.removePlayer(playerInstance.playerData)
-        ScytheDatabase.unitDao()?.removeUnit(*workers.toTypedArray())
+        ScytheDatabase.unitDao()?.getUnits()?.toTypedArray()?.also { ScytheDatabase.unitDao()?.removeUnit(*it) }
         ScytheDatabase.resourceDao()?.getResources()?.toTypedArray()?.also { ScytheDatabase.resourceDao()?.removeResource(*it) }
         ObjectiveCardDeck.resetDeck()
     }
@@ -119,4 +118,46 @@ class ProduceActionTest {
         assertEquals(0, resourcesAtHex?.size?: 0)
         assertFalse(TurnHolder.isAnyUpdateQueued(ResourceData::class.java))
     }
+
+    @Test
+    fun testProduceActionProduceWorker() {
+        val workers = ScytheDatabase.unitDao()?.getUnitsForPlayer(playerInstance.playerId, UnitType.WORKER.ordinal)
+        val worker = workers!!.first()
+        worker.loc = 10
+        TurnHolder.updateMove(worker)
+        TurnHolder.commitChanges()
+
+        val hex = GameMap.currentMap.findHexAtIndex(10)
+        assertTrue(ScytheAction.ProduceAction(playerInstance, hex!!).perform())
+
+        val resourcesAtHex = ScytheDatabase.resourceDao()?.getResourcesAt(10)
+        assertEquals(0, resourcesAtHex?.size?: 0)
+        val unitsAtHex = playerInstance.selectUnits(UnitType.WORKER)?.filter { it.pos == 10 }
+        assertEquals(2, unitsAtHex?.size?: 0)
+        val newWorker = unitsAtHex?.first { it.id != worker.id }
+        assertTrue(TurnHolder.isUpdateQueued(newWorker!!.unitData))
+        assertFalse(TurnHolder.isUpdateQueued(worker))
+        assertFalse(TurnHolder.isAnyUpdateQueued(ResourceData::class.java))
+    }
+
+    @Test
+    fun testProduceActionProduceWorkerLimit() {
+        val workers = ScytheDatabase.unitDao()?.getUnitsForPlayer(playerInstance.playerId, UnitType.WORKER.ordinal)!!
+        repeat(5) {
+            workers[it].loc = 10
+            TurnHolder.updateMove(workers[it])
+        }
+        TurnHolder.commitChanges()
+
+        val hex = GameMap.currentMap.findHexAtIndex(10)
+        assertTrue(ScytheAction.ProduceAction(playerInstance, hex!!).perform())
+
+        val resourcesAtHex = ScytheDatabase.resourceDao()?.getResourcesAt(10)
+        assertEquals(0, resourcesAtHex?.size?: 0)
+        val unitsAtHex = playerInstance.selectUnits(UnitType.WORKER)?.filter { it.pos == 10 }
+        assertEquals(8, unitsAtHex?.size?: 0)
+        assertTrue(TurnHolder.isAnyUpdateQueued(UnitData::class.java))
+        assertFalse(TurnHolder.isAnyUpdateQueued(ResourceData::class.java))
+    }
+
 }

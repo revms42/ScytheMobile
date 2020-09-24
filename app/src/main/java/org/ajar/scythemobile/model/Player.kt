@@ -62,7 +62,8 @@ class PlayerInstance private constructor(
             TurnHolder.updatePlayer(playerData)
         }
 
-    var playerId: Int = playerData.id
+    val playerId: Int
+        get() = playerData.id
 
     val recruits: Int
         get() = playerMat.sections.count { section -> section.bottomRowAction.enlisted }
@@ -176,6 +177,7 @@ class PlayerInstance private constructor(
             playerInstance.initializePlayer()
 
             ScytheDatabase.playerDao()!!.addPlayer(playerData)
+            playerInstance.playerData.id = ScytheDatabase.playerDao()!!.getPlayer(playerName)!!.id
             playerInstance.initializeUnits()
 
             return playerInstance
@@ -189,12 +191,7 @@ class PlayerInstance private constructor(
             return PlayerInstance(ScytheDatabase.playerDao()!!.getPlayer(playerId)!!)
         }
 
-        private var _activeFactions: List<Int>? = null
-        fun activeFactions() : List<Int>? {
-            if(_activeFactions == null) {
-                _activeFactions = ScytheDatabase.playerDao()?.getPlayers()?.map { it.factionMat.matId }
-            }
-            return _activeFactions
-        }
+        val activeFactions: List<Int>?
+            get() = ScytheDatabase.playerDao()?.getPlayers()?.map { it.factionMat.matId }
     }
 }

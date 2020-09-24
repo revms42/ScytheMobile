@@ -14,11 +14,11 @@ class PlayerTestDataDAO : PlayerDataDAO {
     }
 
     override fun getPlayer(name: String): PlayerData? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return this.playerData.firstOrNull { it.name == name }
     }
 
     override fun getPlayer(id: Int): PlayerData? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return this.playerData.firstOrNull { it.id == id }
     }
 
     override fun getHighestPower(): Int? {

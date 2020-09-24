@@ -29,7 +29,7 @@ sealed class ScytheAction<R> {
             val amount = GameMap.currentMap.unitsAtHex(hex.loc).filter {
                 when(it.type) {
                     UnitType.MILL.ordinal -> it.owner == player.playerId
-                    UnitType.WORKER.ordinal -> true
+                    UnitType.WORKER.ordinal -> it.owner == player.playerId // TODO: Unclear whether you can produce on another player's mill
                     else -> false
                 }
             }.count()
@@ -191,6 +191,6 @@ sealed class ScytheAction<R> {
             }
         }
 
-        return if(changed?.isNotEmpty() == true) changed.let { update(it); true }?: false else false
+        return if(changed?.isNotEmpty() == true) changed.let { update(it); true } else false
     }
 }

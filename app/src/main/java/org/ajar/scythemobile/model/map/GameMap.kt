@@ -11,32 +11,14 @@ class GameMap(list: List<MapHexData>) {
 
     val mapHexes: List<MapHex> = list.map { MapHex(it) }
 
-    private var _startingHexes: List<MapHex>? = null
     val startingHexes: List<MapHex>
-        get() {
-            if(_startingHexes == null) {
-                _startingHexes = mapHexes.filter { it.data.faction?: -1 >= 0 }
-            }
-            return _startingHexes!!
-        }
+        get() = mapHexes.filter { it.data.faction?: -1 >= 0 }
 
-    private var _homeBases: List<MapHex>? = null
     val homeBases: List<MapHex>
-        get() {
-            if(_homeBases == null) {
-                _homeBases = startingHexes.filter { PlayerInstance.activeFactions()?.contains(it.data.faction)?: false }
-            }
-            return _homeBases!!
-        }
+        get() = startingHexes.filter { PlayerInstance.activeFactions?.contains(it.data.faction)?: false }
 
-    private var _vacantBases: List<MapHex>? = null
     val vacantBases: List<MapHex>
-        get() {
-            if(_vacantBases == null) {
-                _vacantBases = startingHexes.filter { !homeBases.contains(it) }
-            }
-            return _vacantBases!!
-        }
+        get()  = startingHexes.filter { !homeBases.contains(it) }
 
     fun findHexAtIndex(index: Int): MapHex? {
         return mapHexes.find { it.data.loc == index }

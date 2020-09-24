@@ -62,7 +62,7 @@ object TurnHolder {
     private fun createCombatRecord(hex: Int, attacker: Int, gameUnits: List<Int>) : CombatRecord {
         var defenderId = -1
         val defendingUnits = GameMap.currentMap.unitsAtHex(hex).filter {
-            it.owner != currentPlayer.playerId && UnitType.provokeUnits.contains(UnitType.valueOf(it.type))
+            it.owner != currentPlayer.playerId && !UnitType.structures.contains(UnitType.valueOf(it.type))
         }.map { if(defenderId == -1) defenderId = it.owner; it.id }
         return CombatRecord(hex, attacker, defenderId, gameUnits, defendingUnits)
     }
@@ -117,5 +117,13 @@ object TurnHolder {
             UnitData::class.java -> cachedMoves.isNotEmpty()
             else -> false
         }
+    }
+
+    fun resetTurn() {
+        cachedPlayerUpdates.clear()
+        cachedResourceUpdates.clear()
+        cachedEncounterUpdates.clear()
+        cachedMoves.clear()
+        ScytheDatabase.turnDao()?.updateTurn(TurnData(currentTurn.turn, currentTurn.playerId))
     }
 }

@@ -20,7 +20,7 @@ class MapHexTestDAO : MapHexDAO {
     }
 
     override fun getHomeBase(vararg faction: Int): List<MapHexData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return mapHexData.filter { it.faction?.let { fac -> faction.contains(fac) }?: false }
     }
 
     override fun addMapHex(vararg hex: MapHexData) {
