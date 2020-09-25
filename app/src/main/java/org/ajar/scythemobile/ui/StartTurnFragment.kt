@@ -20,7 +20,6 @@ class StartTurnFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProvider(requireActivity()).get(ScytheTurnViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
         // TODO: look up the selectable sections, then make someone select one.
         return root
     }

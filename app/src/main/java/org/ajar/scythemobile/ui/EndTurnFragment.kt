@@ -20,7 +20,6 @@ class EndTurnFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProvider(requireActivity()).get(ScytheTurnViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
         // TODO: end the turn, save the data, prompt the next person (hotseat) or make a DB diff message (PBE)
         return root
     }

@@ -7,10 +7,10 @@
     <path android:fillColor="@color/colorTunnelPrimary"
         android:strokeColor="@color/colorTunnelSecondary"
         android:strokeWidth="1"
-        android:pathData="M4,23
-        l0,-11
-        a6,6 0 0,1 15,0
-        l0,11
+        android:pathData="M8,18
+        l0,-8
+        a4,4 0 0,1 8,0
+        l0,8
         Z" />
 
 </vector>

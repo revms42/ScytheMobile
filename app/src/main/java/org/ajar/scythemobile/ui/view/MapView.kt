@@ -1,126 +1,128 @@
 package org.ajar.scythemobile.ui.view
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.PointF
-import android.graphics.Rect
+import android.graphics.*
+import android.util.AttributeSet
 import android.view.View
 import androidx.collection.SparseArrayCompat
+import androidx.collection.forEach
+import androidx.collection.isNotEmpty
 import androidx.collection.set
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.map.*
+import java.lang.RuntimeException
 
-class MapView(context: Context) : View(context) {
+class MapView(context: Context, attributeSet: AttributeSet) : View(context, attributeSet) {
+
+    private val minX: Float by lazy { minimumXPoint() }
+    private val minY: Float by lazy { minimumYPoint() }
+    private val maxX: Float by lazy { maximumXPoint() }
+    private val maxY: Float by lazy { maximumYPoint() }
+
+    private val unitWidth: Float by lazy { maxX - minX }
+    private val unitHeight: Float by lazy { maxY - minY }
+
+    private var rawWidth: Int = 0
+    private var rawHeight: Int = 0
 
     private val map: List<MapHex> by lazy { GameMap.currentMap.mapHexes }
-    private val widthCount: Int by lazy { computeWidestPoint() }
-    private val heightCount: Int by lazy { computeTallestPoint() }
 
-    private var measuredTileSize: Int = 0
-    private val rect: Rect by lazy { Rect(0, 0, measuredTileSize, measuredTileSize) }
+    private var measuredTileSize: Float = 0.0F
+    private var rect: Rect? = null
 
     private val _displayMapping = SparseArrayCompat<PointF>()
     private val displayMapping: SparseArrayCompat<PointF>
             get() {
-                if(_displayMapping.isEmpty()) {
-                    GameMap.currentMap.findAllMatching { TerrainFeature.valueOf(it!!.terrain) == TerrainFeature.FACTORY }?.first()?.also {
-                        displayMapping[it.loc] = PointF(0.0F, 0.0F)
-                        mapNeigbors(it)
+                if(_displayMapping.isEmpty) {
+                    GameMap.currentMap.findAllMatching {
+                        TerrainFeature.valueOf(it!!.terrain) == TerrainFeature.FACTORY
+                    }?.first()?.also {
+                        _displayMapping[it.loc] = PointF(0.0F, 0.0F)
+                        mapNeighbors(it)
                     }
                 }
                 return _displayMapping
             }
 
-    private fun mapNeigbors(mapHex: MapHex) {
+    private fun mapNeighbors(mapHex: MapHex) {
         val grab: (Int) -> MapHex? = fun(index: Int): MapHex? {
-            return if(index != -1 && _displayMapping[mapHex.loc] == null) GameMap.currentMap.findHexAtIndex(index) else null
+            return if(index != -1 && _displayMapping[index] == null) GameMap.currentMap.findHexAtIndex(index) else null
         }
         val currentPoint = _displayMapping[mapHex.loc]
         with(mapHex.data.neighbors) {
-            if(_displayMapping[this.w] == null) grab(this.w)?.also { _displayMapping[this.w] = PointF(currentPoint!!.x - 1.0f, currentPoint.y) ; mapNeigbors(it) }
-            if(_displayMapping[this.nw] == null) grab(this.nw)?.also { _displayMapping[this.nw] = PointF(currentPoint!!.x - 0.5f, currentPoint.y - 0.75f) ; mapNeigbors(it) }
-            if(_displayMapping[this.ne] == null) grab(this.ne)?.also { _displayMapping[this.ne] = PointF(currentPoint!!.x + 0.5f, currentPoint.y - 0.75f) ; mapNeigbors(it) }
-            if(_displayMapping[this.e] == null) grab(this.e)?.also { _displayMapping[this.e] = PointF(currentPoint!!.x + 1.0f, currentPoint.y) ; mapNeigbors(it) }
-            if(_displayMapping[this.se] == null) grab(this.se)?.also { _displayMapping[this.se] = PointF(currentPoint!!.x + 0.5f, currentPoint.y + 0.75f) ; mapNeigbors(it) }
-            if(_displayMapping[this.sw] == null) grab(this.sw)?.also { _displayMapping[this.sw] = PointF(currentPoint!!.x - 0.5f, currentPoint.y + 0.75f) ; mapNeigbors(it) }
+            if(_displayMapping[this.w] == null) grab(this.w)?.also { _displayMapping[this.w] = PointF(currentPoint!!.x - 1.0f, currentPoint.y) ; mapNeighbors(it) }
+            if(_displayMapping[this.nw] == null) grab(this.nw)?.also { _displayMapping[this.nw] = PointF(currentPoint!!.x - 0.5f, currentPoint.y - 0.75f) ; mapNeighbors(it) }
+            if(_displayMapping[this.ne] == null) grab(this.ne)?.also { _displayMapping[this.ne] = PointF(currentPoint!!.x + 0.5f, currentPoint.y - 0.75f) ; mapNeighbors(it) }
+            if(_displayMapping[this.e] == null) grab(this.e)?.also { _displayMapping[this.e] = PointF(currentPoint!!.x + 1.0f, currentPoint.y) ; mapNeighbors(it) }
+            if(_displayMapping[this.se] == null) grab(this.se)?.also { _displayMapping[this.se] = PointF(currentPoint!!.x + 0.5f, currentPoint.y + 0.75f) ; mapNeighbors(it) }
+            if(_displayMapping[this.sw] == null) grab(this.sw)?.also { _displayMapping[this.sw] = PointF(currentPoint!!.x - 0.5f, currentPoint.y + 0.75f) ; mapNeighbors(it) }
         }
     }
 
-    private fun computeWidestPoint(): Int {
-        var widest = 0
-        map.forEach { hex ->
-            if(hex.data.neighbors.e == -1) {
-                var count = 0
-                var track = hex
-                while(track.data.neighbors.w != -1) {
-                    count++
-                    track = GameMap.currentMap.findHexAtIndex(track.data.neighbors.w)!!
-                }
-                if(count > widest) widest = count
-            }
-        }
-        return widest
+    private fun minimumXPoint() : Float {
+        var leastX = Float.MAX_VALUE
+        displayMapping.forEach { _, value -> if(leastX > value.x) leastX = value.x }
+        return leastX
     }
 
-    private fun computeTallestPoint(): Int {
-        var tallest = 0
-        map.forEach { hex ->
-            if(hex.data.neighbors.ne == -1 && hex.data.neighbors.nw == -1) {
-                val count = crawlOneDown(hex.loc)
-
-                if(count > tallest) {
-                    tallest = count
-                }
-            }
-        }
-        return tallest
+    private fun minimumYPoint() : Float {
+        var leastY = Float.MAX_VALUE
+        displayMapping.forEach { _, value -> if(leastY > value.y) leastY = value.y }
+        return leastY
     }
 
-    private fun crawlOneDown(id: Int): Int {
-        val hex = GameMap.currentMap.findHexAtIndex(id)
-        val se = 1 + if(hex?.data?.neighbors?.se?: -1 != -1) {
-            crawlOneDown(hex!!.data.neighbors.se)
-        } else 0
-        val sw = 1 + if(hex?.data?.neighbors?.sw?: -1 != -1) {
-            1 + crawlOneDown(hex!!.data.neighbors.sw)
-        } else 0
+    private fun maximumXPoint() : Float {
+        var mostX = Float.MIN_VALUE
+        displayMapping.forEach { _, value -> if(mostX < value.x) mostX = value.x }
+        return mostX
+    }
 
-        return if(se > sw) se else sw
+    private fun maximumYPoint() : Float {
+        var mostY = Float.MIN_VALUE
+        displayMapping.forEach { key, value -> if(mostY > value.y) mostY = value.y }
+        return mostY
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val rawTileWidth = widthMeasureSpec / widthCount
-        val rawTileHeight = heightMeasureSpec / heightCount
+        rawWidth = MeasureSpec.getSize(widthMeasureSpec)
+        rawHeight = MeasureSpec.getSize(heightMeasureSpec)
+        val rawTileWidth = rawWidth / (unitWidth + 1)
+        val rawTileHeight =  rawHeight / (unitHeight + 1)
 
         measuredTileSize = if(rawTileHeight < rawTileWidth) rawTileHeight else rawTileWidth
 
-        this.setMeasuredDimension(widthMeasureSpec, heightMeasureSpec)
+        this.setMeasuredDimension(rawWidth, rawHeight)
     }
 
     private fun setRectBounds(mapHex: MapHex) {
-        val point = displayMapping[mapHex.loc]
+        val point = displayMapping[mapHex.loc] ?: throw RuntimeException("Point $mapHex is null!\n$displayMapping")
 
-        val x = ((widthCount / 2) * point!!.x) * measuredTileSize
-        val y = ((heightCount / 2) * point!!.y) * measuredTileSize
+        val x = ((point.x - minX) * measuredTileSize).toInt()
+        val y = ((point.y - minY) * measuredTileSize).toInt()
 
-        rect.set(x.toInt(), y.toInt(), measuredTileSize, measuredTileSize)
+        rect = Rect(x, y, x + measuredTileSize.toInt(), y + measuredTileSize.toInt())
     }
 
     override fun onDraw(canvas: Canvas) {
-        map.forEach { hex ->
-            setRectBounds(hex)
-            drawBaseTerrain(hex, canvas)
-            drawRivers(hex, canvas)
-            drawOtherFeatures(hex, canvas)
+        if(displayMapping.isNotEmpty()) {
+            //TODO: We should paint the faction headquarters as well, but need to change the computing of width/height for that, since you can't "get" to them from the factory.
+            map.filter { it.data.faction == null }.forEach { hex ->
+                setRectBounds(hex)
+                drawBaseTerrain(hex, canvas)
+                drawRivers(hex, canvas)
+                drawOtherFeatures(hex, canvas)
+            }
+            //TODO: Draw units, resources if required.
+        } else {
+            super.onDraw(canvas)
         }
-        //TODO: Draw units, resources if required.
     }
 
     private fun drawDisplayable(id: Int, canvas: Canvas) {
         val drawable = resources.getDrawable(id, null)?.mutate()
 
         drawable?.also {
-            it.bounds = rect
+            it.bounds.set(rect!!)
             it.draw(canvas)
         }
     }
@@ -149,7 +151,7 @@ class MapView(context: Context) : View(context) {
     private fun drawOtherFeatures(hex: MapHex, canvas: Canvas) {
         when {
             hex.data.tunnel -> drawDisplayable(SpecialFeature.TUNNEL.displayable!!, canvas)
-            hex.data.encounter != null || hex.data.encounter != -1 -> drawDisplayable(SpecialFeature.ENCOUNTER.displayable!!, canvas)
+            hex.data.encounter != null || hex.data.encounter?: -1 >= 0 -> drawDisplayable(SpecialFeature.ENCOUNTER.displayable!!, canvas)
             hex.terrain ==  TerrainFeature.FACTORY -> drawDisplayable(R.drawable.ic_factory, canvas)
         }
     }

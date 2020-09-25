@@ -15,6 +15,10 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import org.ajar.scythemobile.R
+import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.faction.StandardFactionMat
+import org.ajar.scythemobile.model.player.StandardPlayerMat
 
 class ScytheTurn : AppCompatActivity() {
 
@@ -39,6 +43,13 @@ class ScytheTurn : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        //TODO: **** Temporary for testing ****
+        ScytheDatabase.init(applicationContext)
+        ScytheDatabase.reset()
+        val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.RUSVIET.id)
+        ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
+        //TODO: **** --------------------- ****
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
@@ -65,5 +76,12 @@ class ScytheTurn : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //TODO: **** Temporary for testing ****
+        ScytheDatabase.reset()
+        //TODO: **** --------------------- ****
     }
 }

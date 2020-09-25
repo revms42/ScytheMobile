@@ -69,8 +69,8 @@ abstract class ScytheDatabase : RoomDatabase() {
 
         fun init(context: Context, name: String = DATABASE_NAME): Boolean {
             if(database == null) {
-                //TODO: This should take considerably more thought as this builder has a lot of options.
-                database = Room.databaseBuilder(context, ScytheDatabase::class.java, name).enableMultiInstanceInvalidation().build()
+                //TODO: This should take considerably more thought as this builder has a lot of options. Main Thread queries may need to come off.
+                database = Room.databaseBuilder(context, ScytheDatabase::class.java, name).enableMultiInstanceInvalidation().allowMainThreadQueries().build()
 
                 NaturalResourceType.values().forEach { type ->
                     resourceDao()?.addResource( *(1..20).map { ResourceData(0, -1, -1, type.id) }.toTypedArray() )

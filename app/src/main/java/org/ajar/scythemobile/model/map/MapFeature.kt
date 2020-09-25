@@ -37,7 +37,7 @@ class RiverFeature(val direction: Direction) : MapFeature {
         get() {
             return when(direction) {
                 Direction.NW -> R.drawable.river_nw
-                Direction.NE -> R.drawable.river_se
+                Direction.NE -> R.drawable.river_ne
                 Direction.E -> R.drawable.river_e
                 Direction.SE -> R.drawable.river_se
                 Direction.SW -> R.drawable.river_sw
