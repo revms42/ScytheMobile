@@ -57,7 +57,7 @@ class MapDesc(vararg val mapHexDesc: MapHexDesc =
         MapHexDesc(23, Neighbors(w = 22, nw = 16, ne = 17, e = 24, se = 30, sw = 29), TerrainFeature.FOREST),
         MapHexDesc(24, Neighbors(w = 23, nw = 17, ne = 18, e = 25, se = 31, sw = 30), TerrainFeature.LAKE),
         MapHexDesc(25, Neighbors(w = 24, nw = 18, ne = 19, e = 26, se = 32, sw = 31), TerrainFeature.FOREST, SpecialFeature.TUNNEL, RiverFeature(direction = Direction.NW), RiverFeature(direction = Direction.SE), RiverFeature(direction = Direction.E)),
-        MapHexDesc(26, Neighbors(w = 25, nw = 19, ne = 20, se = 33, sw = 32), TerrainFeature.FOREST, SpecialFeature.TUNNEL, RiverFeature(direction = Direction.W), RiverFeature(direction = Direction.NE), RiverFeature(direction = Direction.NW)),
+        MapHexDesc(26, Neighbors(w = 25, nw = 19, ne = 20, se = 33, sw = 32), TerrainFeature.VILLAGE, RiverFeature(direction = Direction.W), RiverFeature(direction = Direction.NE), RiverFeature(direction = Direction.NW)),
 
         MapHexDesc(27, Neighbors(ne = 21, e = 28, se = 35, sw = 34), TerrainFeature.FIELD, RiverFeature(direction = Direction.SE), RiverFeature(direction = Direction.SW)),
         MapHexDesc(28, Neighbors(w = 27, nw = 21, ne = 22, e = 29, se = 36, sw = 35), TerrainFeature.VILLAGE, SpecialFeature.ENCOUNTER, RiverFeature(direction = Direction.SE), RiverFeature(direction = Direction.SW), RiverFeature(direction = Direction.NE)),

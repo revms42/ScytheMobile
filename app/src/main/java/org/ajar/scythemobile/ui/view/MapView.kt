@@ -8,7 +8,6 @@ import androidx.collection.SparseArrayCompat
 import androidx.collection.forEach
 import androidx.collection.isNotEmpty
 import androidx.collection.set
-import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.map.*
 import java.lang.RuntimeException
 
@@ -25,6 +24,14 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     private var rawWidth: Int = 0
     private var rawHeight: Int = 0
 
+    private var debugText = false
+    private val debugTextPaint by lazy {
+        Paint().also {
+            it.color = Color.BLACK
+            it.textSize = measuredTileSize / 5.0f
+        }
+    }
+
     private val map: List<MapHex> by lazy { GameMap.currentMap.mapHexes }
 
     private var measuredTileSize: Float = 0.0F
@@ -40,14 +47,16 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
                         _displayMapping[it.loc] = PointF(0.0F, 0.0F)
                         mapNeighbors(it)
                     }
+                    GameMap.currentMap.startingHexes.forEach { mapBases(it) }
                 }
                 return _displayMapping
             }
 
+    private fun grab(index: Int): MapHex? {
+        return if(index != -1 && _displayMapping[index] == null) GameMap.currentMap.findHexAtIndex(index) else null
+    }
+
     private fun mapNeighbors(mapHex: MapHex) {
-        val grab: (Int) -> MapHex? = fun(index: Int): MapHex? {
-            return if(index != -1 && _displayMapping[index] == null) GameMap.currentMap.findHexAtIndex(index) else null
-        }
         val currentPoint = _displayMapping[mapHex.loc]
         with(mapHex.data.neighbors) {
             if(_displayMapping[this.w] == null) grab(this.w)?.also { _displayMapping[this.w] = PointF(currentPoint!!.x - 1.0f, currentPoint.y) ; mapNeighbors(it) }
@@ -56,6 +65,19 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
             if(_displayMapping[this.e] == null) grab(this.e)?.also { _displayMapping[this.e] = PointF(currentPoint!!.x + 1.0f, currentPoint.y) ; mapNeighbors(it) }
             if(_displayMapping[this.se] == null) grab(this.se)?.also { _displayMapping[this.se] = PointF(currentPoint!!.x + 0.5f, currentPoint.y + 0.75f) ; mapNeighbors(it) }
             if(_displayMapping[this.sw] == null) grab(this.sw)?.also { _displayMapping[this.sw] = PointF(currentPoint!!.x - 0.5f, currentPoint.y + 0.75f) ; mapNeighbors(it) }
+        }
+    }
+
+    private fun mapBases(mapHex: MapHex) {
+        val neighborDirection = Direction.values().first { mapHex.data.neighbors.getDirection(it) != -1 }
+        val neighbor = _displayMapping[mapHex.data.neighbors.getDirection(neighborDirection)]
+        _displayMapping[mapHex.loc] = when(neighborDirection) {
+            Direction.E -> PointF(neighbor!!.x - 1.0f, neighbor.y)
+            Direction.SE -> PointF(neighbor!!.x - 0.5f, neighbor.y - 0.75F)
+            Direction.SW -> PointF(neighbor!!.x + 0.5f, neighbor.y - 0.75F)
+            Direction.W -> PointF(neighbor!!.x + 1.0f, neighbor.y)
+            Direction.NW -> PointF(neighbor!!.x + 0.5f, neighbor.y + 0.75F)
+            Direction.NE -> PointF(neighbor!!.x - 0.5f, neighbor.y + 0.75F)
         }
     }
 
@@ -79,7 +101,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
     private fun maximumYPoint() : Float {
         var mostY = Float.MIN_VALUE
-        displayMapping.forEach { key, value -> if(mostY > value.y) mostY = value.y }
+        displayMapping.forEach { _, value -> if(mostY > value.y) mostY = value.y }
         return mostY
     }
 
@@ -90,8 +112,6 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         val rawTileHeight =  rawHeight / (unitHeight + 1)
 
         measuredTileSize = if(rawTileHeight < rawTileWidth) rawTileHeight else rawTileWidth
-
-        this.setMeasuredDimension(rawWidth, rawHeight)
     }
 
     private fun setRectBounds(mapHex: MapHex) {
@@ -105,12 +125,16 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
     override fun onDraw(canvas: Canvas) {
         if(displayMapping.isNotEmpty()) {
-            //TODO: We should paint the faction headquarters as well, but need to change the computing of width/height for that, since you can't "get" to them from the factory.
-            map.filter { it.data.faction == null }.forEach { hex ->
+            map.forEach { hex ->
                 setRectBounds(hex)
                 drawBaseTerrain(hex, canvas)
                 drawRivers(hex, canvas)
                 drawOtherFeatures(hex, canvas)
+                if(debugText) {
+                    val x = rect!!.centerX().toFloat() - (measuredTileSize / 10.0f)
+                    val y = rect!!.centerY().toFloat() - (measuredTileSize / 10.0f)
+                    canvas.drawText(hex.loc.toString(), x, y, debugTextPaint)
+                }
             }
             //TODO: Draw units, resources if required.
         } else {
@@ -143,8 +167,14 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     }
 
     private fun drawBaseTerrain(hex: MapHex, canvas: Canvas) {
-        hex.terrain.displayable?.also { id ->
-            drawDisplayable(id, canvas)
+        if(hex.data.faction != null) {
+            hex.faction?.displayable?.also { id ->
+                if(id != 0) drawDisplayable(id, canvas)
+            }
+        } else {
+            hex.terrain.displayable?.also { id ->
+                drawDisplayable(id, canvas)
+            }
         }
     }
 
@@ -152,7 +182,6 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         when {
             hex.data.tunnel -> drawDisplayable(SpecialFeature.TUNNEL.displayable!!, canvas)
             hex.data.encounter != null || hex.data.encounter?: -1 >= 0 -> drawDisplayable(SpecialFeature.ENCOUNTER.displayable!!, canvas)
-            hex.terrain ==  TerrainFeature.FACTORY -> drawDisplayable(R.drawable.ic_factory, canvas)
         }
     }
 }

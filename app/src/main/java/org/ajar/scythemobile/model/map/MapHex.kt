@@ -27,6 +27,9 @@ open class MapHex(val data: MapHexData) {
     val terrain: TerrainFeature
         get() = TerrainFeature.valueOf(data.terrain)
 
+    val faction: HomeBase?
+        get() = data.faction?.let { HomeBase.valueOf(it) }?: null
+
     val producesResource: Boolean
         get() = terrain.productionFeature
 

@@ -22,12 +22,27 @@
     <color name="colorForestPrimary">#005000</color>
     <color name="colorMountainPrimary">#505050</color>
     <color name="colorTownPrimary">#905000</color>
-    <color name="colorFactoryPrimary">#900000</color>
+    <color name="colorFactoryPrimary">#600090</color>
 
     <color name="colorTunnelPrimary">#000000</color>
-    <color name="colorTunnelSecondary">#404040</color>
+    <color name="colorTunnelSecondary">#800000</color>
     <color name="colorEncounterPrimary">#006000</color>
     <color name="colorEncounterSecondary">#707000</color>
-    <color name="colorFactorySecondary">#000000</color>
+    <color name="colorFactorySecondary">#FFFFFF</color>
     <color name="colorRiverPrimary">#0000F0</color>
+
+    <color name="colorCrimeaPrimary">#707000</color>
+    <color name="colorCrimeaSecondary">#005000</color>
+    <color name="colorPoloniaPrimary">#C0C0C0</color>
+    <color name="colorPoloniaSecondary">#800000</color>
+    <color name="colorSaxonyPrimary">#000000</color>
+    <color name="colorSaxonySecondary">#707000</color>
+    <color name="colorNordicPrimary">#0060A0</color>
+    <color name="colorNordicSecondary">#0000C0</color>
+    <color name="colorRusvietPrimary">#B00000</color>
+    <color name="colorRusvietSecondary">#500000</color>
+    <color name="colorAlbionPrimary">#005000</color>
+    <color name="colorAlbionSecondary">#806000</color>
+    <color name="colorTogawaPrimary">#600090</color>
+    <color name="colorTogawaSecondary">#C0C0C0</color>
 </resources>

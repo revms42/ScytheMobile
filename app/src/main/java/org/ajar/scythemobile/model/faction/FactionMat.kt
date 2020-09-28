@@ -3,6 +3,7 @@ package org.ajar.scythemobile.model.faction
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.StarType
@@ -89,7 +90,7 @@ enum class StandardFactionMat(
         override val enlistCards: Int = 2,
         override val enlistPopularity: Int = 2
 ) : FactionMat {
-    NORDIC("Nordic Kingdoms", CharacterDescription.BJORN, DefaultFactionAbility.SWIM, 0x000000FF, 4, 1, 0, 0) {
+    NORDIC("Nordic Kingdoms", CharacterDescription.BJORN, DefaultFactionAbility.SWIM, 0x000000FF, 4, 1, R.drawable.ic_nordic, 0) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.FOREST_MOUNTAIN, Seaworthy(), Speed.singleton, Artillery()
         )
@@ -98,7 +99,7 @@ enum class StandardFactionMat(
             return listOf(Swim())
         }
     },
-    SAXONY("Saxony Empire", CharacterDescription.GUNTER, DefaultFactionAbility.DOMINATE,0x00000000, 1, 4, 0, 0) {
+    SAXONY("Saxony Empire", CharacterDescription.GUNTER, DefaultFactionAbility.DOMINATE,0x00000000, 1, 4, R.drawable.ic_saxony, 0) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.FOREST_MOUNTAIN, Underpass(), Speed.singleton, Disarm()
         )
@@ -111,12 +112,12 @@ enum class StandardFactionMat(
             }
         }
     },
-    POLONIA("Republic of Polonia", CharacterDescription.ANNA, DefaultFactionAbility.MEANDER, 0x00FFFFFF, 2, 3, 0, 0, 2) {
+    POLONIA("Republic of Polonia", CharacterDescription.ANNA, DefaultFactionAbility.MEANDER, 0x00FFFFFF, 2, 3, R.drawable.ic_polonia, 0, 2) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.VILLAGE_MOUNTAIN, Submerge(), Speed.singleton, Camaraderie()
         )
     },
-    CRIMEA("Crimean Khanate", CharacterDescription.ZERHA, DefaultFactionAbility.COERCION, 0x00FFFF00, 5, 0, 0, 0) {
+    CRIMEA("Crimean Khanate", CharacterDescription.ZERHA, DefaultFactionAbility.COERCION, 0x00FFFF00, 5, 0, R.drawable.ic_crimea, 0) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.FARM_TUNDRA, Wayfare(), Speed.singleton, Scout()
         )
@@ -132,7 +133,7 @@ enum class StandardFactionMat(
             return default
         }
     },
-    RUSVIET("Rusviet Union", CharacterDescription.OLGA, DefaultFactionAbility.RELENTLESS, 0x00FF0000, 3, 2, 0, 0) {
+    RUSVIET("Rusviet Union", CharacterDescription.OLGA, DefaultFactionAbility.RELENTLESS, 0x00FF0000, 3, 2, R.drawable.ic_rusviet, 0) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.FARM_VILLAGE, Township(), Speed.singleton, PeoplesArmy()
         )
@@ -142,7 +143,7 @@ enum class StandardFactionMat(
             return (0..top).toList()
         }
     },
-    ALBION("Clan Albion", CharacterDescription.CONNER, DefaultFactionAbility.EXALT, 0x0000AA00, 3, 0, 0, 0) {
+    ALBION("Clan Albion", CharacterDescription.CONNER, DefaultFactionAbility.EXALT, 0x0000AA00, 3, 0, R.drawable.ic_albion, 0) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 Burrow(), Rally(), Sword(), Shield()
         )
@@ -157,7 +158,7 @@ enum class StandardFactionMat(
             return ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.FLAG.ordinal)?.filter { it.loc == -1 }?.map { GameUnit(it, player) }
         }
     },
-    TOGAWA("Togawa Shogunate", CharacterDescription.AKIKO, DefaultFactionAbility.MAIFUKU, 0x00DD00DD, 0, 2, 0, 0) {
+    TOGAWA("Togawa Shogunate", CharacterDescription.AKIKO, DefaultFactionAbility.MAIFUKU, 0x00DD00DD, 0, 2, R.drawable.ic_togawa, 0) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 Toka(), Shinobi(), Ronin(), Suiton()
         )

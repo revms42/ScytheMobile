@@ -57,6 +57,11 @@ class HomeBase(val faction: FactionMat) : MapFeature {
         builder.faction = faction.id
     }
 
+    companion object {
+        fun valueOf(id: Int): HomeBase {
+            return HomeBase(FactionMat[id]!!)
+        }
+    }
 }
 
 enum class SpecialFeature : MapFeature {
