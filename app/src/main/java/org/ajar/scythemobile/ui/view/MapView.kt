@@ -3,6 +3,8 @@ package org.ajar.scythemobile.ui.view
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.ScaleGestureDetector
 import android.view.View
 import androidx.collection.SparseArrayCompat
 import androidx.collection.forEach
@@ -10,8 +12,10 @@ import androidx.collection.isNotEmpty
 import androidx.collection.set
 import org.ajar.scythemobile.model.map.*
 import java.lang.RuntimeException
+import android.view.MotionEvent
 
-class MapView(context: Context, attributeSet: AttributeSet) : View(context, attributeSet) {
+
+class MapView(context: Context, attributeSet: AttributeSet) : View(context, attributeSet), ScaleGestureDetector.OnScaleGestureListener, GestureDetector.OnGestureListener {
 
     private val minX: Float by lazy { minimumXPoint() }
     private val minY: Float by lazy { minimumYPoint() }
@@ -105,6 +109,51 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         return mostY
     }
 
+    // Scale and Pan
+    private var scaleFactor = 1.0f
+    private var scaleGestureDetector = ScaleGestureDetector(this.context, this)
+    private var translate = PointF(0.0F, 0.0F)
+    private var translateGestureDetector = GestureDetector(this.context, this)
+
+    override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean = true
+
+    override fun onScaleEnd(detector: ScaleGestureDetector?) {
+        scaleFactor *= detector?.scaleFactor?: 1.0f
+
+        scaleFactor = when {
+            scaleFactor > 3.0f -> 3.0f
+            scaleFactor < 1.0f -> 1.0f
+            else -> scaleFactor
+        }
+        invalidate()
+    }
+
+    override fun onScale(detector: ScaleGestureDetector?): Boolean = false
+
+    override fun onShowPress(e: MotionEvent?) {}
+
+    override fun onSingleTapUp(e: MotionEvent?): Boolean = true
+
+    override fun onDown(e: MotionEvent?): Boolean = true
+
+    override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean = true
+
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+        translate.x -= distanceX
+        translate.y -= distanceY
+        invalidate()
+        return true
+    }
+
+    override fun onLongPress(e: MotionEvent?) {}
+
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
+        translateGestureDetector.onTouchEvent(ev)
+        scaleGestureDetector.onTouchEvent(ev)
+        return true
+    }
+
+    // View
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         rawWidth = MeasureSpec.getSize(widthMeasureSpec)
         rawHeight = MeasureSpec.getSize(heightMeasureSpec)
@@ -112,6 +161,8 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         val rawTileHeight =  rawHeight / (unitHeight + 1)
 
         measuredTileSize = if(rawTileHeight < rawTileWidth) rawTileHeight else rawTileWidth
+
+        this.setMeasuredDimension(rawWidth, rawHeight)
     }
 
     private fun setRectBounds(mapHex: MapHex) {
@@ -125,6 +176,9 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
     override fun onDraw(canvas: Canvas) {
         if(displayMapping.isNotEmpty()) {
+            canvas.save()
+            canvas.translate(translate.x, translate.y)
+            canvas.scale(scaleFactor, scaleFactor)
             map.forEach { hex ->
                 setRectBounds(hex)
                 drawBaseTerrain(hex, canvas)
@@ -136,6 +190,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
                     canvas.drawText(hex.loc.toString(), x, y, debugTextPaint)
                 }
             }
+            canvas.restore()
             //TODO: Draw units, resources if required.
         } else {
             super.onDraw(canvas)
