@@ -1,5 +1,7 @@
 package org.ajar.scythemobile.model
 
+import androidx.collection.SparseArrayCompat
+import androidx.collection.forEach
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.data.FactionMatData
 import org.ajar.scythemobile.data.PlayerData
@@ -7,11 +9,8 @@ import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.entity.GameUnit
-import org.ajar.scythemobile.model.faction.CombatRule
-import org.ajar.scythemobile.model.faction.FactionMatInstance
-import org.ajar.scythemobile.model.faction.MovementRule
 import org.ajar.scythemobile.model.entity.UnitType
-import org.ajar.scythemobile.model.faction.FactionMat
+import org.ajar.scythemobile.model.faction.*
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.player.*
 import org.ajar.scythemobile.model.objective.Objective
@@ -29,6 +28,9 @@ class PlayerInstance private constructor(
     val playerMat: PlayerMatInstance by lazy {
         PlayerMatInstance(this)
     }
+
+    val resources: FactionResourcePack
+        get() = factionMat.factionMat.resourcePack
 
     var popularity: Int
         get() = playerData.popularity
@@ -151,6 +153,8 @@ class PlayerInstance private constructor(
     }
 
     companion object {
+        private val loadedPlayers = SparseArrayCompat<PlayerInstance>()
+
         fun makePlayer(playerName: String, playerMatId: Int, factionMatId: Int): PlayerInstance {
             val playerMat = PlayerMat[playerMatId]
             val factionMat = FactionMat[factionMatId]
@@ -183,12 +187,10 @@ class PlayerInstance private constructor(
             return playerInstance
         }
 
-        fun loadPlayer(playerName: String): PlayerInstance {
-            return PlayerInstance(ScytheDatabase.playerDao()!!.getPlayer(playerName)!!)
-        }
-
         fun loadPlayer(playerId: Int): PlayerInstance {
-            return PlayerInstance(ScytheDatabase.playerDao()!!.getPlayer(playerId)!!)
+            return if(loadedPlayers.containsKey(playerId)) loadedPlayers[playerId]!! else PlayerInstance(ScytheDatabase.playerDao()!!.getPlayer(playerId)!!).also {
+                loadedPlayers.put(playerId, it)
+            }
         }
 
         val activeFactions: List<Int>?

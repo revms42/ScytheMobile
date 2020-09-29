@@ -1,7 +1,9 @@
 package org.ajar.scythemobile.model.entity
 
+import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.faction.FactionResourcePack
 import org.ajar.scythemobile.model.player.Bank
 import org.ajar.scythemobile.turn.TurnHolder
 
@@ -61,17 +63,17 @@ class TrapUnit(unitData: UnitData, controllingPlayer: PlayerInstance) : GameUnit
     }
 }
 
-enum class UnitType {
-    CHARACTER,
-    MECH,
-    TRAP,
-    FLAG,
-    WORKER,
-    AIRSHIP,
-    MILL,
-    MONUMENT,
-    MINE,
-    ARMORY;
+enum class UnitType(val resourceFrom: (FactionResourcePack) -> Int?) {
+    CHARACTER(FactionResourcePack::heroRes),
+    MECH(FactionResourcePack::mechRes),
+    TRAP(FactionResourcePack::trapUnsprungRes),
+    FLAG(FactionResourcePack::flagRes),
+    WORKER(FactionResourcePack::workerRes),
+    AIRSHIP(FactionResourcePack::airshipRes),
+    MILL(FactionResourcePack::millRes),
+    MONUMENT(FactionResourcePack::monumentRes),
+    MINE(FactionResourcePack::mineRes),
+    ARMORY(FactionResourcePack::armoryRes);
 
     companion object {
         val structures = listOf(MILL, MONUMENT, MINE, ARMORY)
@@ -84,7 +86,7 @@ enum class UnitType {
     }
 }
 
-open class GameUnit(val unitData: UnitData, val controllingPlayer: PlayerInstance, var image: Int = -1) {
+open class GameUnit(val unitData: UnitData, val controllingPlayer: PlayerInstance) {
     var pos: Int
         get() = unitData.loc
         set(value) {
@@ -100,5 +102,12 @@ open class GameUnit(val unitData: UnitData, val controllingPlayer: PlayerInstanc
     fun move(loc: Int) {
         unitData.loc = loc
         TurnHolder.updateMove(unitData)
+    }
+
+    val image: Int?
+        get() = type.resourceFrom(controllingPlayer.resources)
+
+    companion object {
+        fun load(unitData: UnitData): GameUnit = GameUnit(unitData, PlayerInstance.loadPlayer(unitData.owner))
     }
 }

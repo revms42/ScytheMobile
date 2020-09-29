@@ -6,13 +6,14 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.ScaleGestureDetector
 import android.view.View
-import androidx.collection.SparseArrayCompat
-import androidx.collection.forEach
-import androidx.collection.isNotEmpty
-import androidx.collection.set
 import org.ajar.scythemobile.model.map.*
 import java.lang.RuntimeException
 import android.view.MotionEvent
+import androidx.collection.*
+import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.entity.GameUnit
+import org.ajar.scythemobile.model.entity.UnitType
 
 
 class MapView(context: Context, attributeSet: AttributeSet) : View(context, attributeSet), ScaleGestureDetector.OnScaleGestureListener, GestureDetector.OnGestureListener {
@@ -35,8 +36,32 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
             it.textSize = measuredTileSize / 5.0f
         }
     }
+    private var unitTextPaint = SparseArrayCompat<Paint>()
+
+    private fun getTextPaint(playerInstance: PlayerInstance) : Paint {
+        if(!unitTextPaint.containsKey(playerInstance.playerId)) {
+            unitTextPaint[playerInstance.playerId] = Paint().also {
+                it.color = resources.getColor(playerInstance.resources.secondaryColorRes, null)
+                it.textSize = measuredTileSize / 5.0f
+            }
+        }
+        return unitTextPaint[playerInstance.playerId]!!
+    }
 
     private val map: List<MapHex> by lazy { GameMap.currentMap.mapHexes }
+    private val unitGroupings: SparseArrayCompat<out List<GameUnit>>
+        get() {
+            val map = SparseArrayCompat<MutableList<GameUnit>>()
+
+            GameMap.currentMap.mapHexes.forEach { mapHex ->
+                map[mapHex.loc] = ArrayList()
+            }
+            ScytheDatabase.unitDao()?.getUnits()?.filter { it.loc > 0 }?.forEach { unitData ->
+                map[unitData.loc]!!.add(GameUnit.load(unitData))
+            }
+
+            return map
+        }
 
     private var measuredTileSize: Float = 0.0F
     private var rect: Rect? = null
@@ -176,6 +201,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
     override fun onDraw(canvas: Canvas) {
         if(displayMapping.isNotEmpty()) {
+            val unitGroupings = unitGroupings
             canvas.save()
             canvas.translate(translate.x, translate.y)
             canvas.scale(scaleFactor, scaleFactor)
@@ -184,12 +210,14 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
                 drawBaseTerrain(hex, canvas)
                 drawRivers(hex, canvas)
                 drawOtherFeatures(hex, canvas)
+                unitGroupings[hex.loc]?.also { if(it.isNotEmpty()) drawUnits(it, canvas) }
                 if(debugText) {
                     val x = rect!!.centerX().toFloat() - (measuredTileSize / 10.0f)
                     val y = rect!!.centerY().toFloat() - (measuredTileSize / 10.0f)
                     canvas.drawText(hex.loc.toString(), x, y, debugTextPaint)
                 }
             }
+
             canvas.restore()
             //TODO: Draw units, resources if required.
         } else {
@@ -197,11 +225,11 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         }
     }
 
-    private fun drawDisplayable(id: Int, canvas: Canvas) {
+    private fun drawDisplayable(id: Int, canvas: Canvas, rect: Rect = this.rect!!) {
         val drawable = resources.getDrawable(id, null)?.mutate()
 
         drawable?.also {
-            it.bounds.set(rect!!)
+            it.bounds.set(rect)
             it.draw(canvas)
         }
     }
@@ -238,5 +266,96 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
             hex.data.tunnel -> drawDisplayable(SpecialFeature.TUNNEL.displayable!!, canvas)
             hex.data.encounter != null || hex.data.encounter?: -1 >= 0 -> drawDisplayable(SpecialFeature.ENCOUNTER.displayable!!, canvas)
         }
+    }
+
+    private fun drawUnits(unitsPresent: List<GameUnit>, canvas: Canvas) {
+        // ArrayList<Player, HashMap<UnitResourceID, Count>>
+
+        val playersPresent = unitsPresent.map { it.controllingPlayer }.toSet()
+
+        if(playersPresent.size > 1) {
+            TODO("Cannot draw multiple players in one hex yet!")
+        } else {
+            val types = HashMap<UnitType, MutableList<GameUnit>>()
+            unitsPresent.forEach {
+                if(!types.containsKey(it.type)) {
+                    types[it.type] = ArrayList()
+                }
+                types[it.type]!!.add(it)
+            }
+
+            if(types.size > 1) {
+                var conflictCount = 0
+                var workerCount = 0
+                var building: GameUnit? = null
+
+                types.forEach { type, list ->
+                    when {
+                        UnitType.provokeUnits.contains(type) -> conflictCount += list.size
+                        UnitType.WORKER == type -> workerCount = list.size
+                        UnitType.structures.contains(type) -> building = list.first()
+                    }
+                }
+
+                building?.image?.also { drawDisplayable(it, canvas) }
+
+                when {
+                    (conflictCount > 1 && workerCount > 1) -> {
+                        types[UnitType.WORKER]?.first()?.also {
+                            drawDiamondWithDoubleCount(it.controllingPlayer.resources.diamondRes, it.controllingPlayer, canvas, conflictCount, workerCount)
+                        }
+                    }
+                    workerCount > 1 -> {
+                        types[UnitType.WORKER]?.first()?.also {
+                            drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, workerCount)
+                        }
+                    }
+                    types.containsKey(UnitType.CHARACTER) && types.containsKey(UnitType.MECH) -> {
+                        types[UnitType.CHARACTER]?.first()?.also {
+                            drawDisplayableWithCount(it.controllingPlayer.resources.diamondRes, it.controllingPlayer, canvas, conflictCount)
+                        }
+                    }
+                    types.containsKey(UnitType.MECH) -> {
+                        types[UnitType.MECH]?.first()?.also {
+                            drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, conflictCount)
+                        }
+                    }
+                    types.containsKey(UnitType.CHARACTER) -> {
+                        types[UnitType.CHARACTER]?.first()?.also {
+                            drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, 1)
+                        }
+                    }
+                    else -> {
+                        TODO("Don't know how to draw something!")
+                    }
+                }
+            } else {
+                unitsPresent[0].also {
+                    drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, types[it.type]!!.size)
+                }
+            }
+        }
+    }
+
+    private fun drawDisplayableWithCount(image: Int, player: PlayerInstance, canvas: Canvas, count: Int, rect: Rect = this.rect!!) {
+        drawDisplayable(image, canvas)
+        if(count > 1) {
+            canvas.drawText(
+                    count.toString(),
+                    (rect.centerX() - (rect.width() / 10.0F)),
+                    (rect.centerY() - (rect.height() / 10.0F)),
+                    getTextPaint(player).let { it.textSize = rect.width() / 5.0f; it }
+            )
+        }
+    }
+
+    private fun drawDiamondWithDoubleCount(image: Int, player: PlayerInstance, canvas: Canvas, firstCount: Int, secondCount: Int, rect: Rect = this.rect!!) {
+        drawDisplayable(image, canvas)
+        canvas.drawText(
+                "$firstCount/$secondCount",
+                (rect.centerX() - (3.0F * (rect.width() / 10.0F))),
+                (rect.centerY() - (rect.height() / 10.0F)),
+                getTextPaint(player).let { it.textSize = rect.width() / 5.0f; it }
+        )
     }
 }

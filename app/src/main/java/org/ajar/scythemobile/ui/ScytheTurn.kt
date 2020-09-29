@@ -16,7 +16,10 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.entity.GameUnit
+import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.faction.StandardFactionMat
 import org.ajar.scythemobile.model.player.StandardPlayerMat
 
@@ -49,6 +52,7 @@ class ScytheTurn : AppCompatActivity() {
         ScytheDatabase.reset()
         val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.RUSVIET.id)
         ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
+        ScytheDatabase.unitDao()?.addUnit(UnitData(0, 0, 21, UnitType.MECH.ordinal))
         //TODO: **** --------------------- ****
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

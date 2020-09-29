@@ -24,23 +24,68 @@ interface HeroCharacter {
     val characterName: String
 }
 
+interface FactionResourcePack {
+    val primaryColorRes: Int
+    val secondaryColorRes: Int
+    val factionIconRes: Int
+    val diamondRes: Int
+    val heroRes: Int?
+    val mechRes: Int?
+    val workerRes: Int?
+    val millRes: Int?
+    val mineRes: Int?
+    val monumentRes: Int?
+    val armoryRes: Int?
+    val airshipRes: Int?
+    val trapUnsprungRes: Int?
+    val flagRes: Int?
+    val matImage: Int?
+}
+
+enum class StandardFactionResourcePack(
+        override val primaryColorRes: Int,
+        override val secondaryColorRes: Int,
+        override val factionIconRes: Int,
+        override val diamondRes: Int,
+        override val mechRes: Int,
+        override val heroRes: Int? = null,
+        override val workerRes: Int? = null,
+        override val millRes: Int? = null,
+        override val mineRes: Int? = null,
+        override val monumentRes: Int? = null,
+        override val armoryRes: Int? = null,
+        override val airshipRes: Int? = null,
+        override val trapUnsprungRes: Int? = null,
+        override val flagRes: Int? = null,
+        override val matImage: Int? = null
+) : FactionResourcePack {
+    NODIC(R.color.colorNordicPrimary, R.color.colorNordicSecondary, R.drawable.ic_nordic, R.drawable.ic_nordic_diamond, R.drawable.ic_nordic_mech),
+    SAXONY(R.color.colorSaxonyPrimary, R.color.colorSaxonySecondary, R.drawable.ic_saxony, R.drawable.ic_saxony_diamond, R.drawable.ic_saxony_mech),
+    POLONIA(R.color.colorPoloniaPrimary, R.color.colorPoloniaSecondary, R.drawable.ic_polonia, R.drawable.ic_polonia_diamond, R.drawable.ic_polonia_mech),
+    CRIMEA(R.color.colorCrimeaPrimary, R.color.colorCrimeaSecondary, R.drawable.ic_crimea, R.drawable.ic_crimea_diamond, R.drawable.ic_crimea_mech),
+    RUSVIET(R.color.colorRusvietPrimary, R.color.colorRusvietSecondary, R.drawable.ic_rusviet, R.drawable.ic_rusviet_diamond, R.drawable.ic_rusviet_mech),
+    ALBION(R.color.colorAlbionPrimary, R.color.colorAlbionSecondary, R.drawable.ic_albion, R.drawable.ic_albion_diamond, R.drawable.ic_albion_mech),
+    TOGAWA(R.color.colorTogawaPrimary, R.color.colorTogawaSecondary, R.drawable.ic_togawa, R.drawable.ic_togawa_diamond, R.drawable.ic_togawa_mech)
+}
+
 interface FactionMat {
     val matName: String
     val heroCharacter: HeroCharacter
     val factionAbility: FactionAbility
-    val color: Int
     val initialPower: Int
     val initialCombatCards: Int
     val enlistPower: Int
     val enlistCoins: Int
     val enlistCards: Int
     val enlistPopularity: Int
-    val symbol: Int
-    val matImage: Int
+    val resourcePack: FactionResourcePack
     val encounterSelections: Int
 
     val id: Int
         get() = factionMats.indexOfValue(this)
+
+    val symbol: Int
+        get() = resourcePack.factionIconRes
 
     val mechAbilities: Collection<FactionAbility>
 
@@ -79,18 +124,22 @@ enum class StandardFactionMat(
         override val matName: String,
         override val heroCharacter: HeroCharacter,
         override val factionAbility: FactionAbility,
-        override val color: Int,
+        override val resourcePack: FactionResourcePack,
         override val initialPower: Int,
         override val initialCombatCards: Int,
-        override val symbol: Int,
-        override val matImage: Int,
         override val encounterSelections: Int = 1,
         override val enlistPower: Int = 2,
         override val enlistCoins: Int = 2,
         override val enlistCards: Int = 2,
         override val enlistPopularity: Int = 2
 ) : FactionMat {
-    NORDIC("Nordic Kingdoms", CharacterDescription.BJORN, DefaultFactionAbility.SWIM, 0x000000FF, 4, 1, R.drawable.ic_nordic, 0) {
+    NORDIC("Nordic Kingdoms",
+            CharacterDescription.BJORN,
+            DefaultFactionAbility.SWIM,
+            StandardFactionResourcePack.NODIC,
+            4,
+            1
+    ) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.FOREST_MOUNTAIN, Seaworthy(), Speed.singleton, Artillery()
         )
@@ -99,7 +148,13 @@ enum class StandardFactionMat(
             return listOf(Swim())
         }
     },
-    SAXONY("Saxony Empire", CharacterDescription.GUNTER, DefaultFactionAbility.DOMINATE,0x00000000, 1, 4, R.drawable.ic_saxony, 0) {
+    SAXONY("Saxony Empire",
+            CharacterDescription.GUNTER,
+            DefaultFactionAbility.DOMINATE,
+            StandardFactionResourcePack.SAXONY,
+            1,
+            4
+    ) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.FOREST_MOUNTAIN, Underpass(), Speed.singleton, Disarm()
         )
@@ -112,12 +167,25 @@ enum class StandardFactionMat(
             }
         }
     },
-    POLONIA("Republic of Polonia", CharacterDescription.ANNA, DefaultFactionAbility.MEANDER, 0x00FFFFFF, 2, 3, R.drawable.ic_polonia, 0, 2) {
+    POLONIA("Republic of Polonia",
+            CharacterDescription.ANNA,
+            DefaultFactionAbility.MEANDER,
+            StandardFactionResourcePack.POLONIA,
+            2,
+            3,
+            2
+    ) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.VILLAGE_MOUNTAIN, Submerge(), Speed.singleton, Camaraderie()
         )
     },
-    CRIMEA("Crimean Khanate", CharacterDescription.ZERHA, DefaultFactionAbility.COERCION, 0x00FFFF00, 5, 0, R.drawable.ic_crimea, 0) {
+    CRIMEA("Crimean Khanate",
+            CharacterDescription.ZERHA,
+            DefaultFactionAbility.COERCION,
+            StandardFactionResourcePack.CRIMEA,
+            5,
+            0
+    ) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.FARM_TUNDRA, Wayfare(), Speed.singleton, Scout()
         )
@@ -133,7 +201,13 @@ enum class StandardFactionMat(
             return default
         }
     },
-    RUSVIET("Rusviet Union", CharacterDescription.OLGA, DefaultFactionAbility.RELENTLESS, 0x00FF0000, 3, 2, R.drawable.ic_rusviet, 0) {
+    RUSVIET("Rusviet Union",
+            CharacterDescription.OLGA,
+            DefaultFactionAbility.RELENTLESS,
+            StandardFactionResourcePack.RUSVIET,
+            3,
+            2
+    ) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 RiverWalk.FARM_VILLAGE, Township(), Speed.singleton, PeoplesArmy()
         )
@@ -143,7 +217,13 @@ enum class StandardFactionMat(
             return (0..top).toList()
         }
     },
-    ALBION("Clan Albion", CharacterDescription.CONNER, DefaultFactionAbility.EXALT, 0x0000AA00, 3, 0, R.drawable.ic_albion, 0) {
+    ALBION("Clan Albion",
+            CharacterDescription.CONNER,
+            DefaultFactionAbility.EXALT,
+            StandardFactionResourcePack.ALBION,
+            3,
+            0
+    ) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 Burrow(), Rally(), Sword(), Shield()
         )
@@ -158,7 +238,13 @@ enum class StandardFactionMat(
             return ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.FLAG.ordinal)?.filter { it.loc == -1 }?.map { GameUnit(it, player) }
         }
     },
-    TOGAWA("Togawa Shogunate", CharacterDescription.AKIKO, DefaultFactionAbility.MAIFUKU, 0x00DD00DD, 0, 2, R.drawable.ic_togawa, 0) {
+    TOGAWA("Togawa Shogunate",
+            CharacterDescription.AKIKO,
+            DefaultFactionAbility.MAIFUKU,
+            StandardFactionResourcePack.TOGAWA,
+            0,
+            2
+    ) {
         override val mechAbilities: Collection<FactionAbility> = listOf(
                 Toka(), Shinobi(), Ronin(), Suiton()
         )
