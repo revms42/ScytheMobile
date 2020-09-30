@@ -18,31 +18,31 @@
 
     <color name="colorLakePrimary">#0000F0</color>
     <color name="colorTundraPrimary">#DFDFDF</color>
-    <color name="colorFieldPrimary">#D0D000</color>
-    <color name="colorForestPrimary">#005000</color>
-    <color name="colorMountainPrimary">#505050</color>
-    <color name="colorTownPrimary">#905000</color>
-    <color name="colorFactoryPrimary">#600090</color>
+    <color name="colorFieldPrimary">#b7b71a</color>
+    <color name="colorForestPrimary">#0a470a</color>
+    <color name="colorMountainPrimary">#8a1414</color>
+    <color name="colorTownPrimary">#7d4d12</color>
+    <color name="colorFactoryPrimary">#808080</color>
 
     <color name="colorTunnelPrimary">#000000</color>
-    <color name="colorTunnelSecondary">#800000</color>
-    <color name="colorEncounterPrimary">#006000</color>
-    <color name="colorEncounterSecondary">#707000</color>
-    <color name="colorFactorySecondary">#FFFFFF</color>
+    <color name="colorTunnelSecondary">#b30000</color>
+    <color name="colorEncounterPrimary">#008000</color>
+    <color name="colorEncounterSecondary">#e6e600</color>
+    <color name="colorFactorySecondary">#59127d</color>
     <color name="colorRiverPrimary">#0000F0</color>
 
-    <color name="colorCrimeaPrimary">#707000</color>
-    <color name="colorCrimeaSecondary">#005000</color>
-    <color name="colorPoloniaPrimary">#C0C0C0</color>
-    <color name="colorPoloniaSecondary">#800000</color>
-    <color name="colorSaxonyPrimary">#000000</color>
-    <color name="colorSaxonySecondary">#707000</color>
-    <color name="colorNordicPrimary">#0060A0</color>
-    <color name="colorNordicSecondary">#0000C0</color>
-    <color name="colorRusvietPrimary">#B00000</color>
-    <color name="colorRusvietSecondary">#500000</color>
-    <color name="colorAlbionPrimary">#005000</color>
-    <color name="colorAlbionSecondary">#806000</color>
-    <color name="colorTogawaPrimary">#600090</color>
-    <color name="colorTogawaSecondary">#C0C0C0</color>
+    <color name="colorCrimeaPrimary">#e6e600</color>
+    <color name="colorCrimeaSecondary">#006600</color>
+    <color name="colorPoloniaPrimary">#ffffff</color>
+    <color name="colorPoloniaSecondary">#b30000</color>
+    <color name="colorSaxonyPrimary">#0d0d0d</color>
+    <color name="colorSaxonySecondary">#e6e600</color>
+    <color name="colorNordicPrimary">#0099ff</color>
+    <color name="colorNordicSecondary">#0000ff</color>
+    <color name="colorRusvietPrimary">#e60000</color>
+    <color name="colorRusvietSecondary">#660000</color>
+    <color name="colorAlbionPrimary">#008000</color>
+    <color name="colorAlbionSecondary">#b38600</color>
+    <color name="colorTogawaPrimary">#9900e6</color>
+    <color name="colorTogawaSecondary">#ffffff</color>
 </resources>

@@ -4,12 +4,11 @@
     android:height="24dp"
     android:viewportWidth="24.0"
     android:viewportHeight="24.0">
-    <path android:fillColor="@color/colorRusvietPrimary"
-        android:strokeColor="@color/colorRusvietSecondary"
+    <path android:fillColor="@color/colorCrimeaPrimary"
+        android:strokeColor="@color/colorCrimeaSecondary"
         android:strokeWidth="1"
         android:pathData="M4,12
-        l8,-8
-        l8,8
-        l-8,8
+        a8,8 0 0,1 16,0
+        a8,8 0 0,1 -16,0
         Z" />
 </vector>

@@ -59,13 +59,13 @@ enum class StandardFactionResourcePack(
         override val flagRes: Int? = null,
         override val matImage: Int? = null
 ) : FactionResourcePack {
-    NODIC(R.color.colorNordicPrimary, R.color.colorNordicSecondary, R.drawable.ic_nordic, R.drawable.ic_nordic_diamond, R.drawable.ic_nordic_mech),
-    SAXONY(R.color.colorSaxonyPrimary, R.color.colorSaxonySecondary, R.drawable.ic_saxony, R.drawable.ic_saxony_diamond, R.drawable.ic_saxony_mech),
-    POLONIA(R.color.colorPoloniaPrimary, R.color.colorPoloniaSecondary, R.drawable.ic_polonia, R.drawable.ic_polonia_diamond, R.drawable.ic_polonia_mech),
-    CRIMEA(R.color.colorCrimeaPrimary, R.color.colorCrimeaSecondary, R.drawable.ic_crimea, R.drawable.ic_crimea_diamond, R.drawable.ic_crimea_mech),
-    RUSVIET(R.color.colorRusvietPrimary, R.color.colorRusvietSecondary, R.drawable.ic_rusviet, R.drawable.ic_rusviet_diamond, R.drawable.ic_rusviet_mech),
-    ALBION(R.color.colorAlbionPrimary, R.color.colorAlbionSecondary, R.drawable.ic_albion, R.drawable.ic_albion_diamond, R.drawable.ic_albion_mech),
-    TOGAWA(R.color.colorTogawaPrimary, R.color.colorTogawaSecondary, R.drawable.ic_togawa, R.drawable.ic_togawa_diamond, R.drawable.ic_togawa_mech)
+    NODIC(R.color.colorNordicPrimary, R.color.colorNordicSecondary, R.drawable.ic_nordic, R.drawable.ic_nordic_circle, R.drawable.ic_nordic_mech),
+    SAXONY(R.color.colorSaxonyPrimary, R.color.colorSaxonySecondary, R.drawable.ic_saxony, R.drawable.ic_saxony_circle, R.drawable.ic_saxony_mech),
+    POLONIA(R.color.colorPoloniaPrimary, R.color.colorPoloniaSecondary, R.drawable.ic_polonia, R.drawable.ic_polonia_circle, R.drawable.ic_polonia_mech),
+    CRIMEA(R.color.colorCrimeaPrimary, R.color.colorCrimeaSecondary, R.drawable.ic_crimea, R.drawable.ic_crimea_circle, R.drawable.ic_crimea_mech),
+    RUSVIET(R.color.colorRusvietPrimary, R.color.colorRusvietSecondary, R.drawable.ic_rusviet, R.drawable.ic_rusviet_circle, R.drawable.ic_rusviet_mech),
+    ALBION(R.color.colorAlbionPrimary, R.color.colorAlbionSecondary, R.drawable.ic_albion, R.drawable.ic_albion_circle, R.drawable.ic_albion_mech),
+    TOGAWA(R.color.colorTogawaPrimary, R.color.colorTogawaSecondary, R.drawable.ic_togawa, R.drawable.ic_togawa_circle, R.drawable.ic_togawa_mech)
 }
 
 interface FactionMat {

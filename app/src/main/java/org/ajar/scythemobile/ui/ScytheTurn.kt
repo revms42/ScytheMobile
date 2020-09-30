@@ -50,9 +50,10 @@ class ScytheTurn : AppCompatActivity() {
         //TODO: **** Temporary for testing ****
         ScytheDatabase.init(applicationContext)
         ScytheDatabase.reset()
-        val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.RUSVIET.id)
+        val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.TOGAWA.id)
         ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
         ScytheDatabase.unitDao()?.addUnit(UnitData(0, 0, 21, UnitType.MECH.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.MECH.ordinal))
         //TODO: **** --------------------- ****
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

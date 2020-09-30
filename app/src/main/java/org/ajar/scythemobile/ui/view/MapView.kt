@@ -36,14 +36,24 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
             it.textSize = measuredTileSize / 5.0f
         }
     }
-    private var unitTextPaint = SparseArrayCompat<Paint>()
+    private var unitTextPaint = SparseArrayCompat<Pair<Paint,Paint>>()
+    private var unitTextSize: Float? = null
+    private var unitTextYOffset: Float? = null
 
-    private fun getTextPaint(playerInstance: PlayerInstance) : Paint {
+    private fun getTextPaint(playerInstance: PlayerInstance) : Pair<Paint,Paint> {
         if(!unitTextPaint.containsKey(playerInstance.playerId)) {
-            unitTextPaint[playerInstance.playerId] = Paint().also {
-                it.color = resources.getColor(playerInstance.resources.secondaryColorRes, null)
-                it.textSize = measuredTileSize / 5.0f
-            }
+            unitTextPaint[playerInstance.playerId] = Pair(
+                    Paint().also {
+                        it.color = resources.getColor(playerInstance.resources.primaryColorRes, null)
+                        it.textSize = measuredTileSize / 2.0f
+                        it.textAlign = Paint.Align.CENTER
+                    },
+                    Paint().also {
+                        it.color = resources.getColor(playerInstance.resources.secondaryColorRes, null)
+                        it.textSize = measuredTileSize / 2.0f
+                        it.textAlign = Paint.Align.CENTER
+                    }
+            )
         }
         return unitTextPaint[playerInstance.playerId]!!
     }
@@ -291,7 +301,8 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
                 types.forEach { type, list ->
                     when {
-                        UnitType.provokeUnits.contains(type) -> conflictCount += list.size
+                        UnitType.CHARACTER == type -> conflictCount += list.size
+                        UnitType.MECH == type -> conflictCount += list.size
                         UnitType.WORKER == type -> workerCount = list.size
                         UnitType.structures.contains(type) -> building = list.first()
                     }
@@ -300,12 +311,12 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
                 building?.image?.also { drawDisplayable(it, canvas) }
 
                 when {
-                    (conflictCount > 1 && workerCount > 1) -> {
+                    (conflictCount > 0 && workerCount > 0) -> {
                         types[UnitType.WORKER]?.first()?.also {
                             drawDiamondWithDoubleCount(it.controllingPlayer.resources.diamondRes, it.controllingPlayer, canvas, conflictCount, workerCount)
                         }
                     }
-                    workerCount > 1 -> {
+                    workerCount > 0 -> {
                         types[UnitType.WORKER]?.first()?.also {
                             drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, workerCount)
                         }
@@ -340,22 +351,44 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     private fun drawDisplayableWithCount(image: Int, player: PlayerInstance, canvas: Canvas, count: Int, rect: Rect = this.rect!!) {
         drawDisplayable(image, canvas)
         if(count > 1) {
-            canvas.drawText(
-                    count.toString(),
-                    (rect.centerX() - (rect.width() / 10.0F)),
-                    (rect.centerY() - (rect.height() / 10.0F)),
-                    getTextPaint(player).let { it.textSize = rect.width() / 5.0f; it }
-            )
+            getTextPaint(player).first.also {
+                if(unitTextSize == null) setTextSize(it)
+                it.textSize = unitTextSize!!
+                canvas.drawText(
+                        count.toString(),
+                        rect.centerX().toFloat(),
+                        rect.centerY().toFloat() + unitTextYOffset!!,
+                        it
+                )
+            }
         }
     }
 
     private fun drawDiamondWithDoubleCount(image: Int, player: PlayerInstance, canvas: Canvas, firstCount: Int, secondCount: Int, rect: Rect = this.rect!!) {
         drawDisplayable(image, canvas)
-        canvas.drawText(
-                "$firstCount/$secondCount",
-                (rect.centerX() - (3.0F * (rect.width() / 10.0F))),
-                (rect.centerY() - (rect.height() / 10.0F)),
-                getTextPaint(player).let { it.textSize = rect.width() / 5.0f; it }
-        )
+        getTextPaint(player).second.also {
+            if(unitTextSize == null) setTextSize(it)
+            it.textSize = unitTextSize!!
+            canvas.drawText(
+                    "$firstCount/$secondCount",
+                    rect.centerX().toFloat(),
+                    rect.centerY().toFloat() + unitTextYOffset!!,
+                    it
+            )
+        }
+    }
+
+    private fun setTextSize(paint: Paint){
+        paint.textSize = 16f
+        val bounds = Rect()
+        paint.getTextBounds("8/8",0,3, bounds)
+
+        unitTextSize = (paint.textSize * measuredTileSize) / (2.5f * bounds.width())
+
+        paint.textSize = unitTextSize!!
+        paint.getTextBounds("1", 0, 1, bounds)
+
+        unitTextYOffset = bounds.height() / 2.0f
+        println(unitTextYOffset!!)
     }
 }

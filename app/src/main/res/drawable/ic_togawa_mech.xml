@@ -8,12 +8,11 @@
         android:strokeColor="@color/colorTogawaSecondary"
         android:strokeWidth="1"
         android:pathData="M4,12
-        l8,-8
-        l8,8
-        l-8,8
+        a8,8 0 0,1 16,0
+        a8,8 0 0,1 -16,0
         Z" />
     <path android:fillColor="@color/colorTogawaSecondary"
-        android:pathData="M10,8
+        android:pathData="M10,6
         l4,0
         l0,1.5
         l1.5,0
@@ -57,19 +56,19 @@
         l1.5,0
         Z"/>
     <path android:fillColor="@color/colorTogawaSecondary"
-        android:pathData="M9.8,9.5
+        android:pathData="M9.8,7.5
         l0,3
         l-1.5,0
         l0,-3
         "/>
     <path android:fillColor="@color/colorTogawaSecondary"
-        android:pathData="M17.2,10.5
+        android:pathData="M17.2,8.5
         l0,3
         l-1.5,0
         l0,-3
         "/>
     <path android:fillColor="@color/colorTogawaPrimary"
-        android:pathData="M10.5,8.7
+        android:pathData="M10.5,6.7
         l3,0
         l0,0.5
         l-3,0
