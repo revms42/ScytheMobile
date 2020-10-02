@@ -14,7 +14,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import org.ajar.scythemobile.NaturalResourceType
 import org.ajar.scythemobile.R
+import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
@@ -54,6 +56,14 @@ class ScytheTurn : AppCompatActivity() {
         ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
         ScytheDatabase.unitDao()?.addUnit(UnitData(0, 0, 21, UnitType.MECH.ordinal))
         ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.MECH.ordinal))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(0, 21, -1, NaturalResourceType.FOOD.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(1, 21, -1, NaturalResourceType.FOOD.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(2, 21, -1, NaturalResourceType.METAL.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(3, 21, -1, NaturalResourceType.METAL.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(4, 21, -1, NaturalResourceType.WOOD.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(5, 21, -1, NaturalResourceType.WOOD.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(6, 21, -1, NaturalResourceType.OIL.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(7, 21, -1, NaturalResourceType.OIL.id))
         //TODO: **** --------------------- ****
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

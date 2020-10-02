@@ -10,6 +10,10 @@ import org.ajar.scythemobile.model.map.*
 import java.lang.RuntimeException
 import android.view.MotionEvent
 import androidx.collection.*
+import androidx.core.content.res.ResourcesCompat
+import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit
@@ -29,33 +33,54 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     private var rawWidth: Int = 0
     private var rawHeight: Int = 0
 
-    private var debugText = false
-    private val debugTextPaint by lazy {
-        Paint().also {
-            it.color = Color.BLACK
-            it.textSize = measuredTileSize / 5.0f
-        }
-    }
-    private var unitTextPaint = SparseArrayCompat<Pair<Paint,Paint>>()
     private var unitTextSize: Float? = null
     private var unitTextYOffset: Float? = null
 
-    private fun getTextPaint(playerInstance: PlayerInstance) : Pair<Paint,Paint> {
-        if(!unitTextPaint.containsKey(playerInstance.playerId)) {
-            unitTextPaint[playerInstance.playerId] = Pair(
+    val paintUnit: (GameUnit) -> Boolean = fun(_): Boolean = true
+    val paintResource: (Resource) -> Boolean = fun(_): Boolean = true
+
+    private val noHighlight: (MapHex) -> Boolean = fun(_): Boolean = true
+    private var _highlight: (MapHex) -> Boolean = noHighlight
+    var hexHighLight: ((MapHex) -> Boolean)?
+        get() = _highlight
+        set(value){
+            _highlight = value ?: noHighlight
+        }
+    private val muteFilter = ColorMatrixColorFilter(Desaturate.makeMatrix())
+
+    private var unitTextPaint = SparseArrayCompat<Pair<Paint,Paint>>()
+    private fun getTextPaint(playerInstance: PlayerInstance?) : Pair<Paint,Paint> {
+        if(playerInstance != null) {
+            if(!unitTextPaint.containsKey(playerInstance.playerId)) {
+                unitTextPaint[playerInstance.playerId] = Pair(
+                        Paint().also {
+                            it.color = resources.getColor(playerInstance.resources.primaryColorRes, null)
+                            it.textSize = measuredTileSize / 2.0f
+                            it.textAlign = Paint.Align.CENTER
+                        },
+                        Paint().also {
+                            it.color = resources.getColor(playerInstance.resources.secondaryColorRes, null)
+                            it.textSize = measuredTileSize / 2.0f
+                            it.textAlign = Paint.Align.CENTER
+                        }
+                )
+            }
+        } else {
+            unitTextPaint[-1] = Pair(
                     Paint().also {
-                        it.color = resources.getColor(playerInstance.resources.primaryColorRes, null)
+                        it.color = Color.BLACK
                         it.textSize = measuredTileSize / 2.0f
                         it.textAlign = Paint.Align.CENTER
                     },
                     Paint().also {
-                        it.color = resources.getColor(playerInstance.resources.secondaryColorRes, null)
+                        it.color = Color.BLACK
                         it.textSize = measuredTileSize / 2.0f
                         it.textAlign = Paint.Align.CENTER
                     }
             )
         }
-        return unitTextPaint[playerInstance.playerId]!!
+
+        return unitTextPaint[playerInstance?.playerId?: -1]!!
     }
 
     private val map: List<MapHex> by lazy { GameMap.currentMap.mapHexes }
@@ -72,9 +97,23 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
             return map
         }
+    private val resourceGroupings: SparseArrayCompat<out List<ResourceData>>
+        get() {
+            val map = SparseArrayCompat<MutableList<ResourceData>>()
+
+            GameMap.currentMap.mapHexes.forEach { mapHex ->
+                map[mapHex.loc] = ArrayList()
+            }
+            ScytheDatabase.resourceDao()?.getResources()?.filter { it.loc > 0 }?.forEach { resourceData ->
+                map[resourceData.loc]!!.add(resourceData)
+            }
+
+            return map
+        }
 
     private var measuredTileSize: Float = 0.0F
     private var rect: Rect? = null
+    private var filter: Boolean = false
 
     private val _displayMapping = SparseArrayCompat<PointF>()
     private val displayMapping: SparseArrayCompat<PointF>
@@ -207,25 +246,24 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         val y = ((point.y - minY) * measuredTileSize).toInt()
 
         rect = Rect(x, y, x + measuredTileSize.toInt(), y + measuredTileSize.toInt())
+        filter = !hexHighLight!!.invoke(mapHex)
     }
 
     override fun onDraw(canvas: Canvas) {
         if(displayMapping.isNotEmpty()) {
             val unitGroupings = unitGroupings
+            val resourceGroupings = resourceGroupings
             canvas.save()
             canvas.translate(translate.x, translate.y)
             canvas.scale(scaleFactor, scaleFactor)
+
             map.forEach { hex ->
                 setRectBounds(hex)
                 drawBaseTerrain(hex, canvas)
                 drawRivers(hex, canvas)
                 drawOtherFeatures(hex, canvas)
                 unitGroupings[hex.loc]?.also { if(it.isNotEmpty()) drawUnits(it, canvas) }
-                if(debugText) {
-                    val x = rect!!.centerX().toFloat() - (measuredTileSize / 10.0f)
-                    val y = rect!!.centerY().toFloat() - (measuredTileSize / 10.0f)
-                    canvas.drawText(hex.loc.toString(), x, y, debugTextPaint)
-                }
+                resourceGroupings[hex.loc]?.also { if(it.isNotEmpty()) drawResources(it, canvas) }
             }
 
             canvas.restore()
@@ -236,10 +274,11 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     }
 
     private fun drawDisplayable(id: Int, canvas: Canvas, rect: Rect = this.rect!!) {
-        val drawable = resources.getDrawable(id, null)?.mutate()
+        val drawable = ResourcesCompat.getDrawable(resources, id, null)?.mutate()
 
         drawable?.also {
             it.bounds.set(rect)
+            if(filter) it.colorFilter = muteFilter
             it.draw(canvas)
         }
     }
@@ -279,8 +318,6 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     }
 
     private fun drawUnits(unitsPresent: List<GameUnit>, canvas: Canvas) {
-        // ArrayList<Player, HashMap<UnitResourceID, Count>>
-
         val playersPresent = unitsPresent.map { it.controllingPlayer }.toSet()
 
         if(playersPresent.size > 1) {
@@ -299,7 +336,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
                 var workerCount = 0
                 var building: GameUnit? = null
 
-                types.forEach { type, list ->
+                types.forEach { (type, list) ->
                     when {
                         UnitType.CHARACTER == type -> conflictCount += list.size
                         UnitType.MECH == type -> conflictCount += list.size
@@ -308,32 +345,59 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
                     }
                 }
 
-                building?.image?.also { drawDisplayable(it, canvas) }
+                building?.also {
+                    if(paintUnit(it)) it.image?.also {image -> drawDisplayable(image, canvas) }
+                }
 
                 when {
                     (conflictCount > 0 && workerCount > 0) -> {
-                        types[UnitType.WORKER]?.first()?.also {
-                            drawDiamondWithDoubleCount(it.controllingPlayer.resources.diamondRes, it.controllingPlayer, canvas, conflictCount, workerCount)
+                        val paintWorker = paintUnit(types[UnitType.WORKER]?.first()!!)
+                        val paintMech = types[UnitType.MECH]?.first()?.let { paintUnit(it) }?: false
+                        val paintCharacter = types[UnitType.CHARACTER]?.first()?.let { paintUnit(it) }?: false
+                        when {
+                            (paintWorker && paintMech) || (paintCharacter && paintWorker) -> {
+                                types[UnitType.WORKER]?.first()!!.also { drawDiamondWithDoubleCount(it.controllingPlayer.resources.diamondRes, it.controllingPlayer, canvas, conflictCount, workerCount) }
+                            }
+                            paintMech && paintCharacter -> {
+                                types[UnitType.CHARACTER]?.first()!!.also { unit ->
+                                    unit.image?.also { drawDisplayableWithCount(it, unit.controllingPlayer, canvas, conflictCount) }
+                                }
+                            }
+                            paintWorker -> {
+                                types[UnitType.WORKER]?.first()?.also {
+                                    drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, workerCount)
+                                }
+                            }
+                            paintMech -> {
+                                types[UnitType.MECH]?.first()?.also {
+                                    drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, conflictCount)
+                                }
+                            }
+                            paintCharacter -> {
+                                types[UnitType.CHARACTER]?.first()?.also {
+                                    drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, 1)
+                                }
+                            }
                         }
                     }
                     workerCount > 0 -> {
                         types[UnitType.WORKER]?.first()?.also {
-                            drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, workerCount)
+                            if(paintUnit(it)) drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, workerCount)
                         }
                     }
                     types.containsKey(UnitType.CHARACTER) && types.containsKey(UnitType.MECH) -> {
                         types[UnitType.CHARACTER]?.first()?.also {
-                            drawDisplayableWithCount(it.controllingPlayer.resources.diamondRes, it.controllingPlayer, canvas, conflictCount)
+                            if(paintUnit(it)) drawDisplayableWithCount(it.controllingPlayer.resources.diamondRes, it.controllingPlayer, canvas, conflictCount)
                         }
                     }
                     types.containsKey(UnitType.MECH) -> {
                         types[UnitType.MECH]?.first()?.also {
-                            drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, conflictCount)
+                            if(paintUnit(it)) drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, conflictCount)
                         }
                     }
                     types.containsKey(UnitType.CHARACTER) -> {
                         types[UnitType.CHARACTER]?.first()?.also {
-                            drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, 1)
+                            if(paintUnit(it)) drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, 1)
                         }
                     }
                     else -> {
@@ -342,16 +406,64 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
                 }
             } else {
                 unitsPresent[0].also {
-                    drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, types[it.type]!!.size)
+                    if(paintUnit(it)) drawDisplayableWithCount(it.image!!, it.controllingPlayer, canvas, types[it.type]!!.size)
                 }
             }
         }
     }
 
-    private fun drawDisplayableWithCount(image: Int, player: PlayerInstance, canvas: Canvas, count: Int, rect: Rect = this.rect!!) {
-        drawDisplayable(image, canvas)
+    private fun drawResources(resourcesPresent: List<ResourceData>, canvas: Canvas) {
+        val resourceMap = HashMap<Resource, Int>()
+
+        resourcesPresent.forEach {
+            val type = Resource.valueOf(it.type)!!
+            if(!resourceMap.containsKey(type)) {
+                resourceMap[type] = 0
+            }
+            if(paintResource(type)) resourceMap[type] = resourceMap[type]!! + 1
+        }
+
+        val rectList = ArrayList<Rect>()
+        val rawWidth = this.rect!!.width()
+        val rawHeight = this.rect!!.height()
+        val centerX = this.rect!!.centerX()
+        val centerY = this.rect!!.centerY()
+
+        when(resourceMap.size) {
+            4 -> {
+                rectList.add(Rect(centerX, centerY - (rawHeight/2), centerX + (rawWidth / 2), centerY))
+                rectList.add(Rect(centerX - (rawWidth / 2), centerY - (rawHeight/2), centerX, centerY))
+                rectList.add(Rect(centerX, centerY, centerX + (rawWidth / 2), centerY + (rawHeight/2)))
+                rectList.add(Rect(centerX - (rawWidth / 2), centerY, centerX, centerY + (rawHeight/2)))
+            }
+            3 -> {
+                rectList.add(Rect(centerX, centerY, centerX + (rawWidth / 2), centerY + (rawHeight/2)))
+                rectList.add(Rect(centerX - (rawWidth / 2), centerY, centerX, centerY + (rawHeight/2)))
+                rectList.add(Rect(centerX - rawWidth/4, centerY, centerX + rawWidth/4, centerY + (rawHeight/2)))
+            }
+            2 -> {
+                rectList.add(Rect(centerX, centerY, centerX + (rawWidth / 2), centerY + (rawHeight/2)))
+                rectList.add(Rect(centerX - (rawWidth / 2), centerY, centerX, centerY + (rawHeight/2)))
+
+            }
+            1 -> {
+                rectList.add(Rect(centerX - rawWidth/4, centerY, centerX + rawWidth/4, centerY + (rawHeight/2)))
+            }
+        }
+
+        val rectIterator = rectList.iterator()
+        resourceMap.forEach {
+            val rect = rectIterator.next()
+            drawDisplayableWithCount(it.key.image, null, canvas, it.value, rect)
+        }
+    }
+
+    private fun drawDisplayableWithCount(image: Int, player: PlayerInstance?, canvas: Canvas, count: Int, rect: Rect = this.rect!!) {
+        drawDisplayable(image, canvas, rect)
         if(count > 1) {
             getTextPaint(player).first.also {
+                val filter = it.colorFilter
+                if(this.filter) it.colorFilter = muteFilter
                 if(unitTextSize == null) setTextSize(it)
                 it.textSize = unitTextSize!!
                 canvas.drawText(
@@ -360,6 +472,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
                         rect.centerY().toFloat() + unitTextYOffset!!,
                         it
                 )
+                it.colorFilter = filter
             }
         }
     }
@@ -367,6 +480,8 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     private fun drawDiamondWithDoubleCount(image: Int, player: PlayerInstance, canvas: Canvas, firstCount: Int, secondCount: Int, rect: Rect = this.rect!!) {
         drawDisplayable(image, canvas)
         getTextPaint(player).second.also {
+            val filter = it.colorFilter
+            if(this.filter) it.colorFilter = muteFilter
             if(unitTextSize == null) setTextSize(it)
             it.textSize = unitTextSize!!
             canvas.drawText(
@@ -375,6 +490,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
                     rect.centerY().toFloat() + unitTextYOffset!!,
                     it
             )
+            it.colorFilter = filter
         }
     }
 

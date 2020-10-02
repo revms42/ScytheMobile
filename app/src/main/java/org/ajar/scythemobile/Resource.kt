@@ -59,10 +59,10 @@ enum class CapitalResourceType(override var displayName: String, override var im
 }
 
 enum class NaturalResourceType(override var displayName: String, override var image: Int = -1) : Resource {
-    WOOD("Wood"),
-    FOOD("Food"),
-    OIL("Oil"),
-    METAL("Metal"),
+    WOOD("Wood", R.drawable.ic_wood_icon),
+    FOOD("Food", R.drawable.ic_food_icon),
+    OIL("Oil", R.drawable.ic_oil_icon),
+    METAL("Metal", R.drawable.ic_metal_icon),
     ANY("(Any)"),
     ANY_DISSIMILAR("(Dissimilar)");
 
