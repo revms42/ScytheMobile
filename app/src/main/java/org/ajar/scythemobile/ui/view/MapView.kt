@@ -68,7 +68,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         } else {
             unitTextPaint[-1] = Pair(
                     Paint().also {
-                        it.color = Color.BLACK
+                        it.color = Color.WHITE
                         it.textSize = measuredTileSize / 2.0f
                         it.textAlign = Paint.Align.CENTER
                     },
@@ -429,39 +429,41 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         val centerX = this.rect!!.centerX()
         val centerY = this.rect!!.centerY()
 
+        val scaleFactor = (3 * rawWidth / 8)
         when(resourceMap.size) {
             4 -> {
-                rectList.add(Rect(centerX, centerY - (rawHeight/2), centerX + (rawWidth / 2), centerY))
-                rectList.add(Rect(centerX - (rawWidth / 2), centerY - (rawHeight/2), centerX, centerY))
-                rectList.add(Rect(centerX, centerY, centerX + (rawWidth / 2), centerY + (rawHeight/2)))
-                rectList.add(Rect(centerX - (rawWidth / 2), centerY, centerX, centerY + (rawHeight/2)))
+                rectList.add(Rect(centerX - scaleFactor, centerY - scaleFactor, centerX, centerY)) // Top-Left
+                rectList.add(Rect(centerX, centerY - scaleFactor, centerX + scaleFactor, centerY)) // Top-Right
+                rectList.add(Rect(centerX - scaleFactor, centerY, centerX, centerY + scaleFactor)) // Bottom-Left
+                rectList.add(Rect(centerX, centerY, centerX + scaleFactor, centerY + scaleFactor)) // Bottom-Right
             }
             3 -> {
-                rectList.add(Rect(centerX, centerY, centerX + (rawWidth / 2), centerY + (rawHeight/2)))
-                rectList.add(Rect(centerX - (rawWidth / 2), centerY, centerX, centerY + (rawHeight/2)))
-                rectList.add(Rect(centerX - rawWidth/4, centerY, centerX + rawWidth/4, centerY + (rawHeight/2)))
+                rectList.add(Rect(centerX, centerY, centerX + scaleFactor, centerY + scaleFactor))
+                rectList.add(Rect(centerX - scaleFactor, centerY, centerX, centerY + scaleFactor))
+                rectList.add(Rect(centerX - (scaleFactor /2), centerY + (scaleFactor/2), centerX + (scaleFactor / 2), centerY + (3 * scaleFactor/2)))
             }
             2 -> {
-                rectList.add(Rect(centerX, centerY, centerX + (rawWidth / 2), centerY + (rawHeight/2)))
-                rectList.add(Rect(centerX - (rawWidth / 2), centerY, centerX, centerY + (rawHeight/2)))
+                rectList.add(Rect(centerX, centerY, centerX + scaleFactor, centerY + scaleFactor))
+                rectList.add(Rect(centerX - scaleFactor, centerY, centerX, centerY + scaleFactor))
 
             }
             1 -> {
-                rectList.add(Rect(centerX - rawWidth/4, centerY, centerX + rawWidth/4, centerY + (rawHeight/2)))
+                rectList.add(Rect(centerX - (scaleFactor/2), centerY, centerX + (scaleFactor/2), centerY + scaleFactor))
             }
         }
 
         val rectIterator = rectList.iterator()
         resourceMap.forEach {
             val rect = rectIterator.next()
-            drawDisplayableWithCount(it.key.image, null, canvas, it.value, rect)
+            val forceSecondary = it.key.id == NaturalResourceType.FOOD.id
+            drawDisplayableWithCount(it.key.image, null, canvas, it.value, rect, forceSecondary)
         }
     }
 
-    private fun drawDisplayableWithCount(image: Int, player: PlayerInstance?, canvas: Canvas, count: Int, rect: Rect = this.rect!!) {
+    private fun drawDisplayableWithCount(image: Int, player: PlayerInstance?, canvas: Canvas, count: Int, rect: Rect = this.rect!!, forceSecondary: Boolean = false) {
         drawDisplayable(image, canvas, rect)
         if(count > 1) {
-            getTextPaint(player).first.also {
+            getTextPaint(player).let { (if(forceSecondary) it.second else it.first) }.also {
                 val filter = it.colorFilter
                 if(this.filter) it.colorFilter = muteFilter
                 if(unitTextSize == null) setTextSize(it)

@@ -7,7 +7,7 @@
     <path android:fillColor="@color/colorOilPrimary"
         android:strokeColor="@color/colorOilSecondary"
         android:strokeWidth="1"
-        android:pathData="M15,4
+        android:pathData="M17,4
         a1,1 0 0,1 0,2
         l0,3
         a1,1 0 0,1 0,2
