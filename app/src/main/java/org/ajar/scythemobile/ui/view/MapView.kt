@@ -18,6 +18,7 @@ import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
+import kotlin.math.pow
 
 
 class MapView(context: Context, attributeSet: AttributeSet) : View(context, attributeSet), ScaleGestureDetector.OnScaleGestureListener, GestureDetector.OnGestureListener {
@@ -38,6 +39,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
     val paintUnit: (GameUnit) -> Boolean = fun(_): Boolean = true
     val paintResource: (Resource) -> Boolean = fun(_): Boolean = true
+    val selectable = true
 
     private val noHighlight: (MapHex) -> Boolean = fun(_): Boolean = true
     private var _highlight: (MapHex) -> Boolean = noHighlight
@@ -84,6 +86,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     }
 
     private val map: List<MapHex> by lazy { GameMap.currentMap.mapHexes }
+    val selected: MutableList<MapHex> = ArrayList()
     private val unitGroupings: SparseArrayCompat<out List<GameUnit>>
         get() {
             val map = SparseArrayCompat<MutableList<GameUnit>>()
@@ -114,6 +117,9 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     private var measuredTileSize: Float = 0.0F
     private var rect: Rect? = null
     private var filter: Boolean = false
+
+    private val selectionMapping = HashMap<PointF, MapHex>()
+    private val selectedHexes = ArrayList<MapHex>()
 
     private val _displayMapping = SparseArrayCompat<PointF>()
     private val displayMapping: SparseArrayCompat<PointF>
@@ -206,7 +212,22 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
     override fun onShowPress(e: MotionEvent?) {}
 
-    override fun onSingleTapUp(e: MotionEvent?): Boolean = true
+    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+        return if(selectable) e?.let {
+            selectionMapping.entries.filter { hexHighLight?.invoke(it.value) != false }.firstOrNull { entry ->
+                (e.x - entry.key.x).pow(2) + (e.y - entry.key.y).pow(2) <= (measuredTileSize/2).pow(2)
+            }?.let {
+                if(selectedHexes.contains(it.value)) {
+                    selectedHexes.remove(it.value)
+                } else {
+                    selectedHexes.add(it.value)
+                }
+                invalidate()
+                true
+            }?: false
+        }?: false
+        else false
+    }
 
     override fun onDown(e: MotionEvent?): Boolean = true
 
@@ -245,8 +266,11 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         val x = ((point.x - minX) * measuredTileSize).toInt()
         val y = ((point.y - minY) * measuredTileSize).toInt()
 
-        rect = Rect(x, y, x + measuredTileSize.toInt(), y + measuredTileSize.toInt())
-        filter = !hexHighLight!!.invoke(mapHex)
+        rect = Rect(x, y, x + measuredTileSize.toInt(), y + measuredTileSize.toInt()).also {
+            selectionMapping[PointF(it.exactCenterX(), it.exactCenterY())] = mapHex
+        }
+
+        filter = !hexHighLight!!.invoke(mapHex) || selectedHexes.contains(mapHex)
     }
 
     override fun onDraw(canvas: Canvas) {

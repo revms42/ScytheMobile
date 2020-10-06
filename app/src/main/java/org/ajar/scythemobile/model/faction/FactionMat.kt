@@ -48,8 +48,8 @@ enum class StandardFactionResourcePack(
         override val factionIconRes: Int,
         override val diamondRes: Int,
         override val mechRes: Int,
+        override val workerRes: Int,
         override val heroRes: Int? = null,
-        override val workerRes: Int? = null,
         override val millRes: Int? = null,
         override val mineRes: Int? = null,
         override val monumentRes: Int? = null,
@@ -59,13 +59,62 @@ enum class StandardFactionResourcePack(
         override val flagRes: Int? = null,
         override val matImage: Int? = null
 ) : FactionResourcePack {
-    NODIC(R.color.colorNordicPrimary, R.color.colorNordicSecondary, R.drawable.ic_nordic, R.drawable.ic_nordic_circle, R.drawable.ic_nordic_mech),
-    SAXONY(R.color.colorSaxonyPrimary, R.color.colorSaxonySecondary, R.drawable.ic_saxony, R.drawable.ic_saxony_circle, R.drawable.ic_saxony_mech),
-    POLONIA(R.color.colorPoloniaPrimary, R.color.colorPoloniaSecondary, R.drawable.ic_polonia, R.drawable.ic_polonia_circle, R.drawable.ic_polonia_mech),
-    CRIMEA(R.color.colorCrimeaPrimary, R.color.colorCrimeaSecondary, R.drawable.ic_crimea, R.drawable.ic_crimea_circle, R.drawable.ic_crimea_mech),
-    RUSVIET(R.color.colorRusvietPrimary, R.color.colorRusvietSecondary, R.drawable.ic_rusviet, R.drawable.ic_rusviet_circle, R.drawable.ic_rusviet_mech),
-    ALBION(R.color.colorAlbionPrimary, R.color.colorAlbionSecondary, R.drawable.ic_albion, R.drawable.ic_albion_circle, R.drawable.ic_albion_mech),
-    TOGAWA(R.color.colorTogawaPrimary, R.color.colorTogawaSecondary, R.drawable.ic_togawa, R.drawable.ic_togawa_circle, R.drawable.ic_togawa_mech)
+    NODIC(
+            R.color.colorNordicPrimary,
+            R.color.colorNordicSecondary,
+            R.drawable.ic_nordic,
+            R.drawable.ic_nordic_circle,
+            R.drawable.ic_nordic_mech,
+            R.drawable.ic_nordic_worker
+    ),
+    SAXONY(
+            R.color.colorSaxonyPrimary,
+            R.color.colorSaxonySecondary,
+            R.drawable.ic_saxony,
+            R.drawable.ic_saxony_circle,
+            R.drawable.ic_saxony_mech,
+            R.drawable.ic_saxony_worker
+    ),
+    POLONIA(
+            R.color.colorPoloniaPrimary,
+            R.color.colorPoloniaSecondary,
+            R.drawable.ic_polonia,
+            R.drawable.ic_polonia_circle,
+            R.drawable.ic_polonia_mech,
+            R.drawable.ic_polonia_worker
+    ),
+    CRIMEA(
+            R.color.colorCrimeaPrimary,
+            R.color.colorCrimeaSecondary,
+            R.drawable.ic_crimea,
+            R.drawable.ic_crimea_circle,
+            R.drawable.ic_crimea_mech,
+            R.drawable.ic_crimea_worker
+    ),
+    RUSVIET(
+            R.color.colorRusvietPrimary,
+            R.color.colorRusvietSecondary,
+            R.drawable.ic_rusviet,
+            R.drawable.ic_rusviet_circle,
+            R.drawable.ic_rusviet_mech,
+            R.drawable.ic_rusviet_worker
+    ),
+    ALBION(
+            R.color.colorAlbionPrimary,
+            R.color.colorAlbionSecondary,
+            R.drawable.ic_albion,
+            R.drawable.ic_albion_circle,
+            R.drawable.ic_albion_mech,
+            R.drawable.ic_albion_worker
+    ),
+    TOGAWA(
+            R.color.colorTogawaPrimary,
+            R.color.colorTogawaSecondary,
+            R.drawable.ic_togawa,
+            R.drawable.ic_togawa_circle,
+            R.drawable.ic_togawa_mech,
+            R.drawable.ic_togawa_worker
+    )
 }
 
 interface FactionMat {

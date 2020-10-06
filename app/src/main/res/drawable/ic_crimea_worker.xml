@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24.0"
+    android:viewportHeight="24.0">
+    <path android:fillColor="@color/colorCrimeaPrimary"
+        android:strokeColor="@color/colorCrimeaSecondary"
+        android:strokeWidth="1"
+        android:pathData="M4,12
+        a8,8 0 0,1 16,0
+        a8,8 0 0,1 -16,0
+        Z" />
+    <path android:fillColor="@color/colorCrimeaSecondary"
+        android:pathData="M7.5,17.5
+        l1.5,-3
+        l-1,-0.5
+        l1.5,-3
+        l1,-0.5
+        a1.5,1.5 0 0,1 -1,-1.5
+        l0,-0.5
+        l-0.5,0
+        l0,-2
+        a6,6 0 0,1 6,0
+        l0,2
+        l-0.5,0
+        l0,0.5
+        a1.5,1.5 0 0,1 -1,1.5
+        l1,0.5
+        l1.5,3
+        l-1,0.5
+        l1.5,3
+        l0,1
+        l-2.5,0
+        a1,1 0 0,1 -1,-1
+        l-1,-1
+        l-1,1
+        a1,1 0 0,1 -1,1
+        l-2.5,0
+        Z
+        " />
+</vector>
