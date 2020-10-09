@@ -52,10 +52,10 @@ class ScytheTurn : AppCompatActivity() {
         //TODO: **** Temporary for testing ****
         ScytheDatabase.init(applicationContext)
         ScytheDatabase.reset()
-        val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.TOGAWA.id)
+        val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.SAXONY.id)
         ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
-        ScytheDatabase.unitDao()?.addUnit(UnitData(0, 0, 21, UnitType.WORKER.ordinal))
-        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.WORKER.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(0, 0, 21, UnitType.CHARACTER.ordinal))
+//        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.WORKER.ordinal))
 //        ScytheDatabase.resourceDao()?.addResource(ResourceData(0, 21, -1, NaturalResourceType.FOOD.id))
 //        ScytheDatabase.resourceDao()?.addResource(ResourceData(1, 21, -1, NaturalResourceType.FOOD.id))
 //        ScytheDatabase.resourceDao()?.addResource(ResourceData(2, 21, -1, NaturalResourceType.METAL.id))

@@ -65,7 +65,8 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_nordic,
             R.drawable.ic_nordic_circle,
             R.drawable.ic_nordic_mech,
-            R.drawable.ic_nordic_worker
+            R.drawable.ic_nordic_worker,
+            R.drawable.ic_nordic_hero
     ),
     SAXONY(
             R.color.colorSaxonyPrimary,
@@ -73,7 +74,8 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_saxony,
             R.drawable.ic_saxony_circle,
             R.drawable.ic_saxony_mech,
-            R.drawable.ic_saxony_worker
+            R.drawable.ic_saxony_worker,
+            R.drawable.ic_saxony_hero
     ),
     POLONIA(
             R.color.colorPoloniaPrimary,
@@ -81,7 +83,8 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_polonia,
             R.drawable.ic_polonia_circle,
             R.drawable.ic_polonia_mech,
-            R.drawable.ic_polonia_worker
+            R.drawable.ic_polonia_worker,
+            R.drawable.ic_polonia_hero
     ),
     CRIMEA(
             R.color.colorCrimeaPrimary,
@@ -89,7 +92,8 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_crimea,
             R.drawable.ic_crimea_circle,
             R.drawable.ic_crimea_mech,
-            R.drawable.ic_crimea_worker
+            R.drawable.ic_crimea_worker,
+            R.drawable.ic_crimea_hero
     ),
     RUSVIET(
             R.color.colorRusvietPrimary,
@@ -97,7 +101,8 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_rusviet,
             R.drawable.ic_rusviet_circle,
             R.drawable.ic_rusviet_mech,
-            R.drawable.ic_rusviet_worker
+            R.drawable.ic_rusviet_worker,
+            R.drawable.ic_rusviet_hero
     ),
     ALBION(
             R.color.colorAlbionPrimary,
@@ -105,7 +110,8 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_albion,
             R.drawable.ic_albion_circle,
             R.drawable.ic_albion_mech,
-            R.drawable.ic_albion_worker
+            R.drawable.ic_albion_worker,
+            R.drawable.ic_albion_hero
     ),
     TOGAWA(
             R.color.colorTogawaPrimary,
@@ -113,7 +119,8 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_togawa,
             R.drawable.ic_togawa_circle,
             R.drawable.ic_togawa_mech,
-            R.drawable.ic_togawa_worker
+            R.drawable.ic_togawa_worker,
+            R.drawable.ic_togawa_hero
     )
 }
 
