@@ -49,11 +49,11 @@ enum class StandardFactionResourcePack(
         override val diamondRes: Int,
         override val mechRes: Int,
         override val workerRes: Int,
-        override val heroRes: Int? = null,
-        override val millRes: Int? = null,
-        override val mineRes: Int? = null,
-        override val monumentRes: Int? = null,
-        override val armoryRes: Int? = null,
+        override val heroRes: Int,
+        override val monumentRes: Int,
+        override val millRes: Int,
+        override val mineRes: Int,
+        override val armoryRes: Int,
         override val airshipRes: Int? = null,
         override val trapUnsprungRes: Int? = null,
         override val flagRes: Int? = null,
@@ -66,7 +66,11 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_nordic_circle,
             R.drawable.ic_nordic_mech,
             R.drawable.ic_nordic_worker,
-            R.drawable.ic_nordic_hero
+            R.drawable.ic_nordic_hero,
+            R.drawable.ic_nordic_monument,
+            R.drawable.ic_nordic_mill,
+            R.drawable.ic_nordic_mine,
+            R.drawable.ic_nordic_armory
     ),
     SAXONY(
             R.color.colorSaxonyPrimary,
@@ -75,7 +79,11 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_saxony_circle,
             R.drawable.ic_saxony_mech,
             R.drawable.ic_saxony_worker,
-            R.drawable.ic_saxony_hero
+            R.drawable.ic_saxony_hero,
+            R.drawable.ic_saxony_monument,
+            R.drawable.ic_saxony_mill,
+            R.drawable.ic_saxony_mine,
+            R.drawable.ic_saxony_armory
     ),
     POLONIA(
             R.color.colorPoloniaPrimary,
@@ -84,7 +92,11 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_polonia_circle,
             R.drawable.ic_polonia_mech,
             R.drawable.ic_polonia_worker,
-            R.drawable.ic_polonia_hero
+            R.drawable.ic_polonia_hero,
+            R.drawable.ic_polonia_monument,
+            R.drawable.ic_polonia_mill,
+            R.drawable.ic_polonia_mine,
+            R.drawable.ic_polonia_armory
     ),
     CRIMEA(
             R.color.colorCrimeaPrimary,
@@ -93,7 +105,11 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_crimea_circle,
             R.drawable.ic_crimea_mech,
             R.drawable.ic_crimea_worker,
-            R.drawable.ic_crimea_hero
+            R.drawable.ic_crimea_hero,
+            R.drawable.ic_crimea_monument,
+            R.drawable.ic_crimea_mill,
+            R.drawable.ic_crimea_mine,
+            R.drawable.ic_crimea_armory
     ),
     RUSVIET(
             R.color.colorRusvietPrimary,
@@ -102,7 +118,11 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_rusviet_circle,
             R.drawable.ic_rusviet_mech,
             R.drawable.ic_rusviet_worker,
-            R.drawable.ic_rusviet_hero
+            R.drawable.ic_rusviet_hero,
+            R.drawable.ic_rusviet_monument,
+            R.drawable.ic_rusviet_mill,
+            R.drawable.ic_rusviet_mine,
+            R.drawable.ic_rusviet_armory
     ),
     ALBION(
             R.color.colorAlbionPrimary,
@@ -111,7 +131,11 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_albion_circle,
             R.drawable.ic_albion_mech,
             R.drawable.ic_albion_worker,
-            R.drawable.ic_albion_hero
+            R.drawable.ic_albion_hero,
+            R.drawable.ic_albion_monument,
+            R.drawable.ic_albion_mill,
+            R.drawable.ic_albion_mine,
+            R.drawable.ic_albion_armory
     ),
     TOGAWA(
             R.color.colorTogawaPrimary,
@@ -120,7 +144,11 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_togawa_circle,
             R.drawable.ic_togawa_mech,
             R.drawable.ic_togawa_worker,
-            R.drawable.ic_togawa_hero
+            R.drawable.ic_togawa_hero,
+            R.drawable.ic_togawa_monument,
+            R.drawable.ic_togawa_mill,
+            R.drawable.ic_togawa_mine,
+            R.drawable.ic_togawa_armory
     )
 }
 

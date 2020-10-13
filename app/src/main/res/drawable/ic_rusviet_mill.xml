@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0">
+    <path android:fillColor="@color/colorRusvietPrimary"
+        android:strokeColor="@color/colorRusvietSecondary"
+        android:strokeWidth="1"
+        android:pathData="M10.5,18
+        l1.5,-6
+        l1.5,6
+        z
+        " />
+    <group
+        android:pivotX="12"
+        android:pivotY="11"
+        android:rotation="-35">
+        <path android:fillColor="@color/colorRusvietPrimary"
+            android:strokeColor="@color/colorRusvietSecondary"
+            android:strokeWidth="1"
+            android:pathData="M12,11
+            l-4.5,2
+            l0,-2
+            z
+            "/>
+    </group>
+    <group
+        android:pivotX="12"
+        android:pivotY="11"
+        android:rotation="55">
+        <path android:fillColor="@color/colorRusvietPrimary"
+            android:strokeColor="@color/colorRusvietSecondary"
+            android:strokeWidth="1"
+            android:pathData="M12,11
+            l-4.5,2
+            l0,-2
+            z
+            "/>
+    </group>
+    <group
+        android:pivotX="12"
+        android:pivotY="11"
+        android:rotation="-125">
+        <path android:fillColor="@color/colorRusvietPrimary"
+            android:strokeColor="@color/colorRusvietSecondary"
+            android:strokeWidth="1"
+            android:pathData="M12,11
+            l-4.5,2
+            l0,-2
+            z
+            "/>
+    </group>
+    <group
+        android:pivotX="12"
+        android:pivotY="11"
+        android:rotation="145">
+        <path android:fillColor="@color/colorRusvietPrimary"
+            android:strokeColor="@color/colorRusvietSecondary"
+            android:strokeWidth="1"
+            android:pathData="M12,11
+            l-4.5,2
+            l0,-2
+            z
+            "/>
+    </group>
+</vector>
