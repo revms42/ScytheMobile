@@ -3,6 +3,7 @@ package org.ajar.scythemobile.ui.view
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -34,12 +35,15 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     private var rawWidth: Int = 0
     private var rawHeight: Int = 0
 
+    private var mapViewWidth: Int = 0
+    private var mapViewHeight: Int = 0
+
     private var unitTextSize: Float? = null
     private var unitTextYOffset: Float? = null
 
     val paintUnit: (GameUnit) -> Boolean = fun(_): Boolean = true
     val paintResource: (Resource) -> Boolean = fun(_): Boolean = true
-    val selectable = true
+    var selectable = true
 
     private val noHighlight: (MapHex) -> Boolean = fun(_): Boolean = true
     private var _highlight: (MapHex) -> Boolean = noHighlight
@@ -185,7 +189,7 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
     private fun maximumYPoint() : Float {
         var mostY = Float.MIN_VALUE
-        displayMapping.forEach { _, value -> if(mostY > value.y) mostY = value.y }
+        displayMapping.forEach { _, value -> if(mostY < value.y) mostY = value.y }
         return mostY
     }
 
@@ -233,11 +237,32 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
 
     override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean = true
 
+    private val lowestScrollX: Float
+            get() = -((scaleFactor - 1.0f) * mapViewWidth.toFloat())
+
+    private val lowestScrollY: Float
+            get() = -((scaleFactor - 1.0f) * mapViewHeight.toFloat())
+
     override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-        translate.x -= distanceX
-        translate.y -= distanceY
+        var consume = false
+        translate.x = (translate.x - distanceX).let {
+            when {
+                it > 0.0f -> 0.0f
+                it < lowestScrollX -> lowestScrollX
+                else -> it.also { consume = true }
+            }
+        }
+        translate.y = (translate.y - distanceY).let {
+            when {
+                it > 0.0f -> 0.0f
+                it < lowestScrollY -> lowestScrollY
+                else -> it.also { consume = true}
+            }
+        }
+        Log.w("Consume", "$consume")
+        Log.w("Translate", "$translate vs $lowestScrollX x $lowestScrollY")
         invalidate()
-        return true
+        return consume
     }
 
     override fun onLongPress(e: MotionEvent?) {}
@@ -256,8 +281,12 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         val rawTileHeight =  rawHeight / (unitHeight + 1)
 
         measuredTileSize = if(rawTileHeight < rawTileWidth) rawTileHeight else rawTileWidth
+        mapViewWidth = (measuredTileSize * (unitWidth + 1)).toInt()
+        mapViewHeight = (measuredTileSize * (unitHeight + 1)).toInt()
 
-        this.setMeasuredDimension(rawWidth, rawHeight)
+        Log.w("Measure", "raw = $rawWidth x $rawHeight, sized = $mapViewWidth x $mapViewHeight")
+
+        this.setMeasuredDimension(mapViewWidth, mapViewWidth)
     }
 
     private fun setRectBounds(mapHex: MapHex) {

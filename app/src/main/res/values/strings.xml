@@ -12,6 +12,20 @@
 
     <string name="subject_combat_defend">Choose Power and Combat Cards for Defense</string>
 
+    <string name="map_switch_resources">Resources</string>
+    <string name="map_switch_traps">Traps</string>
+    <string name="map_switch_flags">Flags</string>
+
+    <string name="map_switch_player_hero">Player Hero</string>
+    <string name="map_switch_player_mechs">Player Mechs</string>
+    <string name="map_switch_player_workers">Player Workers</string>
+    <string name="map_switch_player_buildings">Player Buildings</string>
+
+    <string name="map_switch_enemy_hero">Enemy Heros</string>
+    <string name="map_switch_enemy_mechs">Enemy Mechs</string>
+    <string name="map_switch_enemy_workers">Enemy Workers</string>
+    <string name="map_switch_enemy_buildings">Enemy Buildings</string>
+
     <string-array name="objectives">
         <item>Control at least 3 mountain territories at the end of your turn.</item>
         <item>Control at least 3 tunnels at the end of your turn.</item>

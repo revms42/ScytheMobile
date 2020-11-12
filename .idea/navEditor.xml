@@ -310,8 +310,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="2138" />
-                            <option name="y" value="452" />
+                            <option name="x" value="2046" />
+                            <option name="y" value="460" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -436,6 +436,30 @@
                               </value>
                             </entry>
                           </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="nav_game_end">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="2609" />
+                            <option name="y" value="443" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="nav_game_start">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="-1068" />
+                            <option name="y" value="486" />
+                          </Point>
                         </option>
                       </LayoutPositions>
                     </value>

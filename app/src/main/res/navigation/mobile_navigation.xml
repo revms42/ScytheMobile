@@ -9,7 +9,7 @@
         android:id="@+id/nav_start"
         android:name="org.ajar.scythemobile.ui.StartTurnFragment"
         android:label="@string/menu_start"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_map" >
         <action
             android:id="@+id/action_nav_start_to_nav_bolster"
             app:destination="@id/nav_bolster" />
@@ -113,7 +113,11 @@
         android:id="@+id/nav_end"
         android:label="@string/menu_end"
         android:name="org.ajar.scythemobile.ui.EndTurnFragment"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_end_to_nav_game_end"
+            app:destination="@id/nav_game_end" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_trade"
@@ -510,4 +514,10 @@
             android:id="@+id/action_nav_deploy_worker_from_mech_to_nav_factory_move"
             app:destination="@id/nav_factory_move" />
     </fragment>
+    <fragment android:id="@+id/nav_game_start" >
+        <action
+            android:id="@+id/action_nav_game_start_to_nav_start"
+            app:destination="@id/nav_start" />
+    </fragment>
+    <fragment android:id="@+id/nav_game_end" />
 </navigation>
