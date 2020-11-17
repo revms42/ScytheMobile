@@ -2,6 +2,9 @@ package org.ajar.scythemobile.model.faction
 
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
+import androidx.collection.valueIterator
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.toList
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.*
@@ -135,7 +138,10 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_albion_monument,
             R.drawable.ic_albion_mill,
             R.drawable.ic_albion_mine,
-            R.drawable.ic_albion_armory
+            R.drawable.ic_albion_armory,
+            null,
+            null,
+            R.drawable.ic_albion_flag
     ),
     TOGAWA(
             R.color.colorTogawaPrimary,
@@ -148,7 +154,9 @@ enum class StandardFactionResourcePack(
             R.drawable.ic_togawa_monument,
             R.drawable.ic_togawa_mill,
             R.drawable.ic_togawa_mine,
-            R.drawable.ic_togawa_armory
+            R.drawable.ic_togawa_armory,
+            null,
+            R.drawable.ic_togawa_trap_armed
     )
 }
 
@@ -200,7 +208,9 @@ interface FactionMat {
 
         operator fun get(id: Int): FactionMat? = factionMats[id]
 
-
+        fun list() : List<FactionMat> {
+            return ArrayList<FactionMat>().also { list -> factionMats.valueIterator().forEach { list.add(it) } }
+        }
     }
 }
 

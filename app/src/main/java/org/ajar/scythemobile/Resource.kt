@@ -67,6 +67,7 @@ enum class NaturalResourceType(override var displayName: String, override var im
     ANY_DISSIMILAR("(Dissimilar)");
 
     companion object {
+        val valueList = listOf(WOOD, FOOD, OIL, METAL)
         fun loadNames(context: Context) {
             context.resources.getStringArray(R.array.natural_resources).forEachIndexed { index, name ->
                 values()[index].displayName = name

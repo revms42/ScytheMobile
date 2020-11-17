@@ -1,15 +1,13 @@
 package org.ajar.scythemobile.ui.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
-import android.view.GestureDetector
-import android.view.ScaleGestureDetector
-import android.view.View
+import android.view.*
 import org.ajar.scythemobile.model.map.*
 import java.lang.RuntimeException
-import android.view.MotionEvent
 import androidx.collection.*
 import androidx.core.content.res.ResourcesCompat
 import org.ajar.scythemobile.NaturalResourceType
@@ -22,7 +20,7 @@ import org.ajar.scythemobile.model.entity.UnitType
 import kotlin.math.pow
 
 
-class MapView(context: Context, attributeSet: AttributeSet) : View(context, attributeSet), ScaleGestureDetector.OnScaleGestureListener, GestureDetector.OnGestureListener {
+class MapView(context: Context, attributeSet: AttributeSet? = null) : View(context, attributeSet), ScaleGestureDetector.OnScaleGestureListener, GestureDetector.OnGestureListener {
 
     private val minX: Float by lazy { minimumXPoint() }
     private val minY: Float by lazy { minimumYPoint() }
@@ -41,8 +39,8 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
     private var unitTextSize: Float? = null
     private var unitTextYOffset: Float? = null
 
-    val paintUnit: (GameUnit) -> Boolean = fun(_): Boolean = true
-    val paintResource: (Resource) -> Boolean = fun(_): Boolean = true
+    var paintUnit: (GameUnit) -> Boolean = fun(_): Boolean = true
+    var paintResource: (Resource) -> Boolean = fun(_): Boolean = true
     var selectable = true
 
     private val noHighlight: (MapHex) -> Boolean = fun(_): Boolean = true
@@ -265,7 +263,31 @@ class MapView(context: Context, attributeSet: AttributeSet) : View(context, attr
         return consume
     }
 
-    override fun onLongPress(e: MotionEvent?) {}
+    @SuppressLint("ClickableViewAccessibility") //TODO: Look at this later.
+    override fun onLongPress(e: MotionEvent?) {
+//        val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+//
+//        val view = layoutInflater.inflate(R.layout.control_map_filter, null)
+//
+//        val viewPager = view.findViewById<ViewPager2>(R.id.map_filter_pager)
+//        viewPager.adapter = MapFilterViewAdapter(context)
+//
+//        val tabLayout = view.findViewById<TabLayout>(R.id.map_filter_tabs)
+//        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+//            tab.text = MapFilterTab[position].title
+//        }.attach()
+//
+//        val window = PopupWindow(view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, true)
+//
+//        window.showAtLocation(this, Gravity.CENTER, 0, 0)
+//
+//        //TODO: Hook up controls.
+//
+//        view.setOnTouchListener { _, _ ->
+//            window.dismiss()
+//            true
+//        }
+    }
 
     override fun onTouchEvent(ev: MotionEvent): Boolean {
         translateGestureDetector.onTouchEvent(ev)

@@ -45,4 +45,7 @@
     <color name="colorAlbionSecondary">#b38600</color>
     <color name="colorTogawaPrimary">#9900e6</color>
     <color name="colorTogawaSecondary">#ffffff</color>
+
+    <color name="colorNeutralPrimary">#444444</color>
+    <color name="colorNeutralSecondary">#CCCCCC</color>
 </resources>

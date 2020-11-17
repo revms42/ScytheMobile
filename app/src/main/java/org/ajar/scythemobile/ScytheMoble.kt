@@ -3,6 +3,7 @@ package org.ajar.scythemobile
 import android.content.Context
 import org.ajar.scythemobile.model.map.EncounterDeck
 import org.ajar.scythemobile.model.objective.Objective
+import org.ajar.scythemobile.ui.control.MapFilterTab
 
 object ScytheMoble {
 
@@ -11,5 +12,6 @@ object ScytheMoble {
         CapitalResourceType.loadNames(context)
         NaturalResourceType.loadNames(context)
         EncounterDeck.loadDescs(context)
+        MapFilterTab.populateNames(context.resources)
     }
 }

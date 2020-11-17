@@ -9,7 +9,7 @@
         android:id="@+id/nav_start"
         android:name="org.ajar.scythemobile.ui.StartTurnFragment"
         android:label="@string/menu_start"
-        tools:layout="@layout/fragment_map" >
+        tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_nav_start_to_nav_bolster"
             app:destination="@id/nav_bolster" />

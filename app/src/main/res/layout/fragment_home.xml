@@ -6,8 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".ui.ScytheTurn">
 
-    <org.ajar.scythemobile.ui.view.MapView
-        android:id="@+id/map_view"
+    <fragment
+        android:name="org.ajar.scythemobile.ui.view.MapFragment"
+        android:id="@+id/map_fragment"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         app:layout_constraintBottom_toTopOf="@id/dummyText"
@@ -18,8 +19,8 @@
         android:id="@+id/dummyText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/map_view"
-        app:layout_constraintStart_toEndOf="@id/map_view"
+        app:layout_constraintTop_toBottomOf="@id/map_fragment"
+        app:layout_constraintStart_toEndOf="@id/map_fragment"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:text="@string/nav_header_desc"/>

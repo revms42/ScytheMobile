@@ -1,119 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.ScytheTurn">
 
-    <org.ajar.scythemobile.ui.view.MapView
-        android:id="@+id/map_view"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        app:layout_constraintBottom_toTopOf="@id/secondPanel"
-        app:layout_constraintEnd_toEndOf="@id/secondPanel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <LinearLayout
-        android:id="@+id/secondPanel"
+    <!--    <org.ajar.scythemobile.ui.view.MapView-->
+    <!--        android:id="@+id/map_view"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        app:layout_constraintBottom_toTopOf="@id/filter_view"-->
+    <!--        app:layout_constraintEnd_toStartOf="@id/filter_view"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/map_fragment_pager"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/map_view"
-        app:layout_constraintStart_toEndOf="@id/map_view"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Switch
-                android:id="@+id/resourceSwitch"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/trapSwitch"
-                android:text="@string/map_switch_resources"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-            <Switch
-                android:id="@+id/trapSwitch"
-                app:layout_constraintStart_toEndOf="@id/resourceSwitch"
-                app:layout_constraintEnd_toStartOf="@id/flagSwitch"
-                android:text="@string/map_switch_traps"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-            <Switch
-                android:id="@+id/flagSwitch"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/trapSwitch"
-                android:text="@string/map_switch_flags"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:id="@+id/playerButtonPane"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/enemyButtonPane"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <Switch
-                    android:text="@string/map_switch_player_hero"
-                    android:id="@+id/playerHeroSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-                <Switch
-                    android:text="@string/map_switch_player_mechs"
-                    android:id="@+id/playerMechSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-                <Switch
-                    android:text="@string/map_switch_player_workers"
-                    android:id="@+id/playerWorkerSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-                <Switch
-                    android:text="@string/map_switch_player_buildings"
-                    android:id="@+id/playerBuildingSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/enemyButtonPane"
-                app:layout_constraintStart_toEndOf="@id/playerButtonPane"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <Switch
-                    android:text="@string/map_switch_enemy_hero"
-                    android:id="@+id/enemyHeroSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                <Switch
-                    android:text="@string/map_switch_enemy_mechs"
-                    android:id="@+id/enemyMechSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                <Switch
-                    android:text="@string/map_switch_enemy_workers"
-                    android:id="@+id/enemyWorkerSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <Switch
-                    android:id="@+id/enemyBuildingSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/map_switch_enemy_buildings" />
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent"/>
+</LinearLayout>
