@@ -68,7 +68,7 @@ enum class MapFilterTab(var title: String, var icon: Int, val selected: MutableL
                 UnitType.ARMORY, UnitType.MONUMENT, UnitType.MILL, UnitType.MINE -> BUILDINGS.selected.value?.contains(unit.controllingPlayer.factionMat.factionMat.id)
                 UnitType.TRAP, UnitType.FLAG -> OTHER.selected.value?.contains(unit.controllingPlayer.factionMat.factionMat.id)
                 UnitType.AIRSHIP -> true
-            }?: false).also { Log.w("Drawing", "${unit.type} $it") }
+            }?: false)
         }
 
         fun paintResource(res: Resource): Boolean {

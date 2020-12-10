@@ -1,5 +1,8 @@
 package org.ajar.scythemobile.turn
 
+import androidx.collection.SparseArrayCompat
+import androidx.collection.isNotEmpty
+import androidx.collection.set
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit
@@ -8,24 +11,28 @@ import org.ajar.scythemobile.model.map.GameMap
 import java.lang.IllegalArgumentException
 
 object TurnHolder {
+    private var _currentTurn: TurnData? = null
     val currentTurn: TurnData
         get() {
-            return ScytheDatabase.turnDao()?.getCurrentTurn().let { currentTurn ->
-                currentTurn?.let { turn ->
-                    if (turn.performedBottom) {
-                        var nextPlayerId = currentTurn.playerId + 1
+            if(_currentTurn == null) {
+                _currentTurn = ScytheDatabase.turnDao()?.getCurrentTurn().let { currentTurn ->
+                    currentTurn?.let { turn ->
+                        if (turn.performedBottom) {
+                            var nextPlayerId = currentTurn.playerId + 1
 
-                        val nextPlayer = ScytheDatabase.playerDao()?.getPlayer(nextPlayerId)
-                                ?: ScytheDatabase.playerDao()?.getPlayer(0)
+                            val nextPlayer = ScytheDatabase.playerDao()?.getPlayer(nextPlayerId)
+                                    ?: ScytheDatabase.playerDao()?.getPlayer(0)
 
-                        nextPlayerId = nextPlayer!!.id
+                            nextPlayerId = nextPlayer!!.id
 
-                        TurnData(0, nextPlayerId).also { ScytheDatabase.turnDao()?.addTurn(it) }
-                    } else {
-                        currentTurn
-                    }
-                } ?: TurnData(0, 0).also { ScytheDatabase.turnDao()?.addTurn(it) }
+                            TurnData(0, nextPlayerId).also { ScytheDatabase.turnDao()?.addTurn(it) }
+                        } else {
+                            currentTurn
+                        }
+                    } ?: TurnData(0, 0).also { ScytheDatabase.turnDao()?.addTurn(it) }
+                }
             }
+            return _currentTurn!!
         }
     private val cachedMoves: HashMap<Int,UnitData> = HashMap()
     private val cachedPlayerUpdates: HashMap<Int,PlayerData> = HashMap()
@@ -56,6 +63,24 @@ object TurnHolder {
                 currentTurn.combatThree!!.attackingUnits = currentTurn.combatThree!!.attackingUnits + gameUnits
             }
             else -> throw IllegalArgumentException("There should never be more than three combats in a turn!")
+        }
+    }
+
+    fun hasUnresolvedCombat(): Boolean {
+        return when {
+            currentTurn.combatOne?.combatResolved == false -> true
+            currentTurn.combatTwo?.combatResolved == false -> true
+            currentTurn.combatThree?.combatResolved == false -> true
+            else -> false
+        }
+    }
+
+    fun combatCompleted(): Boolean {
+        return when {
+            currentTurn.combatOne.let { it == null || it.combatResolved } -> true
+            currentTurn.combatTwo.let { it == null || it.combatResolved } -> true
+            currentTurn.combatThree.let { it == null || it.combatResolved } -> true
+            else -> false
         }
     }
 
@@ -125,5 +150,23 @@ object TurnHolder {
         cachedEncounterUpdates.clear()
         cachedMoves.clear()
         ScytheDatabase.turnDao()?.updateTurn(TurnData(currentTurn.turn, currentTurn.playerId))
+    }
+
+    fun updatedUnitPositions(map: SparseArrayCompat<MutableList<GameUnit>> = SparseArrayCompat()) : SparseArrayCompat<MutableList<GameUnit>> {
+        if(map.isNotEmpty()) map.clear()
+
+        GameMap.currentMap.mapHexes.forEach { mapHex ->
+            map[mapHex.loc] = ArrayList()
+        }
+
+        ScytheDatabase.unitDao()?.getUnits()?.filter { it.loc > 0 && !cachedMoves.containsKey(it.id)}?.forEach { unitData ->
+            map[unitData.loc]!!.add(GameUnit.load(unitData))
+        }
+
+        cachedMoves.forEach { (_, unitData) ->
+            map[unitData.loc]!!.add(GameUnit.load(unitData))
+        }
+
+        return map
     }
 }

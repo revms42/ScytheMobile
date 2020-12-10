@@ -1,7 +1,6 @@
 package org.ajar.scythemobile.model
 
 import androidx.collection.SparseArrayCompat
-import androidx.collection.forEach
 import org.ajar.scythemobile.CapitalResourceType
 import org.ajar.scythemobile.data.FactionMatData
 import org.ajar.scythemobile.data.PlayerData

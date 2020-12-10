@@ -14,9 +14,11 @@ import org.ajar.scythemobile.NaturalResourceType
 import org.ajar.scythemobile.Resource
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.turn.TurnHolder
 import kotlin.math.pow
 
 
@@ -42,6 +44,10 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
     var paintUnit: (GameUnit) -> Boolean = fun(_): Boolean = true
     var paintResource: (Resource) -> Boolean = fun(_): Boolean = true
     var selectable = true
+    private var filter: Boolean = false
+
+    private val selectionMapping = HashMap<PointF, MapHex>()
+    val selectedHexes = ArrayList<MapHex>()
 
     private val noHighlight: (MapHex) -> Boolean = fun(_): Boolean = true
     private var _highlight: (MapHex) -> Boolean = noHighlight
@@ -50,6 +56,14 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
         set(value){
             _highlight = value ?: noHighlight
         }
+    private var noSelect: (MapHex) -> Unit = fun(_): Unit = Unit
+    private var _onHexSelect: (MapHex) -> Unit = noSelect
+    var onHexSelect: ((MapHex) -> Unit)?
+        get() = _onHexSelect
+        set(value) {
+            _onHexSelect = value ?: noSelect
+        }
+
     private val muteFilter = ColorMatrixColorFilter(Desaturate.makeMatrix())
 
     private var unitTextPaint = SparseArrayCompat<Pair<Paint,Paint>>()
@@ -88,19 +102,11 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
     }
 
     private val map: List<MapHex> by lazy { GameMap.currentMap.mapHexes }
-    val selected: MutableList<MapHex> = ArrayList()
+    private val _unitGroupings: SparseArrayCompat<MutableList<GameUnit>> by lazy { SparseArrayCompat<MutableList<GameUnit>>()}
     private val unitGroupings: SparseArrayCompat<out List<GameUnit>>
         get() {
-            val map = SparseArrayCompat<MutableList<GameUnit>>()
-
-            GameMap.currentMap.mapHexes.forEach { mapHex ->
-                map[mapHex.loc] = ArrayList()
-            }
-            ScytheDatabase.unitDao()?.getUnits()?.filter { it.loc > 0 }?.forEach { unitData ->
-                map[unitData.loc]!!.add(GameUnit.load(unitData))
-            }
-
-            return map
+            TurnHolder.updatedUnitPositions(_unitGroupings)
+            return _unitGroupings
         }
     private val resourceGroupings: SparseArrayCompat<out List<ResourceData>>
         get() {
@@ -118,10 +124,6 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
 
     private var measuredTileSize: Float = 0.0F
     private var rect: Rect? = null
-    private var filter: Boolean = false
-
-    private val selectionMapping = HashMap<PointF, MapHex>()
-    private val selectedHexes = ArrayList<MapHex>()
 
     private val _displayMapping = SparseArrayCompat<PointF>()
     private val displayMapping: SparseArrayCompat<PointF>
@@ -219,11 +221,7 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
             selectionMapping.entries.filter { hexHighLight?.invoke(it.value) != false }.firstOrNull { entry ->
                 (e.x - entry.key.x).pow(2) + (e.y - entry.key.y).pow(2) <= (measuredTileSize/2).pow(2)
             }?.let {
-                if(selectedHexes.contains(it.value)) {
-                    selectedHexes.remove(it.value)
-                } else {
-                    selectedHexes.add(it.value)
-                }
+                _onHexSelect(it.value)
                 invalidate()
                 true
             }?: false

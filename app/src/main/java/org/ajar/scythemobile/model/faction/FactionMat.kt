@@ -390,7 +390,7 @@ class FactionMatInstance(val factionMat: FactionMat, val factionMatData: Faction
                     3 -> factionMatData.upgradeFour
                     else -> false
                 }
-            }
+            } + factionMat.getFactionMovementRules()
     val lockedFactionAbilities: Collection<FactionAbility>
         get() = factionMat.mechAbilities.filterIndexed { index, _ ->
             when(index) {

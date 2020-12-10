@@ -10,20 +10,19 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import org.ajar.scythemobile.NaturalResourceType
 import org.ajar.scythemobile.R
-import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
-import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.faction.StandardFactionMat
 import org.ajar.scythemobile.model.player.StandardPlayerMat
+import org.ajar.scythemobile.model.player.TopRowAction
 
 class ScytheTurn : AppCompatActivity() {
 
@@ -39,7 +38,7 @@ class ScytheTurn : AppCompatActivity() {
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Temporary testing for movement", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
 
@@ -52,9 +51,11 @@ class ScytheTurn : AppCompatActivity() {
         //TODO: **** Temporary for testing ****
         ScytheDatabase.init(applicationContext)
         ScytheDatabase.reset()
-        val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.ALBION.id)
+        val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.NORDIC.id)
         ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
-        ScytheDatabase.unitDao()?.addUnit(UnitData(0, 0, 21, UnitType.ARMORY.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(0, 0, 21, UnitType.WORKER.ordinal))
+        ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
+        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 15, UnitType.WORKER.ordinal))
 //        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.WORKER.ordinal))
 //        ScytheDatabase.resourceDao()?.addResource(ResourceData(0, 21, -1, NaturalResourceType.FOOD.id))
 //        ScytheDatabase.resourceDao()?.addResource(ResourceData(1, 21, -1, NaturalResourceType.FOOD.id))
@@ -80,6 +81,8 @@ class ScytheTurn : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        navController.navigate(viewModel.currentNav)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

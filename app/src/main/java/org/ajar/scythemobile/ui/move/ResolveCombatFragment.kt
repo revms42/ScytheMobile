@@ -22,6 +22,7 @@ class ResolveCombatFragment : Fragment() {
         moveViewModel =
                 ViewModelProvider(requireActivity()).get(MoveViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
+        //TODO: DON'T FORGET TO LOOK AND SEE IF THERE ARE ANY ENCOUNTERS TO RESOLVE!
         return root
     }
 }
