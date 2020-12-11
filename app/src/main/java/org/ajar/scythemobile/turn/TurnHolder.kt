@@ -1,5 +1,6 @@
 package org.ajar.scythemobile.turn
 
+import android.util.Log
 import androidx.collection.SparseArrayCompat
 import androidx.collection.isNotEmpty
 import androidx.collection.set
@@ -8,7 +9,9 @@ import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.GameMap
+import org.ajar.scythemobile.model.map.MapHex
 import java.lang.IllegalArgumentException
+import java.lang.NullPointerException
 
 object TurnHolder {
     private var _currentTurn: TurnData? = null
@@ -168,5 +171,32 @@ object TurnHolder {
         }
 
         return map
+    }
+
+    fun updatedUnitsAtPosition(mapHex: MapHex) : List<UnitData> {
+        return GameMap.currentMap.unitsAtHex(mapHex.loc).filter { !cachedMoves.containsValue(it) } + cachedMoves.values.filter { it.loc == mapHex.loc }
+    }
+
+    fun updatedResourcePositions(map: SparseArrayCompat<MutableList<ResourceData>>) : SparseArrayCompat<MutableList<ResourceData>> {
+        if(map.isNotEmpty()) map.clear()
+
+        GameMap.currentMap.mapHexes.forEach { mapHex ->
+            map[mapHex.loc] = ArrayList()
+        }
+        ScytheDatabase.resourceDao()?.getResources()?.filter { it.loc > 0 && !cachedResourceUpdates.containsKey(it.id) }?.forEach { resourceData ->
+            map[resourceData.loc]!!.add(resourceData)
+        }
+        cachedResourceUpdates.forEach{ (_, resourceData ) ->
+            map[resourceData.loc]!!.add(resourceData)
+        }
+
+        return map
+    }
+
+    fun debugDatabase() {
+        ScytheDatabase.playerDao()?.getPlayers()?.forEach { Log.w("Player", "$it") }
+        ScytheDatabase.unitDao()?.getUnits()?.forEach { Log.w("Unit", "$it") }
+        ScytheDatabase.resourceDao()?.getResources()?.forEach { Log.w("Resource", "$it") }
+        ScytheDatabase.turnDao()?.getTurns()?.forEach { Log.w("Turn", "$it") }
     }
 }

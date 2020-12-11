@@ -157,7 +157,8 @@ class PlayerInstance private constructor(
         fun makePlayer(playerName: String, playerMatId: Int, factionMatId: Int): PlayerInstance {
             val playerMat = PlayerMat[playerMatId]
             val factionMat = FactionMat[factionMatId]
-            val playerData = PlayerData(0, playerName, playerMat!!.initialCoins, factionMat!!.initialPower, playerMat.initialPopularity,
+            val id= ScytheDatabase.playerDao()?.getPlayers()?.size?: 0
+            val playerData = PlayerData(id, playerName, playerMat!!.initialCoins, factionMat!!.initialPower, playerMat.initialPopularity,
                     ObjectiveCardDeck.currentDeck.drawCard().id,
                     ObjectiveCardDeck.currentDeck.drawCard().id,
                     FactionMatData(factionMat.id),

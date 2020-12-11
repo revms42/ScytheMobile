@@ -10,19 +10,22 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import org.ajar.scythemobile.NaturalResourceType
 import org.ajar.scythemobile.R
+import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.faction.RiverWalk
+import org.ajar.scythemobile.model.faction.Speed
 import org.ajar.scythemobile.model.faction.StandardFactionMat
 import org.ajar.scythemobile.model.player.StandardPlayerMat
-import org.ajar.scythemobile.model.player.TopRowAction
+import org.ajar.scythemobile.turn.TurnHolder
 
 class ScytheTurn : AppCompatActivity() {
 
@@ -31,6 +34,9 @@ class ScytheTurn : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        TurnHolder.debugDatabase()
+        ScytheDatabase.reset()
 
         setContentView(R.layout.activity_scythe_turn)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -53,18 +59,27 @@ class ScytheTurn : AppCompatActivity() {
         ScytheDatabase.reset()
         val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.NORDIC.id)
         ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
-        ScytheDatabase.unitDao()?.addUnit(UnitData(0, 0, 21, UnitType.WORKER.ordinal))
-        ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
-        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 15, UnitType.WORKER.ordinal))
-//        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.WORKER.ordinal))
-//        ScytheDatabase.resourceDao()?.addResource(ResourceData(0, 21, -1, NaturalResourceType.FOOD.id))
-//        ScytheDatabase.resourceDao()?.addResource(ResourceData(1, 21, -1, NaturalResourceType.FOOD.id))
-//        ScytheDatabase.resourceDao()?.addResource(ResourceData(2, 21, -1, NaturalResourceType.METAL.id))
-//        ScytheDatabase.resourceDao()?.addResource(ResourceData(3, 21, -1, NaturalResourceType.METAL.id))
-//        ScytheDatabase.resourceDao()?.addResource(ResourceData(4, 21, -1, NaturalResourceType.WOOD.id))
-//        ScytheDatabase.resourceDao()?.addResource(ResourceData(5, 21, -1, NaturalResourceType.WOOD.id))
-//        ScytheDatabase.resourceDao()?.addResource(ResourceData(6, 21, -1, NaturalResourceType.OIL.id))
-//        ScytheDatabase.resourceDao()?.addResource(ResourceData(7, 21, -1, NaturalResourceType.OIL.id))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.MECH.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(2, 0, 15, UnitType.MECH.ordinal))
+        playerInstance.factionMat.unlockFactionAbility(Speed.singleton)
+        playerInstance.factionMat.unlockFactionAbility(RiverWalk.FOREST_MOUNTAIN)
+        TurnHolder.updatePlayer(playerInstance.playerData)
+        ScytheDatabase.unitDao()?.addUnit(UnitData(3, 0, 21, UnitType.WORKER.ordinal))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(0, 21, -1, NaturalResourceType.FOOD.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(1, 21, -1, NaturalResourceType.FOOD.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(2, 21, -1, NaturalResourceType.METAL.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(3, 21, -1, NaturalResourceType.METAL.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(4, 21, -1, NaturalResourceType.WOOD.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(5, 21, -1, NaturalResourceType.WOOD.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(6, 21, -1, NaturalResourceType.OIL.id))
+        ScytheDatabase.resourceDao()?.addResource(ResourceData(7, 21, -1, NaturalResourceType.OIL.id))
+
+        val enemyPlayer = PlayerInstance.makePlayer("enemyPlayer", StandardPlayerMat.INDUSTRIAL.id, StandardFactionMat.CRIMEA.id)
+        ScytheDatabase.playerDao()?.addPlayer(enemyPlayer.playerData)
+        ScytheDatabase.unitDao()?.addUnit(UnitData(4, 1, 22, UnitType.MECH.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(5, 1, 23, UnitType.WORKER.ordinal))
+        TurnHolder.updatePlayer(enemyPlayer.playerData)
+        TurnHolder.commitChanges()
         //TODO: **** --------------------- ****
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

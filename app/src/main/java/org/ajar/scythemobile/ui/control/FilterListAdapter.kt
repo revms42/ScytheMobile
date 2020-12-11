@@ -101,10 +101,8 @@ sealed class FilterListAdapter(context: Context, override val selected: MutableL
 
         private fun highlightSelection() {
             if(selected.value?.contains(faction) == true) {
-                Log.w("${name.text}", "selected")
                 view.setBackgroundColor(selectedColor)
             } else {
-                Log.w("${name.text}", "unselected")
                 view.setBackgroundColor(unselectedColor)
             }
         }

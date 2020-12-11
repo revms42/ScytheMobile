@@ -299,4 +299,23 @@
     <string name="arg_amount">amount</string>
     <string name="arg_cost_type">costType</string>
     <string name="arg_deploy_from_unit">deployFromUnit</string>
+
+    <!-- Move/Gain Action Strings -->
+    <string name="button_select_move">Move Up To %1$d Units</string>
+    <string name="button_select_gain">Gain $%1$d</string>
+
+    <string name="title_choose_move_or_gain">Move or Gain</string>
+    <string name="msg_choose_move_or_gain">Move units or gain money?</string>
+    <string name="msg_gain_completed">%1$s gained $%2$d</string>
+    <string name="msg_move_completed">Movement Completed</string>
+
+    <string name="title_choose_unit_to_move">Select Unit</string>
+    <string name="msg_choose_unit_to_move">Choose which unit will be moving</string>
+
+    <string name="title_choose_unit_to_ride">Select Riders</string>
+    <string name="msg_choose_unit_to_ride">Select any units that will be riding</string>
+    <string name="button_select_riders">Transport</string>
+
+    <string name="title_choose_resources_to_transport">Select Resources</string>
+    <string name="msg_choose_resources_to_transport">Select any resources to transport</string>
 </resources>

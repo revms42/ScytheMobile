@@ -1,11 +1,14 @@
 package org.ajar.scythemobile.ui.view
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import org.ajar.scythemobile.Resource
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.faction.MovementRule
+import org.ajar.scythemobile.model.faction.Speed
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.turn.TurnHolder
@@ -16,56 +19,67 @@ interface MapSelectionModel {
     fun onSelection(mapHex: MapHex)
 }
 
+
+private fun MapHex.selectMovableHexes(rules: Collection<MovementRule>) : List<MapHex> {
+    return rules.filter { it.validStartingHex(this) }.flatMap { hexRule ->
+        hexRule.validEndingHexes(this)?.filterNotNull() ?: emptyList()
+    }
+}
+
 sealed class StandardSelectionModel : MapSelectionModel {
 
     class SelectUnitToMoveModel(private val selectedUnits: MutableLiveData<Set<GameUnit>>, private val selectedResources: MutableLiveData<Set<ResourceData>>, private val selectedHex: MutableLiveData<MapHex>) : StandardSelectionModel() {
         val filteredUnits = HashSet<Int>()
 
         override fun canSelect(mapHex: MapHex): Boolean {
-            return GameMap.currentMap.unitsAtHex(mapHex.loc).any { UnitType.provokeUnits.contains(UnitType.valueOf(it.type)) && !filteredUnits.contains(it.id)} &&
+            return TurnHolder.updatedUnitsAtPosition(mapHex).any { UnitType.provokeUnits.contains(UnitType.valueOf(it.type)) && !filteredUnits.contains(it.id)} &&
                     mapHex.playerInControl == TurnHolder.currentPlayer.playerId
         }
 
         override fun onSelection(mapHex: MapHex) {
-            val moveableUnits =
-                    ScytheDatabase.unitDao()?.getSpecificUnitsAtLoc(mapHex.loc, TurnHolder.currentPlayer.playerId, UnitType.provokeUnits.map { it.ordinal })?.toMutableList()
+            val moveableUnits = ScytheDatabase.unitDao()?.getSpecificUnitsAtLoc(mapHex.loc, TurnHolder.currentPlayer.playerId)?.toMutableList()
 
             moveableUnits?.removeIf { filteredUnits.contains(it.id) }
 
-            val resourcesPresent =
-                    ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)
-
-            if(moveableUnits?.size == 1) {
+//            val resourcesPresent =
+//                    ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)
+//
+//            if(moveableUnits?.size == 1) {
+//                selectedHex.postValue(mapHex)
+//                if(resourcesPresent?.size == 0) {
+//                    // Easy case: One unit, no resources, e.g. no sub-selection
+//                    selectedResources.postValue(emptySet())
+//                    selectedUnits.postValue(setOf(GameUnit(moveableUnits[0], TurnHolder.currentPlayer)))
+//                    filteredUnits.add(moveableUnits[0].id)
+//                } else {
+//                    TODO("Deal with moving resources here. This will need a UI.")
+//                }
+//            } else {
+//                TODO("Deal with independent selection here. This will need a UI.")
+//            }
+            moveableUnits?.takeIf { it.size > 0 }?.also {
+                selectedResources.postValue(ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)?.toSet()?: emptySet())
+                selectedUnits.postValue(it.map { data -> GameUnit.load(data) }.toSet())
                 selectedHex.postValue(mapHex)
-                if(resourcesPresent?.size == 0) {
-                    // Easy case: One unit, no resources, e.g. no sub-selection
-                    selectedResources.postValue(emptySet())
-                    selectedUnits.postValue(setOf(GameUnit(moveableUnits[0], TurnHolder.currentPlayer)))
-                    filteredUnits.add(moveableUnits[0].id)
-                } else {
-                    TODO("Deal with moving resources here. This will need a UI.")
-                }
-            } else {
-                TODO("Deal with independent selection here. This will need a UI.")
             }
         }
 
-        fun setSelectedUnits(units: Collection<GameUnit>) {
-            selectedUnits.postValue(units.toSet())
-        }
-
-        fun setSelectedResources(resources: Collection<ResourceData>) {
-            selectedResources.postValue(resources.toSet())
-        }
-
         private fun getMovableHexes(): List<MapHex> {
-            return (if(selectedHex.value != null && selectedUnits.value != null) (selectedUnits.value!!.firstOrNull { it.type == UnitType.MECH }?: selectedUnits.value!!.first()).let { unit ->
-                unit.controllingPlayer.factionMat.getMovementAbilities(unit.type).filter {
-                    it.validStartingHex(selectedHex.value!!)
-                }.flatMap { hexRule ->
-                    hexRule.validEndingHexes(selectedHex.value!!)?.filterNotNull()?: emptyList()
-                }
-            } else emptyList())
+            Log.e("GetMovableHexes", "${selectedUnits.value}")
+            return (if (selectedHex.value != null && selectedUnits.value != null)
+                (selectedUnits.value!!.firstOrNull { it.type == UnitType.MECH || it.type == UnitType.CHARACTER }
+                        ?: selectedUnits.value!!.first()).let { unit ->
+                    unit.controllingPlayer.factionMat.getMovementAbilities(unit.type).let { rules ->
+                        var firstPass = selectedHex.value!!.selectMovableHexes(rules)
+                        if(unit.type == UnitType.WORKER) firstPass = firstPass.filter { it.playerInControl == unit.controllingPlayer.playerId || !it.provokesCombat }
+
+                        if ((unit.type == UnitType.MECH || unit.type == UnitType.CHARACTER) && unit.controllingPlayer.factionMat.unlockedFactionAbilities.contains(Speed.singleton)) {
+                            firstPass.filter { !it.provokesCombat }.flatMap { newHex ->
+                                newHex.selectMovableHexes(rules)
+                            } + firstPass
+                        } else firstPass
+                    }
+                } else emptyList())
         }
 
         fun selectDestinationModel() : SelectHexToMoveToModel {

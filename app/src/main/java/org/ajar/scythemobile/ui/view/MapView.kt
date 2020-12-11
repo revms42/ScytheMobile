@@ -108,18 +108,11 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
             TurnHolder.updatedUnitPositions(_unitGroupings)
             return _unitGroupings
         }
+    private val _resourceGroupings: SparseArrayCompat<MutableList<ResourceData>> by lazy { SparseArrayCompat<MutableList<ResourceData>>()}
     private val resourceGroupings: SparseArrayCompat<out List<ResourceData>>
         get() {
-            val map = SparseArrayCompat<MutableList<ResourceData>>()
-
-            GameMap.currentMap.mapHexes.forEach { mapHex ->
-                map[mapHex.loc] = ArrayList()
-            }
-            ScytheDatabase.resourceDao()?.getResources()?.filter { it.loc > 0 }?.forEach { resourceData ->
-                map[resourceData.loc]!!.add(resourceData)
-            }
-
-            return map
+            TurnHolder.updatedResourcePositions(_resourceGroupings)
+            return _resourceGroupings
         }
 
     private var measuredTileSize: Float = 0.0F
@@ -304,8 +297,6 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
         mapViewWidth = (measuredTileSize * (unitWidth + 1)).toInt()
         mapViewHeight = (measuredTileSize * (unitHeight + 1)).toInt()
 
-        Log.w("Measure", "raw = $rawWidth x $rawHeight, sized = $mapViewWidth x $mapViewHeight")
-
         this.setMeasuredDimension(mapViewWidth, mapViewWidth)
     }
 
@@ -394,7 +385,35 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
         val playersPresent = unitsPresent.map { it.controllingPlayer }.toSet()
 
         if(playersPresent.size > 1) {
-            TODO("Cannot draw multiple players in one hex yet!")
+            val types = HashMap<PlayerInstance, Int>()
+
+            fun UnitType.rank() : Int {
+                val index = UnitType.controlUnits.indexOf(this)
+                return if(index == -1) Int.MAX_VALUE else index
+            }
+
+            unitsPresent.forEach { unit ->
+                if(types[unit.controllingPlayer]?.let { it }?: Int.MAX_VALUE > unit.type.rank())
+                    types[unit.controllingPlayer] = unit.type.rank()
+            }
+
+            var playerPair = types.entries.sortedBy { it.value }.let { Pair(it[0].key, it[1].key) }
+
+            if(playerPair.second == TurnHolder.currentPlayer) {
+                playerPair = Pair(playerPair.second, playerPair.first)
+            }
+
+            val offsetAmount = (measuredTileSize/10.0F).toInt()
+
+            rect!!.offset(offsetAmount, -offsetAmount)
+
+            drawUnits(unitsPresent.filter { it.controllingPlayer == playerPair.second }, canvas)
+
+            rect!!.offset(-2 * offsetAmount, 2 * offsetAmount)
+
+            drawUnits(unitsPresent.filter { it.controllingPlayer == playerPair.first }, canvas)
+
+            rect!!.offset(offsetAmount, -offsetAmount)
         } else {
             val types = HashMap<UnitType, MutableList<GameUnit>>()
             unitsPresent.forEach {
@@ -580,6 +599,5 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
         paint.getTextBounds("1", 0, 1, bounds)
 
         unitTextYOffset = bounds.height() / 2.0f
-        println(unitTextYOffset!!)
     }
 }
