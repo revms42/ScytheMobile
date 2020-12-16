@@ -28,4 +28,8 @@ interface PlayerDataDAO {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updatePlayer(vararg setting: PlayerData)
+
+    fun updatePlayerAndIncrement(vararg setting: PlayerData) {
+        updatePlayer(*setting.map { data -> data.version += 1 ; data }.toTypedArray())
+    }
 }

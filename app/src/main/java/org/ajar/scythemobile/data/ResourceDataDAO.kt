@@ -33,4 +33,8 @@ interface ResourceDataDAO {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateResource(vararg setting: ResourceData)
+
+    fun updateResourceAndIncrement(vararg setting: ResourceData) {
+        updateResource(*setting.map { data -> data.version += 1 ; data }.toTypedArray())
+    }
 }

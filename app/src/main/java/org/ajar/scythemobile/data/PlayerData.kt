@@ -28,9 +28,25 @@ data class PlayerData(
         @ColumnInfo(name = COLUMN_FLAG_FORCED_RETREAT) var flagRetreat: Boolean,
         @ColumnInfo(name = COLUMN_FLAG_USED_COERCION) var flagCoercion: Boolean,
         @ColumnInfo(name = COLUMN_FLAG_USED_TOKA) var flagToka: Boolean,
-        @ColumnInfo(name = COLUMN_FACTORY_CARD) var factoryCard: Int?
-) {
+        @ColumnInfo(name = COLUMN_FACTORY_CARD) var factoryCard: Int?,
+        @ColumnInfo(name = Versioned.COLUMN_VERSION) override var version: Int = 0
+) : Versioned {
+
+    override fun toString(): String {
+        return "P:$id,$name,$coins,$power,$popularity,$objectiveOne,$objectiveTwo,$factionMat,$playerMat,$starUpgrades," +
+                "$starMechs,$starStructures,$starRecruits,$starWorkers,$starObjectives,$starCombat,$starPopularity,$starPower," +
+                "$flagRetreat,$flagCoercion,$flagToka,$factoryCard,$version"
+    }
+    
+    override fun toStringCompressed(): String {
+        return toString()
+    }
+
     companion object {
+        init {
+            Versioned.addVersionedDeserializer(::fromString)
+        }
+
         const val TABLE_NAME = "PlayerData"
 
         const val COLUMN_NAME = "name"
@@ -60,6 +76,22 @@ data class PlayerData(
         const val COLUMN_FLAG_USED_TOKA = "flag_toka"
 
         const val COLUMN_FACTORY_CARD = "factory_card"
+
+        fun fromString(str: String): PlayerData? {
+            return if(str.startsWith("P:")) {
+                val parts = str.subSequence(2 until str.length).split(",")
+
+                if(parts.size == 23) {
+                    PlayerData(parts[0].toInt(), parts[1], parts[2].toInt(), parts[3].toInt(), parts[4].toInt(), parts[5].toInt(),
+                            parts[6].toInt(), FactionMatData.fromString(parts[7]), PlayerMatData.fromString(parts[8]), parts[9].toInt(), parts[10].toInt(), parts[11].toInt(),
+                            parts[12].toInt(), parts[13].toInt(), parts[14].toInt(), parts[15].toInt(), parts[16].toInt(),
+                            parts[17].toInt(), parts[18].toBoolean(), parts[19].toBoolean(), parts[20].toBoolean(), parts[21].let { if(it == "null") null else it.toInt() },
+                            parts[22].toInt())
+                } else {
+                    null
+                }
+            } else null
+        }
     }
 }
 
@@ -75,6 +107,10 @@ data class FactionMatData(
         @ColumnInfo(name = COLUMN_UPGRADE_FOUR) var upgradeFour: Boolean = false
 ) {
 
+    override fun toString(): String {
+        return "$matId:$enlistPower:$enlistCoins:$enlistPop:$enlistCards:$enlistCards:$upgradeOne:$upgradeTwo:$upgradeThree:$upgradeFour"
+    }
+
     companion object {
         const val COLUMN_MAT_ID = "faction_mat_id"
         const val COLUMN_ENLIST_POWER = "enlist_pow"
@@ -85,6 +121,21 @@ data class FactionMatData(
         const val COLUMN_UPGRADE_TWO = "upgrade_two"
         const val COLUMN_UPGRADE_THREE = "upgrade_three"
         const val COLUMN_UPGRADE_FOUR = "upgrade_four"
+
+        fun fromString(str: String) : FactionMatData {
+            val parts = str.split(":")
+            return FactionMatData(
+                    parts[0].toInt(),
+                    parts[1].toBoolean(),
+                    parts[2].toBoolean(),
+                    parts[3].toBoolean(),
+                    parts[4].toBoolean(),
+                    parts[5].toBoolean(),
+                    parts[6].toBoolean(),
+                    parts[7].toBoolean(),
+                    parts[8].toBoolean()
+            )
+        }
     }
 }
 
@@ -101,6 +152,18 @@ data class PlayerMatData(
         @Embedded(prefix =  PREFIX_ENLIST) var enlistSection: EnlistSectionData
 ) {
 
+    override fun toString(): String {
+        return "$matId:$lastSection:" +
+                "${tradeSection.resourceGain}&${tradeSection.popularityGain}:" +
+                "${produceSection.territories}:" +
+                "${bolsterSection.powerGain}&${bolsterSection.cardsGain}:" +
+                "${moveGainSection.coinsGained}&${moveGainSection.unitsMoved}:" +
+                "${upgradeSection.oilCost}&${upgradeSection.enlisted}:" +
+                "${deploySection.metalCost}&${deploySection.enlisted}:" +
+                "${buildSection.woodCost}&${buildSection.enlisted}:" +
+                "${enlistSection.foodCost}&${enlistSection.enlisted}"
+    }
+
     companion object {
         const val COLUMN_MAT_ID = "player_mat_id"
         const val COLUMN_LAST_SECTION = "last_section"
@@ -112,6 +175,23 @@ data class PlayerMatData(
         const val PREFIX_DEPLOY = "deploy_section"
         const val PREFIX_BUILD = "build_section"
         const val PREFIX_ENLIST = "enlist_section"
+
+        fun fromString(str: String) : PlayerMatData {
+            val parts = str.split(":")
+
+            return PlayerMatData(
+                    parts[0].toInt(),
+                    parts[1].toInt(),
+                    parts[2].split("&").let { TradeSectionData(it[0].toInt(), it[1].toInt()) },
+                    ProduceSectionData(parts[3].toInt()),
+                    parts[4].split("&").let { BolsterSectionData(it[0].toInt(), it[1].toInt()) },
+                    parts[5].split("&").let { MoveGainSectionData(it[0].toInt(), it[1].toInt()) },
+                    parts[6].split("&").let { UpgradeSectionData(it[0].toInt(), it[1].toBoolean()) },
+                    parts[7].split("&").let { DeploySectionData(it[0].toInt(), it[1].toBoolean()) },
+                    parts[8].split("&").let { BuildSectionData(it[0].toInt(), it[1].toBoolean()) },
+                    parts[9].split("&").let { EnlistSectionData(it[0].toInt(), it[1].toBoolean()) }
+            )
+        }
     }
 }
 

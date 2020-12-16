@@ -16,9 +16,22 @@ data class MapHexData(
 
         @ColumnInfo(name = COLUMN_ENCOUNTER) var encounter: Int? = null, // Null = no encounter, Int >= 0 == encounter/untriggerd, Int < 0 == encounter/triggered
         @ColumnInfo(name = COLUMN_TUNNEL) val tunnel: Boolean = false,
-        @ColumnInfo(name = COLUMN_HOMEBASE) val faction: Int? = null
-) {
+        @ColumnInfo(name = COLUMN_HOMEBASE) val faction: Int? = null,
+        @ColumnInfo(name = Versioned.COLUMN_VERSION) override var version: Int = 0
+) : Versioned {
+    override fun toString(): String {
+        return "H:$loc,$terrain,$neighbors,$rivers,$encounter,$tunnel,$faction,$version"
+    }
+
+    override fun toStringCompressed(): String {
+        return "H:$loc,$encounter"
+    }
+
     companion object {
+        init {
+            Versioned.addVersionedDeserializer(::fromString)
+        }
+
         const val TABLE_NAME = "Map"
         const val COLUMN_LOC = "loc"
 
@@ -27,6 +40,29 @@ data class MapHexData(
         const val COLUMN_ENCOUNTER = "encounter"
         const val COLUMN_TUNNEL = "tunnel"
         const val COLUMN_HOMEBASE = "faction_home"
+
+        fun fromString(str: String): MapHexData? {
+            return if(str.startsWith("H:")) {
+                val parts = str.subSequence(2 until str.length).split(",")
+
+                if(parts.size > 2) {
+                    MapHexData(
+                            parts[0].toInt(),
+                            parts[1].toInt(),
+                            Neighbors.fromString(parts[2]),
+                            Rivers.fromString(parts[3]),
+                            parts[4].let { if(it == "null") null else it.toInt() },
+                            parts[5].toBoolean(),
+                            parts[6].let { if(it == "null") null else it.toInt() },
+                            parts[7].toInt()
+                    )
+                } else {
+                    ScytheDatabase.mapDao()?.getMapHex(parts[0].toInt())?.also { data ->
+                        data.encounter = parts[1].let { if(it == "null") null else it.toInt() }
+                    }
+                }
+            } else null
+        }
     }
 }
 
@@ -69,6 +105,10 @@ data class Neighbors (
         return arrayOf(nw, ne, e, se, sw, w)
     }
 
+    override fun toString(): String {
+        return "$nw:$ne:$e:$se:$sw:$w"
+    }
+
     companion object {
         const val COLUMN_NEIGHBOR_NW = "neighbor_nw"
         const val COLUMN_NEIGHBOR_NE = "neighbor_ne"
@@ -76,6 +116,11 @@ data class Neighbors (
         const val COLUMN_NEIGHBOR_SE = "neighbor_se"
         const val COLUMN_NEIGHBOR_SW = "neighbor_sw"
         const val COLUMN_NEIGHBOR_W = "neighbor_w"
+
+        fun fromString(str: String) : Neighbors {
+            val parts = str.split(":")
+            return Neighbors(parts[0].toInt(), parts[1].toInt(), parts[2].toInt(), parts[3].toInt(), parts[4].toInt(), parts[5].toInt())
+        }
     }
 }
 
@@ -108,6 +153,10 @@ data class Rivers(
             Direction.W -> riverW
         }
     }
+
+    override fun toString(): String {
+        return "$riverNW-$riverNE-$riverE-$riverSE-$riverSW-$riverW"
+    }
     
     companion object {
         const val COLUMN_RIVER_NW = "river_nw"
@@ -116,5 +165,10 @@ data class Rivers(
         const val COLUMN_RIVER_SE = "river_se"
         const val COLUMN_RIVER_SW = "river_sw"
         const val COLUMN_RIVER_W = "river_w"
+
+        fun fromString(str: String) : Rivers {
+            val parts = str.split("-")
+            return Rivers(parts[0].toBoolean(), parts[1].toBoolean(), parts[2].toBoolean(), parts[3].toBoolean(), parts[4].toBoolean(), parts[5].toBoolean())
+        }
     }
 }

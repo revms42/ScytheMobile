@@ -8,7 +8,7 @@ class ResourceTestDataDAO : ResourceDataDAO {
     }
 
     override fun getResource(id: Int): ResourceData? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return resourceData.firstOrNull { it.id == id }
     }
 
     override fun getResourcesAt(loc: Int): List<ResourceData>? {

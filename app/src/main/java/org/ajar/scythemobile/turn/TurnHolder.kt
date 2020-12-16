@@ -113,17 +113,19 @@ object TurnHolder {
     }
 
     fun commitChanges() {
-        ScytheDatabase.playerDao()?.updatePlayer(*cachedPlayerUpdates.values.toTypedArray())
-        ScytheDatabase.resourceDao()?.updateResource(*cachedResourceUpdates.values.toTypedArray())
-        ScytheDatabase.mapDao()?.updateMapHex(*cachedEncounterUpdates.values.toTypedArray())
+        ScytheDatabase.playerDao()?.updatePlayerAndIncrement(*cachedPlayerUpdates.values.toTypedArray())
+        ScytheDatabase.resourceDao()?.updateResourceAndIncrement(*cachedResourceUpdates.values.toTypedArray())
+        ScytheDatabase.mapDao()?.updateMapHexAndIncrement(*cachedEncounterUpdates.values.toTypedArray())
 
         cachedPlayerUpdates.clear()
         cachedResourceUpdates.clear()
         cachedEncounterUpdates.clear()
 
         if(currentTurn.combatOne?.combatResolved != false && currentTurn.combatTwo?.combatResolved != false && currentTurn.combatThree?.combatResolved != false) {
-            ScytheDatabase.unitDao()?.updateUnit(*cachedMoves.values.toTypedArray())
+            ScytheDatabase.unitDao()?.updateUnitAndIncrement(*cachedMoves.values.toTypedArray())
             cachedMoves.clear()
+        } else {
+            TODO("Store incomplete moves somewhere.")
         }
     }
 

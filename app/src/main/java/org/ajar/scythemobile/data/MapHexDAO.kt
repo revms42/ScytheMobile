@@ -27,4 +27,8 @@ interface MapHexDAO {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateMapHex(vararg hex: MapHexData)
+
+    fun updateMapHexAndIncrement(vararg setting: MapHexData) {
+        updateMapHex(*setting.map { data -> data.version += 1 ; data }.toTypedArray())
+    }
 }

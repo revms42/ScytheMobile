@@ -4,7 +4,7 @@ class TurnTestDataDAO : TurnDataDAO {
     private val turnData = ArrayList<TurnData>()
 
     override fun getTurns(): List<TurnData>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return turnData
     }
 
     override fun getCurrentTurn(): TurnData? {
@@ -16,7 +16,7 @@ class TurnTestDataDAO : TurnDataDAO {
     }
 
     override fun removeTurn(vararg turn: TurnData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        turn.forEach { oldTurn -> turnData.remove(oldTurn) }
     }
 
     override fun updateTurn(vararg unit: TurnData) {

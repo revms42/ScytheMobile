@@ -31,4 +31,8 @@ interface UnitDataDAO {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateUnit(vararg unit: UnitData)
+
+    fun updateUnitAndIncrement(vararg unit: UnitData) {
+        updateUnit(*unit.map { data -> data.version += 1 ; data }.toTypedArray())
+    }
 }

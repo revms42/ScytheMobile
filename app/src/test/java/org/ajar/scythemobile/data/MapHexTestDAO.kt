@@ -8,7 +8,7 @@ class MapHexTestDAO : MapHexDAO {
     }
 
     override fun getMapHex(loc: Int): MapHexData? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return mapHexData.firstOrNull { it.loc == loc }
     }
 
     override fun getTunnels(): List<MapHexData>? {
@@ -28,7 +28,7 @@ class MapHexTestDAO : MapHexDAO {
     }
 
     override fun removeMapHex(vararg hex: MapHexData) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        hex.forEach { oldHex -> this.mapHexData.remove(oldHex) }
     }
 
     override fun updateMapHex(vararg hex: MapHexData) {

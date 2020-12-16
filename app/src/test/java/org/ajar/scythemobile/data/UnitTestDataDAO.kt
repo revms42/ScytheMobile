@@ -8,7 +8,7 @@ class UnitTestDataDAO : UnitDataDAO {
     }
 
     override fun getUnit(id: Int): UnitData? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return unitData.firstOrNull { it.id == id }
     }
 
     override fun getUnitsForPlayer(owner: Int, type: Int): List<UnitData>? {

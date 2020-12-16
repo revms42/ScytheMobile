@@ -11,6 +11,7 @@ class ScytheTestDatabase : ScytheDatabase() {
     private val resourceDataDAO: ResourceDataDAO by lazy { ResourceTestDataDAO() }
     private val mapHexDAO: MapHexDAO by lazy { MapHexTestDAO() }
     private val turnDataDAO: TurnDataDAO by lazy { TurnTestDataDAO() }
+    private val snapshotDataDAO: SnapshotDataDAO by lazy { SnapshotTestDataDAO() }
 
     override fun playerDao(): PlayerDataDAO = playerDataDAO
 
@@ -22,6 +23,8 @@ class ScytheTestDatabase : ScytheDatabase() {
 
     override fun turnDao(): TurnDataDAO = turnDataDAO
 
+    override fun snapshotDao(): SnapshotDataDAO = snapshotDataDAO
+
     // Room Database
     override fun createOpenHelper(config: DatabaseConfiguration?): SupportSQLiteOpenHelper { TODO("not implemented") }
     override fun createInvalidationTracker(): InvalidationTracker {
@@ -32,6 +35,7 @@ class ScytheTestDatabase : ScytheDatabase() {
     companion object {
         fun setTestingDatabase() {
             setDatabaseForTesting(ScytheTestDatabase())
+            setupResources()
         }
     }
 }
