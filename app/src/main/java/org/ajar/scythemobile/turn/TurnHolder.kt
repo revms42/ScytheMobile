@@ -70,11 +70,15 @@ object TurnHolder {
     }
 
     fun hasUnresolvedCombat(): Boolean {
+        return getNextCombat() != null
+    }
+
+    fun getNextCombat() : CombatRecord? {
         return when {
-            currentTurn.combatOne?.combatResolved == false -> true
-            currentTurn.combatTwo?.combatResolved == false -> true
-            currentTurn.combatThree?.combatResolved == false -> true
-            else -> false
+            currentTurn.combatOne?.combatResolved == false -> currentTurn.combatOne
+            currentTurn.combatTwo?.combatResolved == false -> currentTurn.combatTwo
+            currentTurn.combatThree?.combatResolved == false -> currentTurn.combatThree
+            else -> null
         }
     }
 
@@ -125,7 +129,7 @@ object TurnHolder {
             ScytheDatabase.unitDao()?.updateUnitAndIncrement(*cachedMoves.values.toTypedArray())
             cachedMoves.clear()
         } else {
-            TODO("Store incomplete moves somewhere.")
+            //TODO("Store incomplete moves somewhere?")
         }
     }
 

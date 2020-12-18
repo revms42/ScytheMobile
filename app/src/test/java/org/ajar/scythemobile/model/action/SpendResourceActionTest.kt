@@ -1,6 +1,6 @@
 package org.ajar.scythemobile.model.action
 
-import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.turn.TurnHolder

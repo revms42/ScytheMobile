@@ -1,6 +1,6 @@
 package org.ajar.scythemobile.model.map
 
-import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.faction.FactionMat
 

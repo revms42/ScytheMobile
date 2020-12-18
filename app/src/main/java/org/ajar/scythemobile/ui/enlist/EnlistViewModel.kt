@@ -1,6 +1,6 @@
 package org.ajar.scythemobile.ui.enlist
 
-import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.player.BottomRowAction
 import org.ajar.scythemobile.turn.TurnHolder

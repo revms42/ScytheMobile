@@ -96,7 +96,7 @@ class Battle private constructor(private val combatRecord: CombatRecord, private
     }
 
     fun resolveCombat() {
-        TODO("Actually resolve combat, drive off units, retreat units, run cleanup on the boards, call turn holder to update.")
+        TODO("Actually resolve combat, drive off units, retreat units, run cleanup on the boards, call turn holder to update. Also, deal with encounters if needs be")
     }
 
     companion object {

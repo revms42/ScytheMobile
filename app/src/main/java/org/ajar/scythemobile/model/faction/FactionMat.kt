@@ -3,9 +3,7 @@ package org.ajar.scythemobile.model.faction
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.collection.valueIterator
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.toList
-import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance

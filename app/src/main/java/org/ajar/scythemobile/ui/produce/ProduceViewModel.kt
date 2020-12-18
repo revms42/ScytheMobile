@@ -1,6 +1,6 @@
 package org.ajar.scythemobile.ui.produce
 
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.entity.UnitType

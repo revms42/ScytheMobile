@@ -1,7 +1,7 @@
 package org.ajar.scythemobile.ui.factory
 
 import androidx.lifecycle.ViewModel
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 
 class ResourceChoicePaymentViewModel : ViewModel() {
 

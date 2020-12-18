@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.player.TopRowAction
@@ -30,9 +30,7 @@ class MoveGainFragment : Fragment() {
         scytheTurnViewModel = ViewModelProvider(requireActivity()).get(ScytheTurnViewModel::class.java)
         moveViewModel = ViewModelProvider(requireActivity()).get(MoveViewModel::class.java)
 
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-
-        return root
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

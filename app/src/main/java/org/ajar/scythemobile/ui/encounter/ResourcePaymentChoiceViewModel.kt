@@ -1,14 +1,13 @@
 package org.ajar.scythemobile.ui.encounter
 
 import androidx.lifecycle.ViewModel
-import org.ajar.scythemobile.CapitalResourceType
-import org.ajar.scythemobile.NaturalResourceType
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.CapitalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.faction.DefaultFactionAbility
-import org.ajar.scythemobile.model.faction.StandardFactionMat
 import org.ajar.scythemobile.turn.TurnHolder
 
 class ResourcePaymentChoiceViewModel : ViewModel() {

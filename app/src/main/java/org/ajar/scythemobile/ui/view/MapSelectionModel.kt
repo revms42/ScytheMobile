@@ -2,7 +2,7 @@ package org.ajar.scythemobile.ui.view
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.entity.GameUnit
@@ -41,22 +41,6 @@ sealed class StandardSelectionModel : MapSelectionModel {
 
             moveableUnits?.removeIf { filteredUnits.contains(it.id) }
 
-//            val resourcesPresent =
-//                    ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)
-//
-//            if(moveableUnits?.size == 1) {
-//                selectedHex.postValue(mapHex)
-//                if(resourcesPresent?.size == 0) {
-//                    // Easy case: One unit, no resources, e.g. no sub-selection
-//                    selectedResources.postValue(emptySet())
-//                    selectedUnits.postValue(setOf(GameUnit(moveableUnits[0], TurnHolder.currentPlayer)))
-//                    filteredUnits.add(moveableUnits[0].id)
-//                } else {
-//                    TODO("Deal with moving resources here. This will need a UI.")
-//                }
-//            } else {
-//                TODO("Deal with independent selection here. This will need a UI.")
-//            }
             moveableUnits?.takeIf { it.size > 0 }?.also {
                 selectedResources.postValue(ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)?.toSet()?: emptySet())
                 selectedUnits.postValue(it.map { data -> GameUnit.load(data) }.toSet())
@@ -107,6 +91,15 @@ sealed class StandardSelectionModel : MapSelectionModel {
         override fun onSelection(mapHex: MapHex) {
             selectedHex.postValue(mapHex)
         }
+    }
+
+    class HighlightSelectedHexModel(private val targetHex: MapHex) : StandardSelectionModel() {
+        override fun canSelect(mapHex: MapHex): Boolean {
+            return targetHex.loc == mapHex.loc
+        }
+
+        override fun onSelection(mapHex: MapHex) {}
+
     }
 
     class SelectHexToBuildOnModel(private val workerHexes: List<MapHex>, private val selectedHex: MutableLiveData<MapHex>) : StandardSelectionModel() {

@@ -21,7 +21,7 @@ interface PlayerDataDAO {
     fun getHighestPower(): Int?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addPlayer(playerData: PlayerData)
+    fun addPlayer(vararg playerData: PlayerData)
 
     @Delete
     fun removePlayer(vararg setting: PlayerData)

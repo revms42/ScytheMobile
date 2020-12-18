@@ -1,6 +1,6 @@
 package org.ajar.scythemobile.model.action
 
-import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.data.ScytheTestDatabase
 import org.ajar.scythemobile.model.PlayerInstance

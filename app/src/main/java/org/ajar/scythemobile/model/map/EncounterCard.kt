@@ -6,10 +6,10 @@ import android.content.res.Resources
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
-import org.ajar.scythemobile.CapitalResourceType
-import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.R
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.entity.GameUnit

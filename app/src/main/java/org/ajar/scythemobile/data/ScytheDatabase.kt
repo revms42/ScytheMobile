@@ -2,9 +2,8 @@ package org.ajar.scythemobile.data
 
 import android.content.Context
 import androidx.room.*
-import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.model.combat.CombatCardDeck
-import org.ajar.scythemobile.model.player.Bank
 
 private class Converters {
     @TypeConverter
@@ -43,7 +42,7 @@ private class Converters {
     }
 }
 
-@Database(entities = [PlayerData::class, UnitData::class, ResourceData::class, MapHexData::class, TurnData::class, SnapshotData::class], version = 1)
+@Database(entities = [PlayerData::class, UnitData::class, ResourceData::class, MapHexData::class, TurnData::class, SnapshotData::class, SettingData::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class ScytheDatabase : RoomDatabase() {
     abstract fun playerDao(): PlayerDataDAO
@@ -52,6 +51,7 @@ abstract class ScytheDatabase : RoomDatabase() {
     abstract fun mapDao(): MapHexDAO
     abstract fun turnDao(): TurnDataDAO
     abstract fun snapshotDao(): SnapshotDataDAO
+    abstract fun settingDao(): SettingDataDAO
 
     companion object {
         const val DATABASE_NAME = "ScytheDatabase"
@@ -70,6 +70,7 @@ abstract class ScytheDatabase : RoomDatabase() {
         fun mapDao(): MapHexDAO? = instance?.mapDao()
         fun turnDao(): TurnDataDAO? = instance?.turnDao()
         fun snapshotDao(): SnapshotDataDAO? = instance?.snapshotDao()
+        fun settingDao(): SettingDataDAO? = instance?.settingDao()
 
         fun init(context: Context, name: String = DATABASE_NAME): Boolean {
             if(database == null) {

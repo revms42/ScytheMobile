@@ -1,7 +1,7 @@
 package org.ajar.scythemobile.model.action
 
-import org.ajar.scythemobile.CapitalResourceType
-import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit

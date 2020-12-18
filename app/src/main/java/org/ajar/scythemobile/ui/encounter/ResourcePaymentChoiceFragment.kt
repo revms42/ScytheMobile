@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import org.ajar.scythemobile.R
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 
 class ResourcePaymentChoiceFragment : Fragment() {
 

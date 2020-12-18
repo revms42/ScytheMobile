@@ -12,16 +12,19 @@ import org.ajar.scythemobile.R
 
 class StartCombatFragment : Fragment() {
 
-    private lateinit var moveViewModel: MoveViewModel
+    private lateinit var startCombatViewModel: StartCombatViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        moveViewModel =
-                ViewModelProvider(requireActivity()).get(MoveViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-        return root
+        startCombatViewModel = ViewModelProvider(requireActivity()).get(StartCombatViewModel::class.java)
+        return inflater.inflate(R.layout.fragment_start_combat, container, false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startCombatViewModel.initialize(requireActivity())
     }
 }

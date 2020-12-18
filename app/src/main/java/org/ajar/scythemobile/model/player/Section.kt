@@ -1,9 +1,9 @@
 package org.ajar.scythemobile.model.player
 
-import org.ajar.scythemobile.CapitalResourceType
-import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.R
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.data.PlayerMatData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance

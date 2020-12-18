@@ -1,6 +1,6 @@
 package org.ajar.scythemobile.model.action
 
-import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.data.PlayerData
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
@@ -9,7 +9,6 @@ import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.faction.StandardFactionMat
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.objective.ObjectiveCardDeck
-import org.ajar.scythemobile.model.player.Bank
 import org.ajar.scythemobile.model.player.StandardPlayerMat
 import org.ajar.scythemobile.turn.TurnHolder
 import org.junit.After

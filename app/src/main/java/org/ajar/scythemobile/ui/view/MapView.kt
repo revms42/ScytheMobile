@@ -10,11 +10,9 @@ import org.ajar.scythemobile.model.map.*
 import java.lang.RuntimeException
 import androidx.collection.*
 import androidx.core.content.res.ResourcesCompat
-import org.ajar.scythemobile.NaturalResourceType
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.NaturalResourceType
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.data.ResourceData
-import org.ajar.scythemobile.data.ScytheDatabase
-import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType

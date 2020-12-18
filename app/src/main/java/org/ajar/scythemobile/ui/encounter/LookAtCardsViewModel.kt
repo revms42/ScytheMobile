@@ -1,7 +1,7 @@
 package org.ajar.scythemobile.ui.encounter
 
 import androidx.lifecycle.ViewModel
-import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.data.PlayerData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.combat.CombatCard

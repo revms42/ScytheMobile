@@ -1,6 +1,6 @@
 package org.ajar.scythemobile.ui.bolster
 
-import org.ajar.scythemobile.CapitalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.player.Bank

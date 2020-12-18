@@ -3,7 +3,7 @@ package org.ajar.scythemobile.ui.view
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.faction.FactionMat

@@ -1,7 +1,7 @@
 package org.ajar.scythemobile.ui.trade
 
-import org.ajar.scythemobile.CapitalResourceType
-import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.entity.GameUnit

@@ -2,10 +2,10 @@ package org.ajar.scythemobile.model.factory
 
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
-import org.ajar.scythemobile.CapitalResourceType
-import org.ajar.scythemobile.NaturalResourceType
+import org.ajar.scythemobile.model.CapitalResourceType
+import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.R
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.combat.CombatCardDeck

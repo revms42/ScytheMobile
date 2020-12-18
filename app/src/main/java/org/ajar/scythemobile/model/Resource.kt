@@ -1,7 +1,7 @@
-package org.ajar.scythemobile
+package org.ajar.scythemobile.model
 
 import android.content.Context
-import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.player.Bank
 

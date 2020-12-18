@@ -2,12 +2,11 @@ package org.ajar.scythemobile.ui.control
 
 import android.content.Context
 import android.content.res.Resources
-import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import org.ajar.scythemobile.R
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
 

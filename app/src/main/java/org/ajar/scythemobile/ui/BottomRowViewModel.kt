@@ -1,9 +1,7 @@
 package org.ajar.scythemobile.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavDirections
-import org.ajar.scythemobile.NaturalResourceType
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.model.player.BottomRowAction
 
 abstract class BottomRowViewModel<A: BottomRowAction> : ViewModel() {

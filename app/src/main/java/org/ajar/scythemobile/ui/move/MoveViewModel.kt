@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import org.ajar.scythemobile.R
-import org.ajar.scythemobile.Resource
+import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.entity.GameUnit
@@ -13,10 +13,11 @@ import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.player.TopRowAction
 import org.ajar.scythemobile.turn.TurnHolder
+import org.ajar.scythemobile.ui.view.MapScreenViewModel
 import org.ajar.scythemobile.ui.view.MapViewModel
 import org.ajar.scythemobile.ui.view.StandardSelectionModel
 
-class MoveViewModel : ViewModel() {
+class MoveViewModel : MapScreenViewModel() {
 
     private val selectedUnits = MutableLiveData<Set<GameUnit>>()
     private val selectedResources = MutableLiveData<Set<ResourceData>>()
@@ -27,7 +28,6 @@ class MoveViewModel : ViewModel() {
     private var resources: Set<ResourceData>? = null
 
     private lateinit var selectionModel: StandardSelectionModel.SelectUnitToMoveModel
-    private lateinit var mapViewModel: MapViewModel
 
     val moveCompleted = MutableLiveData<Boolean>(false)
     val encounter = MutableLiveData<Pair<Int, Int>>()
@@ -35,8 +35,8 @@ class MoveViewModel : ViewModel() {
     private var unitsToMove: Int = 0
     private var unitsMoved: Int = 0
 
-    fun initialize(activity: ViewModelStoreOwner) {
-        mapViewModel = ViewModelProvider(activity).get(MapViewModel::class.java)
+    override fun initialize(activity: ViewModelStoreOwner) {
+        super.initialize(activity)
         selectionModel = StandardSelectionModel.SelectUnitToMoveModel(selectedUnits, selectedResources, selectedHex)
         mapViewModel.setSelectionModel(selectionModel)
 
