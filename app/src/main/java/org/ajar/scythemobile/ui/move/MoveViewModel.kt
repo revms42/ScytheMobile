@@ -14,7 +14,6 @@ import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.player.TopRowAction
 import org.ajar.scythemobile.turn.TurnHolder
 import org.ajar.scythemobile.ui.view.MapScreenViewModel
-import org.ajar.scythemobile.ui.view.MapViewModel
 import org.ajar.scythemobile.ui.view.StandardSelectionModel
 
 class MoveViewModel : MapScreenViewModel() {

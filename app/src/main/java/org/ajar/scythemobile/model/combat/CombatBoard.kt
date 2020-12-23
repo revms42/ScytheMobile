@@ -24,6 +24,9 @@ class CombatBoard(val playerInstance: PlayerInstance, val hex: MapHex, val attac
 
     var camaraderie = false
 
+    val totalPower: Int
+        get() = selectedCards.sumBy { it.power } + selectedPower
+
     val workersPresent = unitsPresent.any { it.type == UnitType.WORKER }
 
     fun finishSelection(combatRecord: CombatRecord) {
@@ -58,10 +61,7 @@ data class CombatResults(val attackingPlayer: Int, val defendingPlayer: Int) {
 
 class Battle private constructor(private val combatRecord: CombatRecord, private val attacker: CombatBoard, private val defender: CombatBoard) {
     fun determineResults(): CombatResults {
-        return CombatResults(
-                attacker.selectedCards.sumBy { it.power } + attacker.selectedPower,
-                defender.selectedCards.sumBy { it.power  + defender.selectedPower }
-        )
+        return CombatResults(attacker.totalPower, defender.totalPower)
     }
 
     fun getOpposingBoard(playerInstance: PlayerInstance): CombatBoard {

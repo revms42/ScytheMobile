@@ -44,38 +44,47 @@ class StartCombatViewModel : MapScreenViewModel() {
             return _defendingBoard
         }
     
-    private val _attackingAbilitiesAuto = MutableLiveData<List<CombatRule>>()
-    val attackingAbilitiesAuto: LiveData<List<CombatRule>> = _attackingAbilitiesAuto
+    val attackingAbilitiesAuto = attackingBoard?.selectedAbilities
 
-    private val _attackingAbilities = MutableLiveData<List<CombatRule>>()
-    val attackingAbilitiesAvailable: LiveData<List<CombatRule>> = _attackingAbilities
-    val attackingAbilitiesSelected = MutableLiveData<List<CombatRule>>()
-    
-    private val _attackingPowerMax = MutableLiveData<Int>()
-    val attackingPowerMax: LiveData<Int> = _attackingPowerMax
-    val attackingPowerSelected = MutableLiveData(0)
+    val attackingAbilitiesAvailable = attackingBoard?.selectableAbilities?: emptyList()
+    val attackingAbilitiesSelected = ArrayList<CombatRule>()
 
-    private val _attackingCardsList = MutableLiveData<List<CombatCard>>()
-    val attackingCardsList: LiveData<List<CombatCard>> = _attackingCardsList
-    val attackingCardsSelected = MutableLiveData(ArrayList<CombatCard>())
+    var attackingPowerMax: Int? = 0
 
-    private val _attackingCardLimit = MutableLiveData<Int>()
-    val attackingCardLimit: LiveData<Int> = _attackingCardLimit
+    var attackingPowerSelected: Int
+        get() {
+            return attackingBoard?.selectedPower?: 0
+        }
+        set(value) {
+            attackingBoard?.selectedPower = value
+        }
 
-    private val _defendingAbilitiesAuto = MutableLiveData<List<CombatRule>>()
-    val defendingAbilitiesAuto: LiveData<List<CombatRule>> = _defendingAbilitiesAuto
+    private val _attackingCardsList = ArrayList<CombatCard>()
+    val attackingCardsList: List<CombatCard> = _attackingCardsList
+    val attackingCardsSelected = attackingBoard?.selectedCards
 
-    private val _defendingAbilities = MutableLiveData<List<CombatRule>>()
-    val defendingAbilitiesAvailable: LiveData<List<CombatRule>> = _defendingAbilities
+    var attackingCardLimit: Int? = 0
 
-    private val _defendingPowerMax = MutableLiveData<Int>()
-    val defendingPowerMax: LiveData<Int> = _defendingPowerMax
+    val attackingTotalPower: Int
+        get() = _attackingBoard?.totalPower?: 0
 
-    private val _defendingCardsList = MutableLiveData<List<CombatCard>>()
-    val defendingCardsList: LiveData<List<CombatCard>> = _defendingCardsList
+    val defendingAbilitiesAuto = defendingBoard?.selectedAbilities
+    val defendingAbilitiesAvailable = defendingBoard?.selectableAbilities
 
-    private val _defendingCardLimit = MutableLiveData<Int>()
-    val defendingCardLimit: LiveData<Int> = _defendingCardLimit
+    var defendingPowerMax: Int
+        get() {
+            return defendingBoard?.playerPower?: 0
+        }
+        set(value) {
+            defendingBoard?.playerPower = value
+        }
+
+    private val _defendingCardsList = ArrayList<CombatCard>()
+    val defendingCardsList: List<CombatCard> = _defendingCardsList
+
+    var defendingCardLimit: Int? = 0
+
+    val defendingTotalPower = _defendingBoard?.totalPower
 
     // Init
     override fun initialize(activity: ViewModelStoreOwner) {
@@ -84,75 +93,32 @@ class StartCombatViewModel : MapScreenViewModel() {
     }
 
     // First
-    fun setupAutomaticAbilities() {
-        _attackingBoard?.also {
-            _attackingAbilitiesAuto.postValue(it.selectableAbilities)
-        }
-        _defendingBoard?.also {
-            _defendingAbilitiesAuto.postValue(it.selectedAbilities)
-        }
-    }
-
-    // Second
     fun applyAutomaticAbilities() {
         battle?.applyAutomaticCombatRules()
     }
 
-    // Third
-    fun setupSelectableAbilities(activity: LifecycleOwner) {
-        _attackingBoard?.also {
-            _attackingAbilities.postValue(it.selectableAbilities)
-        }
-        
-        attackingAbilitiesSelected.observe(activity, Observer { values -> 
-            _attackingBoard?.also { 
-                it.selectedAbilities.clear()
-                it.selectedAbilities.addAll(values)
-            }
-        })
-
-        _defendingBoard?.also {
-            _defendingAbilities.postValue(it.selectableAbilities)
-        }
-    }
-
     // Fourth
-    fun finalizeAbilitySelection(activity: LifecycleOwner) {
-        attackingAbilitiesSelected.removeObservers(activity)
+    fun finalizeAbilitySelection() {
         attackingBoard?.selectedAbilities?.forEach { battle?.applyConditionalCombatRule(TurnHolder.currentPlayer, it) }
     }
 
     // Fifth
     fun setupSelectableAttackValues(activity: LifecycleOwner) {
-        _attackingBoard?.also {
-            _attackingPowerMax.postValue(it.playerPower)
-            _attackingCardsList.postValue(it.playerCombatCards)
-            _attackingCardLimit.postValue(it.cardLimit)
+        defendingBoard?.also {
+            defendingPowerMax = it.playerPower
+            _defendingCardsList.addAll(it.playerCombatCards)
+            defendingCardLimit = it.cardLimit
         }
 
-        attackingPowerSelected.observe(activity, Observer { value ->
-            _attackingBoard?.also {
-                it.selectedPower = value
-            }
-        })
-        attackingCardsSelected.observe(activity, Observer { value ->
-            _attackingBoard?.also {
-                it.selectedCards.clear()
-                it.selectedCards.addAll(value)
-            }
-        })
-
-        _defendingBoard?.also {
-            _defendingPowerMax.postValue(it.playerPower)
-            _defendingCardsList.postValue(it.playerCombatCards)
-            _defendingCardLimit.postValue(it.cardLimit)
+        attackingBoard?.also {
+            attackingPowerMax = it.playerPower
+            _attackingCardsList.addAll(it.playerCombatCards)
+            attackingCardLimit = it.cardLimit
         }
     }
 
     // Sixth
-    fun finalizeValuesSelection(activity: LifecycleOwner) {
-        attackingPowerSelected.removeObservers(activity)
-        attackingCardsSelected.removeObservers(activity)
+    fun finalizeValuesSelection() {
         battle?.finishSelection(TurnHolder.currentPlayer)
     }
 

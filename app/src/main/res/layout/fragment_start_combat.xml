@@ -11,12 +11,12 @@
         android:id="@+id/map_fragment"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:layout_constraintBottom_toTopOf="@id/startCombatButton"
-        app:layout_constraintEnd_toEndOf="@id/startCombatButton"
+        app:layout_constraintBottom_toTopOf="@id/start_combat_button"
+        app:layout_constraintEnd_toEndOf="@id/start_combat_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     <Button
-        android:id="@+id/startCombatButton"
+        android:id="@+id/start_combat_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/map_fragment"
