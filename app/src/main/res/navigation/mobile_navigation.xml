@@ -73,8 +73,8 @@
     <fragment
         android:id="@+id/nav_start_combat"
         android:label="@string/menu_start_combat"
-        android:name="org.ajar.scythemobile.ui.move.StartCombatFragment"
-        tools:layout="@layout/fragment_home" >
+        android:name="org.ajar.scythemobile.ui.combat.StartCombatFragment"
+        tools:layout="@layout/fragment_combat_selection" >
         <action
             android:id="@+id/action_nav_start_combat_to_nav_answer_combat"
             app:destination="@id/nav_answer_combat" />
@@ -82,20 +82,23 @@
 
     <fragment
         android:id="@+id/nav_answer_combat"
-        android:name="org.ajar.scythemobile.ui.move.AnswerCombatFragment"
+        android:name="org.ajar.scythemobile.ui.combat.AnswerCombatFragment"
         android:label="@string/menu_answer_combat"
-        tools:layout="@layout/fragment_home">
+        tools:layout="@layout/fragment_combat_selection">
         <action
             android:id="@+id/action_nav_answer_combat_to_nav_resolve_combat"
             app:destination="@id/nav_resolve_combat" />
         <deepLink
             android:id="@+id/deepLink"
             app:uri="scythemobile://combat/answer/{id}?units={units}&amp;hex={hex}&amp;power={power}&amp;cards={cards}" />
+        <argument
+            android:name="hotseatPlayerId"
+            app:argType="integer" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_resolve_combat"
-        android:name="org.ajar.scythemobile.ui.move.ResolveCombatFragment"
+        android:name="org.ajar.scythemobile.ui.combat.ResolveCombatFragment"
         android:label="@string/menu_resolve_combat"
         tools:layout="@layout/fragment_home">
         <action
@@ -142,7 +145,7 @@
         android:id="@+id/nav_move"
         android:name="org.ajar.scythemobile.ui.move.MoveGainFragment"
         android:label="@string/menu_move"
-        tools:layout="@layout/fragment_slideshow" >
+        tools:layout="@layout/fragment_move_gain" >
         <action
             android:id="@+id/action_nav_move_to_nav_encounter"
             app:destination="@id/nav_encounter" />

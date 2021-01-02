@@ -1,16 +1,8 @@
 <resources>
     <string name="app_name">ScytheMobile</string>
 
-    <string name="combat_start_msg">Please choose combat power and/or cards.</string>
-    <string name="combat_start_nav_header">Prepare for Combat</string>
-    <string name="combat_send_nav_header">Send Combat Request to Player</string>
-
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
-    <string name="button_send_combat_request">Send Combat Request</string>
-    <string name="button_finish_combat">Finish Combat</string>
-
-    <string name="subject_combat_defend">Choose Power and Combat Cards for Defense</string>
 
     <string-array name="map_filter_tabs">
         <item>Workers</item>
@@ -319,12 +311,16 @@
     <string name="title_choose_resources_to_transport">Select Resources</string>
     <string name="msg_choose_resources_to_transport">Select any resources to transport</string>
 
-    <!-- Start Combat Strings -->
+    <!-- Combat Strings -->
     <string name="button_start_combat">Start Combat</string>
+    <string name="button_answer_combat">Respond to Attack</string>
+    <string name="button_finish_combat">Finish Combat</string>
     <string name="title_select_abilities">Choose Abilities To Use</string>
     <string name="title_select_combat_values">Choose Combat Values</string>
     <string name="title_select_combat_cards">Choose Combat Cards</string>
     <string name="title_start_combat_complete">Combat Selection</string>
+    <string name="title_answer_combat_complete">Combat Response</string>
+    <string name="title_resolve_combat_complete">Combat Results</string>
     <string name="button_confirm_ability_selection">Select</string>
     <string name="button_forego_ability_selection">Ignore</string>
     <string name="label_abilities">Abilities</string>
@@ -333,4 +329,11 @@
     <string name="button_start_combat_accept">Accept Selection</string>
     <string name="button_accept_power">Choose Power</string>
     <string name="button_accept_cards">Choose Cards</string>
+    <string name="msg_start_combat_selection">%1$d power and %2$d cards selected: Total power %3$d. Send combat request to defending player or play hot-seat?</string>
+    <string name="msg_answer_combat_selection">%1$d power and %2$d cards selected: Total power %3$d. Send combat response to attacking player or play hot-seat?</string>
+    <string name="button_play_by_mail">Send Request</string>
+    <string name="button_hot_seat">Hot Seat</string>
+    <string name="msg_combat_opponent_stats">Opponent has %1$d power and %2$d cards.</string>
+    <string name="msg_combat_opponent_stats_plus_selection">Opponent has %1$d power and %2$d cards. \n Current Power is %3$d.</string>
+    <string name="msg_combat_results">%1$s committed %2$d total power, while %3$s committed %4$d total power. %5$s wins the combat!</string>
 </resources>

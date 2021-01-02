@@ -22,6 +22,8 @@ class CombatBoard(val playerInstance: PlayerInstance, val hex: MapHex, val attac
     val selectedAbilities: MutableList<CombatRule> = availableAbilities.filter { it.applyAutomatically }.toMutableList()
     val selectableAbilities: List<CombatRule> = availableAbilities.filterNot { it.applyAutomatically }
 
+    var cardsAvailable = playerCombatCards.size
+
     var camaraderie = false
 
     val totalPower: Int
@@ -53,36 +55,67 @@ class CombatBoard(val playerInstance: PlayerInstance, val hex: MapHex, val attac
 
         TurnHolder.updatePlayer(playerInstance.playerData)
     }
+
+//    override fun toString(): String {
+//        return "C:${hex.loc}," +
+//                "${playerInstance.playerId}," +
+//                "$attacker," +
+//                "$playerPower," +
+//                unitsPresent.foldRight(""){ unit, string -> if(string.isBlank()) "${unit.id}" else ":${unit.id}"} +
+//                if(playerCombatCards.size > 0)
+//                    ",${playerCombatCards.foldRight(""){ card, string -> if(string.isBlank()) "${card.resourceData.id}" else ":${card.resourceData.id}"}}"
+//                else ""
+//    }
 }
 
 data class CombatResults(val attackingPlayer: Int, val defendingPlayer: Int) {
     val attackerWon = attackingPlayer >= defendingPlayer
 }
 
-class Battle private constructor(private val combatRecord: CombatRecord, private val attacker: CombatBoard, private val defender: CombatBoard) {
+class Battle private constructor(private val combatRecord: CombatRecord?, private val playerBoard: CombatBoard, private val opponentBoard: CombatBoard) {
     fun determineResults(): CombatResults {
-        return CombatResults(attacker.totalPower, defender.totalPower)
+        return CombatResults(playerBoard.totalPower, opponentBoard.totalPower)
     }
 
     fun getOpposingBoard(playerInstance: PlayerInstance): CombatBoard {
-        return if(playerInstance == attacker.playerInstance) {
-            defender
+        return if(playerInstance == playerBoard.playerInstance) {
+            opponentBoard
         } else {
-            attacker
+            playerBoard
         }
     }
 
     fun getPlayerBoard(playerInstance: PlayerInstance) : CombatBoard {
-        return if(playerInstance == attacker.playerInstance) {
-            attacker
+        return if(playerInstance == playerBoard.playerInstance) {
+            playerBoard
         } else {
-            defender
+            opponentBoard
+        }
+    }
+
+    fun getPlayerBoard() : CombatBoard = playerBoard
+
+    fun getOpposingBoard() : CombatBoard = opponentBoard
+
+    fun getAttackerBoard() : CombatBoard {
+        return if(playerBoard.attacker) {
+            playerBoard
+        } else {
+            opponentBoard
+        }
+    }
+
+    fun getDefenderBoard() : CombatBoard {
+        return if(playerBoard.attacker) {
+            opponentBoard
+        } else {
+            playerBoard
         }
     }
 
     fun applyAutomaticCombatRules() {
-        attacker.selectedAbilities.forEach { it.applyEffect(attacker.playerInstance, this) }
-        defender.selectedAbilities.forEach { it.applyEffect(defender.playerInstance, this) }
+        playerBoard.selectedAbilities.forEach { it.applyEffect(playerBoard.playerInstance, this) }
+        opponentBoard.selectedAbilities.forEach { it.applyEffect(opponentBoard.playerInstance, this) }
     }
 
     fun applyConditionalCombatRule(playerInstance: PlayerInstance, combatRule: CombatRule) {
@@ -90,13 +123,32 @@ class Battle private constructor(private val combatRecord: CombatRecord, private
         combatRule.applyEffect(playerInstance, this)
     }
 
+    // If this has no combat record you're doing it PBE and we don't try to update anything, we'll just send the reply back.
     fun finishSelection(playerInstance: PlayerInstance) {
-        getPlayerBoard(playerInstance).finishSelection(combatRecord)
-        getOpposingBoard(playerInstance).updateTurnHolder()
+        combatRecord?.also { getPlayerBoard(playerInstance).finishSelection(it) ; getOpposingBoard(playerInstance).updateTurnHolder() }
     }
 
     fun resolveCombat() {
         TODO("Actually resolve combat, drive off units, retreat units, run cleanup on the boards, call turn holder to update. Also, deal with encounters if needs be")
+    }
+
+    fun toString(attacker: Boolean): String {
+        return (if(attacker) this.playerBoard else this.opponentBoard).let {
+            val opponent = this.getOpposingBoard(it.playerInstance)
+            "C:${it.hex.loc}," +
+                    "${it.playerInstance.playerId}," +
+                    "$attacker," +
+                    "${it.playerPower}," +
+                    it.unitsPresent.foldRight(""){ unit, string -> if(string.isBlank()) "${unit.id}" else ":${unit.id}"} +
+                    if(it.playerCombatCards.size > 0)
+                        ",${it.playerCombatCards.foldRight(""){ card, string -> if(string.isBlank()) "${card.resourceData.id}" else ":${card.resourceData.id}"}},"
+                    else "-1," +
+                    "${opponent.playerInstance.playerId}," +
+                    "${opponent.playerPower}," +
+                    opponent.unitsPresent.foldRight(""){ unit, string -> if(string.isBlank()) "${unit.id}" else ":${unit.id}"} +
+                    ",${opponent.playerCombatCards.size}"
+        }
+
     }
 
     companion object {
@@ -106,12 +158,49 @@ class Battle private constructor(private val combatRecord: CombatRecord, private
             val attackingPlayer = PlayerInstance.loadPlayer(combatRecord.attackingPlayer)
             val attackingUnits = ScytheDatabase.unitDao()?.getUnitsFromList(combatRecord.attackingUnits)?.map { GameUnit(it, attackingPlayer) }!!
             val attackerBoard = CombatBoard(attackingPlayer, hex, true, attackingUnits)
+            with(combatRecord) {
+                attackerBoard.selectedPower = this.attackerPower?: 0
+                attackerBoard.selectedCards.addAll(this.attackerCards?.map { CombatCard(ScytheDatabase.resourceDao()?.getResource(it)!!) }?: emptyList())
+            }
 
             val defendingPlayer = PlayerInstance.loadPlayer(combatRecord.defendingPlayer)
             val defendingUnits = ScytheDatabase.unitDao()?.getUnitsFromList(combatRecord.defendingUnits)?.map { GameUnit(it, defendingPlayer) }!!
             val defenderBoard = CombatBoard(defendingPlayer, hex, false, defendingUnits)
+            with(combatRecord) {
+                defenderBoard.selectedPower = this.defenderPower?: 0
+                defenderBoard.selectedCards.addAll(this.defenderCards?.map { CombatCard(ScytheDatabase.resourceDao()?.getResource(it)!!) }?: emptyList())
+            }
 
             return Battle(combatRecord, attackerBoard, defenderBoard)
+        }
+
+        fun fromString(str: String): Battle? {
+            val parts = str.takeIf { it.startsWith("C:") }?.substring(2)?.split(",")
+
+            return if(!parts.isNullOrEmpty()) {
+                val hex = GameMap.currentMap.findHexAtIndex(parts[0].toInt())!!
+
+                val player = PlayerInstance.loadPlayer(parts[1].toInt())
+                val attacking = parts[2].toBoolean()
+                val powerAvailable = parts[3].toInt()
+                val unitsPresent = parts[4].split(":").mapNotNull { id -> ScytheDatabase.unitDao()?.getUnit(id.toInt())?.let { GameUnit(it, player) } }
+                val availableCards = parts[5].split(":").mapNotNull { id -> ScytheDatabase.resourceDao()?.getResource(id.toInt())?.let { CombatCard(it) } }
+
+                val playerBoard = CombatBoard(player, hex, attacking, unitsPresent)
+                playerBoard.playerPower = powerAvailable
+                playerBoard.playerCombatCards.also { it.clear() ; it.addAll(availableCards) }
+
+                val opponent = PlayerInstance.loadPlayer(parts[6].toInt())
+                val opponentPower = parts[7].toInt()
+                val opponentUnits = parts[8].split(":").mapNotNull { id -> ScytheDatabase.unitDao()?.getUnit(id.toInt())?.let { GameUnit(it, opponent) } }
+                val opponentCardCount = parts[9].toInt()
+
+                val opponentBoard = CombatBoard(opponent, hex, !attacking, opponentUnits)
+                opponentBoard.playerPower = opponentPower
+                opponentBoard.cardsAvailable = opponentCardCount
+
+                Battle(null, playerBoard, opponentBoard)
+            } else null
         }
     }
 }
