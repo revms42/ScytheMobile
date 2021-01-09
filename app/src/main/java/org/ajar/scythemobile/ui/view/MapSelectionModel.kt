@@ -93,13 +93,14 @@ sealed class StandardSelectionModel : MapSelectionModel {
         }
     }
 
-    class HighlightSelectedHexModel(private val targetHex: MapHex) : StandardSelectionModel() {
+    class HighlightSelectedHexModel(private val selectedHex: MutableLiveData<MapHex>? = null, private vararg val targetHex: MapHex) : StandardSelectionModel() {
         override fun canSelect(mapHex: MapHex): Boolean {
-            return targetHex.loc == mapHex.loc
+            return targetHex.any { it.loc == mapHex.loc }
         }
 
-        override fun onSelection(mapHex: MapHex) {}
-
+        override fun onSelection(mapHex: MapHex) {
+            selectedHex?.postValue(mapHex)
+        }
     }
 
     class SelectHexToBuildOnModel(private val workerHexes: List<MapHex>, private val selectedHex: MutableLiveData<MapHex>) : StandardSelectionModel() {

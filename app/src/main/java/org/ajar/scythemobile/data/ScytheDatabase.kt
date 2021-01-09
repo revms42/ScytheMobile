@@ -7,9 +7,9 @@ import org.ajar.scythemobile.model.combat.CombatCardDeck
 
 private class Converters {
     @TypeConverter
-    fun intListToString(value: List<Int>): String? {
+    fun intListToString(value: List<Int>?): String? {
         val builder = StringBuilder()
-        value.forEach {
+        value?.forEach {
             if(builder.isNotEmpty()) {
                 builder.append(",")
             }
@@ -20,14 +20,14 @@ private class Converters {
 
 
     @TypeConverter
-    fun stringToIntList(value: String): List<Int>? {
-        return value.split(",").map { it.toInt() }
+    fun stringToIntList(value: String?): List<Int>? {
+        return value?.split(",")?.map { it.toInt() }
     }
 
     @TypeConverter
-    fun stringListToString(value: List<String>): String? {
+    fun stringListToString(value: List<String>?): String? {
         val builder = StringBuilder()
-        value.forEach {
+        value?.forEach {
             if(builder.isNotEmpty()) {
                 builder.append(",")
             }
@@ -37,8 +37,8 @@ private class Converters {
     }
 
     @TypeConverter
-    fun stringToStringList(value: String): List<String>? {
-        return value.split(",")
+    fun stringToStringList(value: String?): List<String>? {
+        return value?.split(",")
     }
 }
 

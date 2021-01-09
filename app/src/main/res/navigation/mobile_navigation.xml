@@ -101,15 +101,21 @@
         android:name="org.ajar.scythemobile.ui.combat.ResolveCombatFragment"
         android:label="@string/menu_resolve_combat"
         tools:layout="@layout/fragment_home">
-        <action
-            android:id="@+id/action_nav_resolve_combat_to_nav_move"
-            app:destination="@id/nav_move" />
         <deepLink
             android:id="@+id/deepLink2"
             app:uri="scythemobile://combat/resolve/{id}?power={power}&amp;cards={cards}" />
         <action
             android:id="@+id/action_nav_resolve_combat_to_nav_factory_move"
             app:destination="@id/nav_factory_move" />
+        <action
+            android:id="@+id/action_nav_resolve_combat_to_nav_start_combat"
+            app:destination="@id/nav_start_combat" />
+        <action
+            android:id="@+id/action_nav_resolve_combat_to_nav_encounter"
+            app:destination="@id/nav_encounter" />
+        <action
+            android:id="@+id/action_nav_resolve_combat_to_nav_move"
+            app:destination="@+id/nav_move" />
     </fragment>
 
     <fragment

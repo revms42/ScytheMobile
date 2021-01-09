@@ -30,11 +30,11 @@ abstract class CombatSelectFragment : Fragment() {
                     val newList = ArrayList<CombatRule>()
                     combatViewModel.playerAbilitiesSelected.also { ruleList ->
                         when {
-                            ruleList.contains(value) && !isChecked -> {
+                            combatViewModel.playerAbilitiesSelected.contains(value) && !isChecked -> {
                                 newList.addAll(ruleList)
                                 newList.remove(value)
                             }
-                            !ruleList.contains(value) && isChecked -> {
+                            !combatViewModel.playerAbilitiesSelected.contains(value) && isChecked -> {
                                 newList.addAll(ruleList)
                                 newList.add(value)
                             }

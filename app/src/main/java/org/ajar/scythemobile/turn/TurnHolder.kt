@@ -82,15 +82,6 @@ object TurnHolder {
         }
     }
 
-    fun combatCompleted(): Boolean {
-        return when {
-            currentTurn.combatOne.let { it == null || it.combatResolved } -> true
-            currentTurn.combatTwo.let { it == null || it.combatResolved } -> true
-            currentTurn.combatThree.let { it == null || it.combatResolved } -> true
-            else -> false
-        }
-    }
-
     private fun createCombatRecord(hex: Int, attacker: Int, gameUnits: List<Int>) : CombatRecord {
         var defenderId = -1
         val defendingUnits = GameMap.currentMap.unitsAtHex(hex).filter {
@@ -131,6 +122,8 @@ object TurnHolder {
         } else {
             //TODO("Store incomplete moves somewhere?")
         }
+
+        ScytheDatabase.turnDao()?.updateTurn(currentTurn)
     }
 
     fun isUpdateQueued(obj: Any): Boolean {

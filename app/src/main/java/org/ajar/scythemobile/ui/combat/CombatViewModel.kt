@@ -7,6 +7,8 @@ import org.ajar.scythemobile.model.combat.CombatBoard
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.combat.CombatResults
 import org.ajar.scythemobile.model.faction.CombatRule
+import org.ajar.scythemobile.model.faction.MovementRule
+import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.turn.TurnHolder
 import org.ajar.scythemobile.ui.view.MapScreenViewModel
 import org.ajar.scythemobile.ui.view.StandardSelectionModel
@@ -22,7 +24,8 @@ class CombatViewModel : MapScreenViewModel() {
 
     val playerAbilitiesAvailable
         get() = playerBoard.selectableAbilities
-    val playerAbilitiesSelected = ArrayList<CombatRule>()
+    val playerAbilitiesSelected
+        get() = playerBoard.selectedAbilities
 
     var playerPowerMax: Int? = 0
 
@@ -84,7 +87,7 @@ class CombatViewModel : MapScreenViewModel() {
             }
         }
 
-        battle?.getPlayerBoard()?.hex?.also { mapViewModel.setSelectionModel(StandardSelectionModel.HighlightSelectedHexModel(it))  }
+        battle?.getPlayerBoard()?.hex?.also { mapViewModel.setSelectionModel(StandardSelectionModel.HighlightSelectedHexModel(null, it))  }
     }
 
     // First
@@ -94,7 +97,7 @@ class CombatViewModel : MapScreenViewModel() {
 
     // Fourth
     fun finalizeAbilitySelection() {
-        playerBoard.selectedAbilities.forEach { battle?.applyConditionalCombatRule(playerBoard.playerInstance, it) }
+        playerBoard.selectedAbilities.also { it.forEach { ability -> battle?.applyConditionalCombatRule(playerBoard.playerInstance, ability) } }
     }
 
     // Fifth
@@ -125,5 +128,15 @@ class CombatViewModel : MapScreenViewModel() {
 
     fun determineResults(): CombatResults? = battle?.determineResults()
 
-    fun resolveCombat() = battle?.resolveCombat()
+    fun resolveCombat(): LiveData<MapHex>? = battle?.resolveCombat()?.let { highlightRetreatSpaces(it) }
+
+    private fun highlightRetreatSpaces(hexes: List<MapHex>): LiveData<MapHex> {
+        val selectedHex = MutableLiveData<MapHex>()
+
+        mapViewModel.setSelectionModel(StandardSelectionModel.HighlightSelectedHexModel(selectedHex, *hexes.toTypedArray()))
+
+        return selectedHex
+    }
+
+    fun retreatUnits(mapHex: MapHex) = battle?.retreatUnits(mapHex)
 }

@@ -1,12 +1,16 @@
 package org.ajar.scythemobile.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.navigation.ActionOnlyNavDirections
+import androidx.navigation.NavDirections
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.CombatRecord
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.player.Section
 import org.ajar.scythemobile.turn.TurnHolder
+import org.ajar.scythemobile.ui.combat.ResolveCombatFragmentDirections
 
 class ScytheTurnViewModel : ViewModel() {
 
@@ -32,22 +36,43 @@ class ScytheTurnViewModel : ViewModel() {
             }
         }
 
-    fun finishSection(current: Int): Int? {
+    fun finishSection(current: Int): NavDirections? {
         return when(current) {
-            R.id.nav_start -> currentSection!!.topRowAction.actionInto
-            currentSection!!.topRowAction.fragmentNav -> {
-                when {
-                    TurnHolder.currentTurn.combatOne?.combatResolved == false -> R.id.action_nav_move_to_nav_start_combat
-                    TurnHolder.currentTurn.combatTwo?.combatResolved == false -> R.id.action_nav_move_to_nav_start_combat
-                    TurnHolder.currentTurn.combatThree?.combatResolved == false -> R.id.action_nav_move_to_nav_start_combat
-                    else -> currentSection!!.moveTopToBottom
-                }.also { TurnHolder.commitChanges() }
-            }
-            R.id.nav_start_combat -> R.id.action_nav_start_combat_to_nav_answer_combat
-            R.id.nav_answer_combat -> R.id.action_nav_answer_combat_to_nav_resolve_combat
-            R.id.nav_resolve_combat -> R.id.action_nav_resolve_combat_to_nav_move
-            currentSection!!.bottomRowAction.fragmentNav -> currentSection!!.bottomRowAction.actionOutOf.also { TurnHolder.commitChanges() }
+            R.id.nav_start -> ActionOnlyNavDirections(currentSection!!.topRowAction.actionInto)
+            currentSection!!.topRowAction.fragmentNav -> determineCombatNav(currentSection!!.moveTopToBottom)
+            R.id.nav_start_combat -> ActionOnlyNavDirections(R.id.action_nav_start_combat_to_nav_answer_combat)
+            R.id.nav_answer_combat -> ActionOnlyNavDirections(R.id.action_nav_answer_combat_to_nav_resolve_combat)
+            R.id.nav_resolve_combat -> determineCombatNav(R.id.action_nav_resolve_combat_to_nav_move)
+            currentSection!!.bottomRowAction.fragmentNav -> ActionOnlyNavDirections(currentSection!!.bottomRowAction.actionOutOf).also { TurnHolder.currentTurn.performedBottom = true ; TurnHolder.commitChanges() }
             else -> null
+        }
+    }
+
+    fun isTopRowComplete() : Boolean = TurnHolder.currentTurn.performedTop
+    fun isBottomRowComplete() : Boolean = TurnHolder.currentTurn.performedBottom
+
+    private fun determineCombatNav(fallThrough: Int): NavDirections {
+        return with(TurnHolder.currentTurn){
+            when {
+                this.combatOne?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_move_to_nav_start_combat)
+                this.combatTwo?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_resolve_combat_to_nav_start_combat)
+                this.combatThree?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_resolve_combat_to_nav_start_combat)
+                else -> {
+                    this.combatOne?.hex?.let {
+                        hex -> GameMap.currentMap.findHexAtIndex(hex)?.encounter?.let {
+                            ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex, it.id, false)
+                        }
+                    }?: this.combatTwo?.hex?.let {
+                        hex -> GameMap.currentMap.findHexAtIndex(hex)?.encounter?.let {
+                            ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex, it.id, false)
+                        }
+                    }?: this.combatThree?.hex?.let {
+                        hex -> GameMap.currentMap.findHexAtIndex(hex)?.encounter?.let {
+                            ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex, it.id, false)
+                        }
+                    }?: ActionOnlyNavDirections(fallThrough).also { TurnHolder.currentTurn.performedTop = true ; TurnHolder.commitChanges() }
+                }
+            }
         }
     }
 

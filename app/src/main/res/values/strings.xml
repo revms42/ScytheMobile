@@ -321,6 +321,7 @@
     <string name="title_start_combat_complete">Combat Selection</string>
     <string name="title_answer_combat_complete">Combat Response</string>
     <string name="title_resolve_combat_complete">Combat Results</string>
+    <string name="title_choose_retreat">Choose Retreat Hex</string>
     <string name="button_confirm_ability_selection">Select</string>
     <string name="button_forego_ability_selection">Ignore</string>
     <string name="label_abilities">Abilities</string>
@@ -336,4 +337,6 @@
     <string name="msg_combat_opponent_stats">Opponent has %1$d power and %2$d cards.</string>
     <string name="msg_combat_opponent_stats_plus_selection">Opponent has %1$d power and %2$d cards. \n Current Power is %3$d.</string>
     <string name="msg_combat_results">%1$s committed %2$d total power, while %3$s committed %4$d total power. %5$s wins the combat!</string>
+    <string name="msg_choose_retreat_hex">Choose a location to retreat %1$s units to.</string>
+    <string name="msg_move_to_encounter">Your units have come across an encounter.</string>
 </resources>

@@ -6,6 +6,7 @@ import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.faction.CombatRule
+import org.ajar.scythemobile.model.faction.MovementRule
 import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.turn.TurnHolder
@@ -73,6 +74,8 @@ data class CombatResults(val attackingPlayer: Int, val defendingPlayer: Int) {
 }
 
 class Battle private constructor(private val combatRecord: CombatRecord?, private val playerBoard: CombatBoard, private val opponentBoard: CombatBoard) {
+    private lateinit var retreatingUnits: List<GameUnit>
+
     fun determineResults(): CombatResults {
         return CombatResults(playerBoard.totalPower, opponentBoard.totalPower)
     }
@@ -128,8 +131,38 @@ class Battle private constructor(private val combatRecord: CombatRecord?, privat
         combatRecord?.also { getPlayerBoard(playerInstance).finishSelection(it) ; getOpposingBoard(playerInstance).updateTurnHolder() }
     }
 
-    fun resolveCombat() {
-        TODO("Actually resolve combat, drive off units, retreat units, run cleanup on the boards, call turn holder to update. Also, deal with encounters if needs be")
+    fun resolveCombat(): List<MapHex>? {
+        playerBoard.playerInstance.power -= playerBoard.selectedPower
+        playerBoard.selectedCards.forEach { CombatCardDeck.currentDeck.returnCard(it) }
+
+        opponentBoard.playerInstance.power -= opponentBoard.selectedPower
+        opponentBoard.selectedCards.forEach { CombatCardDeck.currentDeck.returnCard(it) }
+
+        val losingBoard = if(determineResults().attackerWon) opponentBoard else playerBoard
+
+        CombatCardDeck.currentDeck.drawCard(losingBoard.playerInstance)
+
+        val type = losingBoard.unitsPresent.firstOrNull { it.type == UnitType.MECH }?.type?: UnitType.CHARACTER
+        val abilities = losingBoard.playerInstance.factionMat.getMovementAbilities(type).filter { it.allowsRetreat }
+
+        val homeBase = GameMap.currentMap.findFactionBase(losingBoard.playerInstance.factionMat.factionMat.id)
+        retreatingUnits = losingBoard.unitsPresent
+        return if(abilities.isNotEmpty()) {
+            abilities.flatMap { it.validEndingHexes(losingBoard.hex)?.filterNotNull()?: emptyList() } + homeBase!!
+        } else {
+            retreatUnits(homeBase!!)
+            null
+        }
+    }
+
+    fun retreatUnits(mapHex: MapHex) {
+        retreatingUnits.forEach { it.move(mapHex.loc) }
+        combatRecord?.also {
+            it.combatResolved = true
+            TurnHolder.updateMove()
+        }
+
+        TurnHolder.commitChanges()
     }
 
     fun toString(attacker: Boolean): String {
