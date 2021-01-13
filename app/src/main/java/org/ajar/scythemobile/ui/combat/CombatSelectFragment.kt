@@ -1,14 +1,14 @@
 package org.ajar.scythemobile.ui.combat
 
 import android.app.AlertDialog
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.faction.CombatRule
 import org.ajar.scythemobile.turn.TurnHolder
+import org.ajar.scythemobile.ui.ScytheTurnFragment
 
-abstract class CombatSelectFragment : Fragment() {
+abstract class CombatSelectFragment(nav: Int) : ScytheTurnFragment(nav) {
 
     lateinit var combatViewModel: CombatViewModel
 

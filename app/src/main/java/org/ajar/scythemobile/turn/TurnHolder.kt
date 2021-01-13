@@ -90,6 +90,12 @@ object TurnHolder {
         return CombatRecord(hex, attacker, defenderId, gameUnits, defendingUnits)
     }
 
+    fun hasUnresolvedEncounter() : MapHex? {
+        return ((currentPlayer.selectUnits(UnitType.CHARACTER)?: emptyList()) + (currentPlayer.selectUnits(UnitType.MECH)?: emptyList())).mapNotNull { GameMap.currentMap.findHexAtIndex(it.pos) }.firstOrNull {
+            it.encounter != null
+        }
+    }
+
 
     fun updatePlayer(vararg playerData: PlayerData) {
         playerData.forEach { cachedPlayerUpdates[it.id] = it }
@@ -186,7 +192,7 @@ object TurnHolder {
             map[resourceData.loc]!!.add(resourceData)
         }
         cachedResourceUpdates.forEach{ (_, resourceData ) ->
-            map[resourceData.loc]!!.add(resourceData)
+            map[resourceData.loc]?.add(resourceData)
         }
 
         return map

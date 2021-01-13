@@ -6,11 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.navigation.ActionOnlyNavDirections
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import org.ajar.scythemobile.R
+import org.ajar.scythemobile.model.map.GameMap
+import org.ajar.scythemobile.turn.TurnHolder
 
-class StartCombatFragment : CombatSelectFragment() {
+class StartCombatFragment : CombatSelectFragment(R.id.nav_start_combat) {
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -18,6 +22,7 @@ class StartCombatFragment : CombatSelectFragment() {
             savedInstanceState: Bundle?
     ): View? {
         initializeViewModel()
+        combatViewModel.setupCombat(requireActivity())
         val view = inflater.inflate(R.layout.fragment_combat_selection, container, false)
 
         val button = view?.findViewById<Button>(R.id.start_combat_button)
@@ -28,10 +33,7 @@ class StartCombatFragment : CombatSelectFragment() {
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        combatViewModel.setupCombat(requireActivity())
-    }
+    override fun destinationDirections(): NavDirections = StartCombatFragmentDirections.actionNavStartCombatToNavAnswerCombat(combatViewModel.opposingPlayerId)
 
     override fun postSelection() {
         val builder = AlertDialog.Builder(activity)
@@ -45,9 +47,13 @@ class StartCombatFragment : CombatSelectFragment() {
                     .setAction("Action", null).show()
         }
         builder.setNegativeButton(R.string.button_hot_seat) { _, _ ->
-            val directions = StartCombatFragmentDirections.actionNavStartCombatToNavAnswerCombat(combatViewModel.opposingPlayerId)
-            findNavController().navigate(directions)
+            navigateOut()
         }
         builder.show()
     }
+
+    override val redirect: Boolean
+        get() {
+            return TurnHolder.getNextCombat()?.let { !it.combatResolved && it.attackerPower != null }?:true
+        }
 }

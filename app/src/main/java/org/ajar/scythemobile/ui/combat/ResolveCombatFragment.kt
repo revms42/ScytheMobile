@@ -6,21 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
+import androidx.navigation.ActionOnlyNavDirections
 import androidx.navigation.NavDirections
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.ScytheTurnViewModel
+import org.ajar.scythemobile.ui.ScytheTurnFragment
 
-class ResolveCombatFragment : Fragment() {
+class ResolveCombatFragment : ScytheTurnFragment(R.id.nav_resolve_combat) {
 
     private lateinit var combatViewModel: CombatViewModel
-    private lateinit var turnViewModel: ScytheTurnViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -28,7 +26,6 @@ class ResolveCombatFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         combatViewModel = ViewModelProvider(requireActivity()).get(CombatViewModel::class.java)
-        turnViewModel = ViewModelProvider(requireActivity()).get(ScytheTurnViewModel::class.java)
         val view = inflater.inflate(R.layout.fragment_combat_selection, container, false)
         val button = view?.findViewById<Button>(R.id.start_combat_button)
 
@@ -85,8 +82,20 @@ class ResolveCombatFragment : Fragment() {
         builder.show()
     }
 
-    private fun navigateOut() {
-        val directions: NavDirections = turnViewModel.finishSection(R.id.nav_resolve_combat)!!
-        findNavController().navigate(directions)
+    override val redirect: Boolean
+        get() = TurnHolder.getNextCombat()?.combatResolved?: true
+
+    override fun destinationDirections(): NavDirections {
+        return with(TurnHolder.currentTurn){
+            when {
+                this.combatTwo?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_resolve_combat_to_nav_start_combat)
+                this.combatThree?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_resolve_combat_to_nav_start_combat)
+                else -> TurnHolder.hasUnresolvedEncounter()?.let { hex ->
+                    hex.encounter?.let {
+                        ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex.loc, it.id, false)
+                    }
+                }?: ResolveCombatFragmentDirections.actionNavResolveCombatToNavMove()
+            }
+        }
     }
 }

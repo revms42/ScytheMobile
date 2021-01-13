@@ -5,37 +5,43 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.ActionOnlyNavDirections
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.NavDirections
 import com.google.android.material.snackbar.Snackbar
 import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.action.ScytheAction
-import org.ajar.scythemobile.model.entity.GameUnit
-import org.ajar.scythemobile.model.entity.UnitType
-import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.player.TopRowAction
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.ScytheTurnViewModel
+import org.ajar.scythemobile.ui.ScytheTurnFragment
 
-class MoveGainFragment : Fragment() {
+class MoveGainFragment : ScytheTurnFragment(R.id.nav_move) {
 
     private lateinit var moveViewModel: MoveViewModel
-    private lateinit var scytheTurnViewModel: ScytheTurnViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        scytheTurnViewModel = ViewModelProvider(requireActivity()).get(ScytheTurnViewModel::class.java)
-
         moveViewModel = ViewModelProvider(requireActivity()).get(MoveViewModel::class.java)
 
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    override val redirect: Boolean
+        get() {
+            return scytheTurnViewModel.isTopRowComplete()
+        }
+
+    override fun destinationDirections(): NavDirections {
+        return when {
+            TurnHolder.hasUnresolvedCombat() -> MoveGainFragmentDirections.actionNavMoveToNavStartCombat()
+            TurnHolder.hasUnresolvedEncounter() != null -> TurnHolder.hasUnresolvedEncounter()!!.let { MoveGainFragmentDirections.actionNavMoveToNavEncounter(it.loc, it.encounter!!.id, false) }
+            else -> ActionOnlyNavDirections(scytheTurnViewModel.currentSection!!.moveTopToBottom)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -46,43 +52,21 @@ class MoveGainFragment : Fragment() {
             val builder = AlertDialog.Builder(activity)
 
             builder.apply {
-                if(scytheTurnViewModel.isTopRowComplete()){
-                    val units = (TurnHolder.currentPlayer.selectUnits(UnitType.MECH)?: emptyList()) + (TurnHolder.currentPlayer.selectUnits(UnitType.CHARACTER)?: emptyList())
-
-                    val encounterHex = units.map { GameMap.currentMap.findHexAtIndex(it.pos) }.toSet().filterNotNull().firstOrNull { it.encounter != null }
-
-                    if(encounterHex != null) {
-                        setPositiveButton(getString(R.string.button_ok)) { _, _ ->
-                            val directions = MoveGainFragmentDirections.actionNavMoveToNavEncounter(encounterHex.loc, encounterHex.encounter!!.id, false)
-                            findNavController().navigate(directions)
-                        }
-
-                        builder.setMessage(R.string.msg_move_to_encounter)
-                    } else {
-                        setPositiveButton(getString(R.string.button_ok)) { _, _ ->
-                            val directions = ActionOnlyNavDirections(scytheTurnViewModel.currentSection!!.moveTopToBottom)
-                            findNavController().navigate(directions)
-                        }
-
-                        builder.setMessage(R.string.msg_move_completed)
-                    }
-                } else {
-                    setPositiveButton(getString(R.string.button_select_move, moveAction?.unitsMoved?: 2)) { _, _ ->
-                        setupMoveViewModel()
-                    }
-
-                    setNegativeButton(getString(R.string.button_select_gain, moveAction?.coinsGained?: 1)) { _, _ ->
-                        ScytheAction.GiveCapitalResourceAction(TurnHolder.currentPlayer, CapitalResourceType.COINS, moveAction?.coinsGained?: 1)
-                        Snackbar.make(
-                                requireView(),
-                                getString(R.string.msg_gain_completed, TurnHolder.currentPlayer.factionMat.factionMat.matName, moveAction?.coinsGained?: 1),
-                                Snackbar.LENGTH_LONG
-                        ).setAction("Action", null).show()
-                        scytheTurnViewModel.finishSection(R.id.nav_move)?.also { findNavController().navigate(it) }
-                    }
-
-                    builder.setMessage(R.string.msg_choose_move_or_gain)
+                setPositiveButton(getString(R.string.button_select_move, moveAction?.unitsMoved?: 2)) { _, _ ->
+                    setupMoveViewModel()
                 }
+
+                setNegativeButton(getString(R.string.button_select_gain, moveAction?.coinsGained?: 1)) { _, _ ->
+                    ScytheAction.GiveCapitalResourceAction(TurnHolder.currentPlayer, CapitalResourceType.COINS, moveAction?.coinsGained?: 1)
+                    Snackbar.make(
+                            requireView(),
+                            getString(R.string.msg_gain_completed, TurnHolder.currentPlayer.factionMat.factionMat.matName, moveAction?.coinsGained?: 1),
+                            Snackbar.LENGTH_LONG
+                    ).setAction("Action", null).show()
+                    navigateOut()
+                }
+
+                builder.setMessage(R.string.msg_choose_move_or_gain)
                 builder.setTitle(R.string.title_choose_move_or_gain)
             }
 
@@ -99,14 +83,7 @@ class MoveGainFragment : Fragment() {
             if(done) {
                 Snackbar.make(requireView(), getString(R.string.msg_move_completed), Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show()
-                scytheTurnViewModel.finishSection(R.id.nav_move)?.also { findNavController().navigate(it) }
-            }
-        }
-        //TODO: Since we have to figure this out anyway we should do a global check for unresolved encounters post movement like we check for combat.
-        moveViewModel.encounter.observe(requireActivity()) { done ->
-            if(done != null) {
-                val directions = MoveGainFragmentDirections.actionNavMoveToNavEncounter(done.first, done.second, false)
-                findNavController().navigate(directions)
+                navigateOut()
             }
         }
     }

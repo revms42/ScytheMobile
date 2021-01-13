@@ -1,13 +1,15 @@
 package org.ajar.scythemobile.ui.combat
 
 import androidx.lifecycle.*
+import androidx.navigation.ActionOnlyNavDirections
+import androidx.navigation.NavDirections
+import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.PlayerInstance
 import org.ajar.scythemobile.model.combat.Battle
 import org.ajar.scythemobile.model.combat.CombatBoard
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.combat.CombatResults
-import org.ajar.scythemobile.model.faction.CombatRule
-import org.ajar.scythemobile.model.faction.MovementRule
+import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.turn.TurnHolder
 import org.ajar.scythemobile.ui.view.MapScreenViewModel
@@ -66,6 +68,31 @@ class CombatViewModel : MapScreenViewModel() {
     //val opponentTotalPower = opposingBoard.totalPower
     val opposingPlayerId: Int
         get() = opposingBoard.playerInstance.playerId
+
+    fun determineCombatNav(fallThrough: Int): NavDirections {
+        return with(TurnHolder.currentTurn){
+            when {
+                this.combatOne?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_move_to_nav_start_combat)
+                this.combatTwo?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_resolve_combat_to_nav_start_combat)
+                this.combatThree?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_resolve_combat_to_nav_start_combat)
+                else -> {
+                    this.combatOne?.hex?.let {
+                        hex -> GameMap.currentMap.findHexAtIndex(hex)?.encounter?.let {
+                        ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex, it.id, false)
+                    }
+                    }?: this.combatTwo?.hex?.let {
+                        hex -> GameMap.currentMap.findHexAtIndex(hex)?.encounter?.let {
+                        ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex, it.id, false)
+                    }
+                    }?: this.combatThree?.hex?.let {
+                        hex -> GameMap.currentMap.findHexAtIndex(hex)?.encounter?.let {
+                        ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex, it.id, false)
+                    }
+                    }?: ActionOnlyNavDirections(fallThrough)//.also { TurnHolder.currentTurn.performedTop = true ; TurnHolder.commitChanges() }
+                }
+            }
+        }
+    }
 
     // Init
     fun setupCombat(activity: ViewModelStoreOwner, importedBattle: String? = null, hotSeatPlayer: PlayerInstance? = null) {

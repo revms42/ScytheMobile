@@ -96,7 +96,7 @@ class ScytheTurn : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        navController.navigate(viewModel.currentNav)
+        //navController.navigate(viewModel.currentNav)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

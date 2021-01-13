@@ -29,7 +29,6 @@ class MoveViewModel : MapScreenViewModel() {
     private lateinit var selectionModel: StandardSelectionModel.SelectUnitToMoveModel
 
     val moveCompleted = MutableLiveData<Boolean>(false)
-    val encounter = MutableLiveData<Pair<Int, Int>>()
 
     private var unitsToMove: Int = 0
     private var unitsMoved: Int = 0
@@ -132,10 +131,6 @@ class MoveViewModel : MapScreenViewModel() {
                 //selected?.forEach { unit -> unit.move(hex.loc) }
 
                 ScytheAction.MoveUnitAction(selected!!.toList(), hex).perform()
-
-                if(!TurnHolder.hasUnresolvedCombat() && hex.encounter != null) {
-                    encounter.postValue(Pair(hex.loc, hex.encounter!!.id))
-                }
 
                 if(++unitsMoved >= unitsToMove) {
                     moveCompleted.postValue(true)

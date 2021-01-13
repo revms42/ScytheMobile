@@ -6,13 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.turn.TurnHolder
 
-class AnswerCombatFragment : CombatSelectFragment() {
+class AnswerCombatFragment : CombatSelectFragment(R.id.nav_answer_combat) {
 
     private val args: AnswerCombatFragmentArgs by navArgs()
 
@@ -35,6 +37,8 @@ class AnswerCombatFragment : CombatSelectFragment() {
         combatViewModel.setupCombat(requireActivity(), null, PlayerInstance.loadPlayer(args.hotseatPlayerId))
     }
 
+    override fun destinationDirections(): NavDirections = AnswerCombatFragmentDirections.actionNavAnswerCombatToNavResolveCombat()
+
     override fun postSelection() {
         val builder = AlertDialog.Builder(activity)
 
@@ -47,9 +51,13 @@ class AnswerCombatFragment : CombatSelectFragment() {
                     .setAction("Action", null).show()
         }
         builder.setNegativeButton(R.string.button_hot_seat) { _, _ ->
-           val directions = AnswerCombatFragmentDirections.actionNavAnswerCombatToNavResolveCombat()
-            findNavController().navigate(directions)
+            navigateOut()
         }
         builder.show()
     }
+
+    override val redirect: Boolean
+        get() {
+            return TurnHolder.getNextCombat()?.let { !it.combatResolved && it.defenderPower != null }?:true
+        }
 }

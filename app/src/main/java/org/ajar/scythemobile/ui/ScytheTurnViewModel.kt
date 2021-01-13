@@ -23,58 +23,41 @@ class ScytheTurnViewModel : ViewModel() {
     val currentSection: Section?
         get() = TurnHolder.currentTurn.selection?.let { currentPlayer.selectableSections()[it] }
 
-    val currentNav: Int
-        get() {
-            return when {
-                TurnHolder.currentTurn.selection == null -> R.id.nav_start
-                !TurnHolder.currentTurn.performedTop -> currentSection!!.topRowAction.fragmentNav
-                TurnHolder.currentTurn.combatOne?.combatResolved == false -> determineCombatPhase(1)
-                TurnHolder.currentTurn.combatTwo?.combatResolved == false -> determineCombatPhase(2)
-                TurnHolder.currentTurn.combatThree?.combatResolved == false -> determineCombatPhase(3)
-                !TurnHolder.currentTurn.performedBottom -> currentSection!!.bottomRowAction.fragmentNav
-                else -> R.id.nav_end
-            }
-        }
+//    val currentNav: Int
+//        get() {
+//            return when {
+//                TurnHolder.currentTurn.selection == null -> R.id.nav_start
+//                !TurnHolder.currentTurn.performedTop -> currentSection!!.topRowAction.fragmentNav
+//                TurnHolder.currentTurn.combatOne?.combatResolved == false -> determineCombatPhase(1)
+//                TurnHolder.currentTurn.combatTwo?.combatResolved == false -> determineCombatPhase(2)
+//                TurnHolder.currentTurn.combatThree?.combatResolved == false -> determineCombatPhase(3)
+//                !TurnHolder.currentTurn.performedBottom -> currentSection!!.bottomRowAction.fragmentNav
+//                else -> R.id.nav_end
+//            }
+//        }
 
-    fun finishSection(current: Int): NavDirections? {
-        return when(current) {
-            R.id.nav_start -> ActionOnlyNavDirections(currentSection!!.topRowAction.actionInto)
-            currentSection!!.topRowAction.fragmentNav -> determineCombatNav(currentSection!!.moveTopToBottom)
-            R.id.nav_start_combat -> ActionOnlyNavDirections(R.id.action_nav_start_combat_to_nav_answer_combat)
-            R.id.nav_answer_combat -> ActionOnlyNavDirections(R.id.action_nav_answer_combat_to_nav_resolve_combat)
-            R.id.nav_resolve_combat -> determineCombatNav(R.id.action_nav_resolve_combat_to_nav_move)
-            currentSection!!.bottomRowAction.fragmentNav -> ActionOnlyNavDirections(currentSection!!.bottomRowAction.actionOutOf).also { TurnHolder.currentTurn.performedBottom = true ; TurnHolder.commitChanges() }
-            else -> null
+//    fun finishSection(current: Int): NavDirections? {
+//        return when(current) {
+//            R.id.nav_start -> ActionOnlyNavDirections(currentSection!!.topRowAction.actionInto)
+//            currentSection!!.topRowAction.fragmentNav -> determineCombatNav(currentSection!!.moveTopToBottom)
+//            R.id.nav_start_combat -> ActionOnlyNavDirections(R.id.action_nav_start_combat_to_nav_answer_combat)
+//            R.id.nav_answer_combat -> ActionOnlyNavDirections(R.id.action_nav_answer_combat_to_nav_resolve_combat)
+//            R.id.nav_resolve_combat -> determineCombatNav(R.id.action_nav_resolve_combat_to_nav_move)
+//            currentSection!!.bottomRowAction.fragmentNav -> ActionOnlyNavDirections(currentSection!!.bottomRowAction.actionOutOf).also { TurnHolder.currentTurn.performedBottom = true ; TurnHolder.commitChanges() }
+//            else -> null
+//        }
+//    }
+
+    fun finishSection(current: Int) {
+        when(current) {
+            currentSection?.topRowAction?.fragmentNav -> TurnHolder.currentTurn.performedTop = true
+            currentSection?.bottomRowAction?.fragmentNav -> TurnHolder.currentTurn.performedBottom = true
         }
+        TurnHolder.commitChanges()
     }
 
     fun isTopRowComplete() : Boolean = TurnHolder.currentTurn.performedTop
     fun isBottomRowComplete() : Boolean = TurnHolder.currentTurn.performedBottom
-
-    private fun determineCombatNav(fallThrough: Int): NavDirections {
-        return with(TurnHolder.currentTurn){
-            when {
-                this.combatOne?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_move_to_nav_start_combat)
-                this.combatTwo?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_resolve_combat_to_nav_start_combat)
-                this.combatThree?.combatResolved == false -> ActionOnlyNavDirections(R.id.action_nav_resolve_combat_to_nav_start_combat)
-                else -> {
-                    this.combatOne?.hex?.let {
-                        hex -> GameMap.currentMap.findHexAtIndex(hex)?.encounter?.let {
-                            ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex, it.id, false)
-                        }
-                    }?: this.combatTwo?.hex?.let {
-                        hex -> GameMap.currentMap.findHexAtIndex(hex)?.encounter?.let {
-                            ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex, it.id, false)
-                        }
-                    }?: this.combatThree?.hex?.let {
-                        hex -> GameMap.currentMap.findHexAtIndex(hex)?.encounter?.let {
-                            ResolveCombatFragmentDirections.actionNavResolveCombatToNavEncounter(hex, it.id, false)
-                        }
-                    }?: ActionOnlyNavDirections(fallThrough).also { TurnHolder.currentTurn.performedTop = true ; TurnHolder.commitChanges() }
-                }
-            }
-        }
-    }
 
     fun selectSection(selection: Int) {
         TurnHolder.currentTurn.selection = selection
