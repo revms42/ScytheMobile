@@ -311,6 +311,8 @@
     <string name="title_choose_resources_to_transport">Select Resources</string>
     <string name="msg_choose_resources_to_transport">Select any resources to transport</string>
 
+    <string name="title_encounter">Encounter</string>
+
     <!-- Combat Strings -->
     <string name="button_start_combat">Start Combat</string>
     <string name="button_answer_combat">Respond to Attack</string>

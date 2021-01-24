@@ -91,7 +91,7 @@ object TurnHolder {
     }
 
     fun hasUnresolvedEncounter() : MapHex? {
-        return ((currentPlayer.selectUnits(UnitType.CHARACTER)?: emptyList()) + (currentPlayer.selectUnits(UnitType.MECH)?: emptyList())).mapNotNull { GameMap.currentMap.findHexAtIndex(it.pos) }.firstOrNull {
+        return currentPlayer.selectUnits(UnitType.CHARACTER)?.mapNotNull { GameMap.currentMap.findHexAtIndex(it.pos) }?.firstOrNull {
             it.encounter != null
         }
     }

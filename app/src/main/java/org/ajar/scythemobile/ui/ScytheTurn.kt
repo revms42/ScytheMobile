@@ -16,6 +16,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.R
+import org.ajar.scythemobile.ScytheMobile
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.data.UnitData
@@ -57,9 +58,10 @@ class ScytheTurn : AppCompatActivity() {
         //TODO: **** Temporary for testing ****
         ScytheDatabase.init(applicationContext)
         ScytheDatabase.reset()
+        ScytheMobile.loadLocalizedNames(this)
         val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.NORDIC.id)
         ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
-        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.MECH.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.CHARACTER.ordinal))
         ScytheDatabase.unitDao()?.addUnit(UnitData(2, 0, 15, UnitType.MECH.ordinal))
         playerInstance.factionMat.lockedFactionAbilities.forEach { playerInstance.factionMat.unlockFactionAbility(it) }
         TurnHolder.updatePlayer(playerInstance.playerData)

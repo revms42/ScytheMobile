@@ -47,30 +47,32 @@ class MoveGainFragment : ScytheTurnFragment(R.id.nav_move) {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        requireActivity().let { activity ->
-            val moveAction = TurnHolder.currentPlayer.playerMat.findTopRowAction(TopRowAction.MoveOrGain::class.java)
-            val builder = AlertDialog.Builder(activity)
+        if(!TurnHolder.currentTurn.performedTop) {
+            requireActivity().let { activity ->
+                val moveAction = TurnHolder.currentPlayer.playerMat.findTopRowAction(TopRowAction.MoveOrGain::class.java)
+                val builder = AlertDialog.Builder(activity)
 
-            builder.apply {
-                setPositiveButton(getString(R.string.button_select_move, moveAction?.unitsMoved?: 2)) { _, _ ->
-                    setupMoveViewModel()
+                builder.apply {
+                    setPositiveButton(getString(R.string.button_select_move, moveAction?.unitsMoved?: 2)) { _, _ ->
+                        setupMoveViewModel()
+                    }
+
+                    setNegativeButton(getString(R.string.button_select_gain, moveAction?.coinsGained?: 1)) { _, _ ->
+                        ScytheAction.GiveCapitalResourceAction(TurnHolder.currentPlayer, CapitalResourceType.COINS, moveAction?.coinsGained?: 1)
+                        Snackbar.make(
+                                requireView(),
+                                getString(R.string.msg_gain_completed, TurnHolder.currentPlayer.factionMat.factionMat.matName, moveAction?.coinsGained?: 1),
+                                Snackbar.LENGTH_LONG
+                        ).setAction("Action", null).show()
+                        navigateOut()
+                    }
+
+                    builder.setMessage(R.string.msg_choose_move_or_gain)
+                    builder.setTitle(R.string.title_choose_move_or_gain)
                 }
 
-                setNegativeButton(getString(R.string.button_select_gain, moveAction?.coinsGained?: 1)) { _, _ ->
-                    ScytheAction.GiveCapitalResourceAction(TurnHolder.currentPlayer, CapitalResourceType.COINS, moveAction?.coinsGained?: 1)
-                    Snackbar.make(
-                            requireView(),
-                            getString(R.string.msg_gain_completed, TurnHolder.currentPlayer.factionMat.factionMat.matName, moveAction?.coinsGained?: 1),
-                            Snackbar.LENGTH_LONG
-                    ).setAction("Action", null).show()
-                    navigateOut()
-                }
-
-                builder.setMessage(R.string.msg_choose_move_or_gain)
-                builder.setTitle(R.string.title_choose_move_or_gain)
+                builder.create().show()
             }
-
-            builder.create().show()
         }
     }
 
