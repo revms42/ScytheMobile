@@ -1,5 +1,11 @@
 package org.ajar.scythemobile.ui.build
 
+import android.app.AlertDialog
+import android.content.Context
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.observe
+import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.entity.GameUnit
@@ -7,28 +13,91 @@ import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.player.BottomRowAction
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.BottomRowViewModel
+import org.ajar.scythemobile.ui.view.MapScreenViewModel
+import org.ajar.scythemobile.ui.view.StandardSelectionModel
 
-class BuildViewModel : BottomRowViewModel<BottomRowAction.Build>() {
+class BuildViewModel : MapScreenViewModel() {
     private var _action: BottomRowAction.Build? = null
-    override val action: BottomRowAction.Build
+    val action: BottomRowAction.Build
         get() {
             if(_action == null) {
                 _action = TurnHolder.currentPlayer.playerMat.findBottomRowAction(BottomRowAction.Build::class.java)
             }
             return _action!!
         }
+    val cost = action.cost
     var returnNav: Int? = null
     var unitType: Int? = null
 
-    var selectedStructure: GameUnit? = null
+    private val selectableStructures: List<GameUnit>
+        get() = action.getBuildableStructures()?: emptyList()
+    private val selectedStructureLiveData = MutableLiveData<GameUnit?>()
+    private var selectedStructure: GameUnit? = null
+
+    private val selectedHexLiveData = MutableLiveData<MapHex>()
     var selectedHex: MapHex? = null
 
-    fun getValidLocations(): List<MapHex>? {
+    fun canBuildStructure(requireResources: Boolean): Boolean {
+        return TurnHolder.currentPlayer.canBuild(requireResources) && getValidLocations()?.size?:0 > 0
+    }
+
+    private fun getValidLocations(): List<MapHex>? {
         return ScytheDatabase.unitDao()?.getUnitsForPlayer(TurnHolder.currentPlayer.playerId, unitType!!)?.map { unit -> unit.loc }?.filter { it != -1 }?.mapNotNull { GameMap.currentMap.findHexAtIndex(it) }
     }
 
-    fun performBuild(): Boolean {
+    fun <T> setupSelectBuildSite(activity: T): AlertDialog? where T: LifecycleOwner, T: Context {
+        selectedHexLiveData.observe(activity) {
+            selectedHex = it
+            setupSelectStructureObserver(activity)?.show()
+            selectedHexLiveData.removeObservers(activity)
+        }
+        return getValidLocations()?.let {
+            if(it.size > 1) {
+                val builder = AlertDialog.Builder(activity)
+                builder.setTitle(R.string.title_choose_build_location)
+
+                builder.setPositiveButton(R.string.button_ok) { _, _ ->
+                    val selectionModel = StandardSelectionModel.SelectHexToBuildOnModel(it, selectedHexLiveData)
+                    mapViewModel.setSelectionModel(selectionModel)
+                }
+
+                builder.create()
+            } else {
+                selectedHexLiveData.postValue(it[0])
+
+                null
+            }
+        }
+    }
+
+    private fun selectStructure(context: Context, postUnit: MutableLiveData<GameUnit?>): AlertDialog? {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(R.string.title_choose_structure_to_build)
+
+        return if(selectableStructures.size > 1) {
+            builder.setItems(selectableStructures.map {
+                // TODO: Replace with a custom view that has the icons instead.
+                it.type.toString()
+            }.toTypedArray()) { _, which ->
+                postUnit.postValue(selectableStructures[which])
+            }.create()
+        } else {
+            selectedStructure = selectableStructures[0]
+            null
+        }
+    }
+
+    fun <T> setupSelectStructureObserver(activity: T): AlertDialog? where T: LifecycleOwner, T: Context {
+        selectedStructureLiveData.observe(activity) {
+            selectedStructure = it
+            performBuild()
+            selectedStructureLiveData.removeObservers(activity)
+        }
+
+        return selectStructure(activity, selectedStructureLiveData)
+    }
+
+    private fun performBuild(): Boolean {
         return if(selectedStructure != null && selectedHex != null) {
             ScytheAction.BuildStructure(selectedHex!!, selectedStructure!!)
             return true

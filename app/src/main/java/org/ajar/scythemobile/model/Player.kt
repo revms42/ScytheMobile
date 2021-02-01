@@ -1,10 +1,7 @@
 package org.ajar.scythemobile.model
 
 import androidx.collection.SparseArrayCompat
-import org.ajar.scythemobile.data.FactionMatData
-import org.ajar.scythemobile.data.PlayerData
-import org.ajar.scythemobile.data.ScytheDatabase
-import org.ajar.scythemobile.data.UnitData
+import org.ajar.scythemobile.data.*
 import org.ajar.scythemobile.model.combat.CombatCard
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
@@ -126,9 +123,29 @@ class PlayerInstance private constructor(
     }
 
     fun selectUnits(unitType: UnitType) : List<GameUnit>? {
-        return ScytheDatabase.unitDao()?.getUnitsForPlayer(playerData.id, unitType.ordinal)?.map {
+        return ScytheDatabase.unitDao()?.getUnitsForPlayer(playerId, unitType.ordinal)?.map {
             GameUnit(it, this)
         }
+    }
+
+    fun selectMapResourcesOfType(type: List<Resource>): List<ResourceData> {
+        return ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(playerId, type.map { it.id })?: emptyList()
+    }
+
+    fun canBuild(requireResources: Boolean): Boolean {
+        return playerMat.findBottomRowAction(BottomRowAction.Build::class.java)!!.canPerform(requireResources)
+    }
+
+    fun canEnlist(requireResources: Boolean): Boolean {
+        return playerMat.findBottomRowAction(BottomRowAction.Enlist::class.java)!!.canPerform(requireResources)
+    }
+
+    fun canDeploy(requireResources: Boolean): Boolean {
+        return playerMat.findBottomRowAction(BottomRowAction.Deploy::class.java)!!.canPerform(requireResources)
+    }
+
+    fun canUpgrade(requireResources: Boolean): Boolean {
+        return playerMat.findBottomRowAction(BottomRowAction.Upgrade::class.java)!!.canPerform(requireResources)
     }
 
     private fun initializePlayer() {

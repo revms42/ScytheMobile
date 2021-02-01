@@ -43,6 +43,6 @@ class EnlistFragment : Fragment() {
     }
 
     private fun navigateOut() {
-        view?.findNavController()?.navigate(enlistViewModel.returnNav?:enlistViewModel.navigateOut).also { enlistViewModel.reset() }
+        //TODO: view?.findNavController()?.navigate(enlistViewModel.returnNav?:enlistViewModel.navigateOut).also { enlistViewModel.reset() }
     }
 }

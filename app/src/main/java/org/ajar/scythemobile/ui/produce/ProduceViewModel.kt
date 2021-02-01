@@ -1,5 +1,6 @@
 package org.ajar.scythemobile.ui.produce
 
+import androidx.lifecycle.ViewModel
 import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.action.ScytheAction
@@ -8,11 +9,10 @@ import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.player.TopRowAction
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.TopRowViewModel
 
-class ProduceViewModel : TopRowViewModel<TopRowAction.Produce>() {
+class ProduceViewModel : ViewModel() {
     private var _action: TopRowAction.Produce? = null
-    override val action: TopRowAction.Produce
+    val action: TopRowAction.Produce
         get() {
             if(_action == null) {
                 _action = TurnHolder.currentPlayer.playerMat.findTopRowAction(TopRowAction.Produce::class.java)

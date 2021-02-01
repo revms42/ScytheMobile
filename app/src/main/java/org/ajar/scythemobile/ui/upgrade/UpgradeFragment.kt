@@ -43,6 +43,6 @@ class UpgradeFragment : Fragment() {
     }
 
     private fun navigateOut() {
-        view?.findNavController()?.navigate(upgradeViewModel.returnNav?:upgradeViewModel.navigateOut).also { upgradeViewModel.reset() }
+        //TODO: view?.findNavController()?.navigate(upgradeViewModel.returnNav?:upgradeViewModel.navigateOut).also { upgradeViewModel.reset() }
     }
 }

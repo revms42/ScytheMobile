@@ -1,14 +1,14 @@
 package org.ajar.scythemobile.ui.upgrade
 
+import androidx.lifecycle.ViewModel
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.player.BottomRowAction
 import org.ajar.scythemobile.model.player.TopRowAction
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.BottomRowViewModel
 
-class UpgradeViewModel : BottomRowViewModel<BottomRowAction.Upgrade>() {
+class UpgradeViewModel : ViewModel() {
     private var _action: BottomRowAction.Upgrade? = null
-    override val action: BottomRowAction.Upgrade
+    val action: BottomRowAction.Upgrade
         get() {
             if(_action == null) {
                 _action = TurnHolder.currentPlayer.playerMat.findBottomRowAction(BottomRowAction.Upgrade::class.java)
@@ -16,6 +16,7 @@ class UpgradeViewModel : BottomRowViewModel<BottomRowAction.Upgrade>() {
             return _action!!
         }
     var returnNav: Int? = null
+    val cost = action.cost
 
     val upgradableBottom: List<BottomRowAction>
         get() = TurnHolder.currentPlayer.playerMat.sections.map { it.bottomRowAction }.filter { it.canUpgrade }

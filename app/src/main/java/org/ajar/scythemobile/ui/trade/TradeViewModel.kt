@@ -1,5 +1,6 @@
 package org.ajar.scythemobile.ui.trade
 
+import androidx.lifecycle.ViewModel
 import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.model.NaturalResourceType
 import org.ajar.scythemobile.data.ScytheDatabase
@@ -9,12 +10,11 @@ import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.player.Bank
 import org.ajar.scythemobile.model.player.TopRowAction
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.TopRowViewModel
 
-class TradeViewModel : TopRowViewModel<TopRowAction.Trade>() {
+class TradeViewModel : ViewModel() {
 
     private var _action: TopRowAction.Trade? = null
-    override val action: TopRowAction.Trade
+    val action: TopRowAction.Trade
         get() {
             if(_action == null) {
                 _action = TurnHolder.currentPlayer.playerMat.findTopRowAction(TopRowAction.Trade::class.java)

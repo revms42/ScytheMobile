@@ -341,4 +341,13 @@
     <string name="msg_combat_results">%1$s committed %2$d total power, while %3$s committed %4$d total power. %5$s wins the combat!</string>
     <string name="msg_choose_retreat_hex">Choose a location to retreat %1$s units to.</string>
     <string name="msg_move_to_encounter">Your units have come across an encounter.</string>
+
+    <!-- Build Action Strings -->
+    <string name="button_perform_build">Build</string>
+    <string name="button_skip_building">Skip</string>
+    <string name="msg_build_skipped">Building Skipped, Completing Turn</string>
+    <string name="msg_build_or_skip">Build a Structure?</string>
+    <string name="title_build">Build</string>
+    <string name="title_choose_structure_to_build">Select Structure to Build</string>
+    <string name="title_choose_build_location">Choose Location To Build</string>
 </resources>

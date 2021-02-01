@@ -44,6 +44,6 @@ class DeployFragment : Fragment() {
     }
 
     private fun navigateOut() {
-        view?.findNavController()?.navigate(deployViewModel.returnNav?: deployViewModel.navigateOut).also { deployViewModel.reset() }
+        //TODO: view?.findNavController()?.navigate(deployViewModel.returnNav?: deployViewModel.navigateOut).also { deployViewModel.reset() }
     }
 }

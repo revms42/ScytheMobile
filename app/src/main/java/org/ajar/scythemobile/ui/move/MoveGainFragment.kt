@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.ActionOnlyNavDirections
 import androidx.navigation.NavDirections
-import com.google.android.material.snackbar.Snackbar
 import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.action.ScytheAction
@@ -59,11 +58,7 @@ class MoveGainFragment : ScytheTurnFragment(R.id.nav_move) {
 
                     setNegativeButton(getString(R.string.button_select_gain, moveAction?.coinsGained?: 1)) { _, _ ->
                         ScytheAction.GiveCapitalResourceAction(TurnHolder.currentPlayer, CapitalResourceType.COINS, moveAction?.coinsGained?: 1)
-                        Snackbar.make(
-                                requireView(),
-                                getString(R.string.msg_gain_completed, TurnHolder.currentPlayer.factionMat.factionMat.matName, moveAction?.coinsGained?: 1),
-                                Snackbar.LENGTH_LONG
-                        ).setAction("Action", null).show()
+                        showSnackbarMessage(getString(R.string.msg_gain_completed, TurnHolder.currentPlayer.factionMat.factionMat.matName, moveAction?.coinsGained?: 1))
                         navigateOut()
                     }
 
@@ -83,8 +78,7 @@ class MoveGainFragment : ScytheTurnFragment(R.id.nav_move) {
 
         moveViewModel.moveCompleted.observe(requireActivity()){ done ->
             if(done) {
-                Snackbar.make(requireView(), getString(R.string.msg_move_completed), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show()
+                showSnackbarMessage(R.string.msg_move_completed)
                 navigateOut()
             }
         }

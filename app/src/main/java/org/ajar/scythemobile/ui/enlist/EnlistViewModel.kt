@@ -1,14 +1,14 @@
 package org.ajar.scythemobile.ui.enlist
 
+import androidx.lifecycle.ViewModel
 import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.player.BottomRowAction
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.BottomRowViewModel
 
-class EnlistViewModel : BottomRowViewModel<BottomRowAction.Enlist>() {
+class EnlistViewModel : ViewModel() {
     private var _action: BottomRowAction.Enlist? = null
-    override val action: BottomRowAction.Enlist
+    val action: BottomRowAction.Enlist
         get() {
             if(_action == null) {
                 _action = TurnHolder.currentPlayer.playerMat.findBottomRowAction(BottomRowAction.Enlist::class.java)
@@ -17,6 +17,7 @@ class EnlistViewModel : BottomRowViewModel<BottomRowAction.Enlist>() {
         }
 
     var returnNav: Int? = null
+    val cost = action.cost
 
     val unrecruited: List<BottomRowAction>
         get() = TurnHolder.currentPlayer.playerMat.sections.map { it.bottomRowAction }.filter { !it.enlisted }

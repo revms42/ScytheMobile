@@ -1,5 +1,6 @@
 package org.ajar.scythemobile.ui.deploy
 
+import androidx.lifecycle.ViewModel
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.faction.FactionAbility
@@ -7,11 +8,10 @@ import org.ajar.scythemobile.model.map.GameMap
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.model.player.BottomRowAction
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.BottomRowViewModel
 
-class DeployViewModel : BottomRowViewModel<BottomRowAction.Deploy>() {
+class DeployViewModel : ViewModel() {
     private var _action: BottomRowAction.Deploy? = null
-    override val action: BottomRowAction.Deploy
+    val action: BottomRowAction.Deploy
         get() {
             if(_action == null) {
                 _action = TurnHolder.currentPlayer.playerMat.findBottomRowAction(BottomRowAction.Deploy::class.java)
@@ -19,6 +19,7 @@ class DeployViewModel : BottomRowViewModel<BottomRowAction.Deploy>() {
             return _action!!
         }
     var unitType: Int? = null
+    val cost = action.cost
 
     var selectedAbility: FactionAbility? = null
     var selectedHex: MapHex? = null

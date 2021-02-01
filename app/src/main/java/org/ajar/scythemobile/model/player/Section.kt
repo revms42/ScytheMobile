@@ -189,6 +189,11 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
         override val canUpgrade: Boolean
             get() = data.oilCost > costBottom
 
+        override fun canPerform(requireResources: Boolean): Boolean {
+            return playerInstance.playerMat.sections.firstOrNull { it.bottomRowAction.canUpgrade } != null &&
+                    if(requireResources) playerInstance.selectMapResourcesOfType(listOf(NaturalResourceType.OIL)).size >= data.oilCost else true
+        }
+
         override val recruitResource: Resource = CapitalResourceType.POWER
         override var enlisted: Boolean
             get() = data.enlisted
@@ -215,6 +220,10 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
         override val canUpgrade: Boolean
             get() = data.metalCost > costBottom
 
+        override fun canPerform(requireResources: Boolean): Boolean {
+            return getDeployableMechs()?.size?:0 > 0 && if(requireResources) playerInstance.selectMapResourcesOfType(listOf(NaturalResourceType.METAL)).size >= data.metalCost else true
+        }
+
         override val recruitResource: Resource = CapitalResourceType.COINS
         override var enlisted: Boolean
             get() = data.enlisted
@@ -228,6 +237,14 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
         override fun upgrade() {
             data.metalCost -= 1
         }
+
+        fun getDeployableMechs() : List<GameUnit>? {
+            return listOf(UnitType.MECH).flatMap { unitType ->
+                ScytheDatabase.unitDao()?.getUnitsForPlayer(playerInstance.playerId, unitType.ordinal)?.map { unitData ->
+                    GameUnit(unitData, playerInstance)
+                }?: emptyList()
+            }.filter { it.pos == -1 }
+        }
     }
     class Build(playerInstance: PlayerInstance, startingCost: Int, costBottom: Int, coins: Int) : BottomRowAction(playerInstance, startingCost, costBottom, coins) {
         override val fragmentNav: Int = R.id.nav_build
@@ -240,6 +257,11 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
 
         override val canUpgrade: Boolean
             get() = data.woodCost > costBottom
+
+        override fun canPerform(requireResources: Boolean): Boolean {
+            return getBuildableStructures()?.size ?: 0 > 0 &&
+                    if(requireResources) playerInstance.selectMapResourcesOfType(listOf(NaturalResourceType.WOOD)).size >= data.woodCost else true
+        }
 
         override val recruitResource: Resource = CapitalResourceType.POPULARITY
         override var enlisted: Boolean
@@ -275,6 +297,12 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
         override val canUpgrade: Boolean
             get() = data.foodCost > costBottom
 
+        override fun canPerform(requireResources: Boolean): Boolean {
+            return playerInstance.playerMat.sections.firstOrNull { !it.bottomRowAction.enlisted } != null &&
+                    if(requireResources) playerInstance.selectMapResourcesOfType(listOf(NaturalResourceType.FOOD)).size >= data.foodCost else true
+        }
+
+
         override val recruitResource: Resource = CapitalResourceType.CARDS
         override var enlisted: Boolean
             get() = data.enlisted
@@ -294,4 +322,5 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
     abstract val actionOutOf: Int
     abstract var enlisted: Boolean
     abstract fun upgrade()
+    abstract fun canPerform(requireResources: Boolean = true): Boolean
 }

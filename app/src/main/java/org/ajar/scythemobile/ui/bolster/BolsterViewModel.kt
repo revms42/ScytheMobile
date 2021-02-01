@@ -1,16 +1,16 @@
 package org.ajar.scythemobile.ui.bolster
 
+import androidx.lifecycle.ViewModel
 import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.model.action.ScytheAction
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.player.Bank
 import org.ajar.scythemobile.model.player.TopRowAction
 import org.ajar.scythemobile.turn.TurnHolder
-import org.ajar.scythemobile.ui.TopRowViewModel
 
-class BolsterViewModel : TopRowViewModel<TopRowAction.Bolster>() {
+class BolsterViewModel : ViewModel() {
     private var _action: TopRowAction.Bolster? = null
-    override val action: TopRowAction.Bolster
+    val action: TopRowAction.Bolster
         get() {
             if(_action == null) {
                 _action = TurnHolder.currentPlayer.playerMat.findTopRowAction(TopRowAction.Bolster::class.java)
