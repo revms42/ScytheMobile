@@ -11,6 +11,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import org.ajar.scythemobile.R
+import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.turn.TurnHolder
 import org.ajar.scythemobile.ui.ScytheTurnFragment
 
@@ -27,7 +28,11 @@ class BuildFragment : ScytheTurnFragment(R.id.nav_build) {
         buildViewModel =
                 ViewModelProvider(requireActivity()).get(BuildViewModel::class.java)
 
-        if(buildViewModel.unitType == null && navigationArgs.deployFromUnit != -1) buildViewModel.unitType = navigationArgs.deployFromUnit
+        if(buildViewModel.unitType == null && navigationArgs.deployFromUnit != -1) {
+            buildViewModel.unitType = navigationArgs.deployFromUnit
+        } else {
+            buildViewModel.unitType = UnitType.WORKER.ordinal
+        }
         if(buildViewModel.returnNav == null && navigationArgs.returnNav != -1) buildViewModel.returnNav = navigationArgs.returnNav
 
         return inflater.inflate(R.layout.fragment_gallery, container, false)
@@ -35,7 +40,7 @@ class BuildFragment : ScytheTurnFragment(R.id.nav_build) {
 
     override val redirect: Boolean
         get() {
-            return scytheTurnViewModel.isTopRowComplete()
+            return scytheTurnViewModel.isBottomRowComplete()
         }
 
     override fun onResume() {

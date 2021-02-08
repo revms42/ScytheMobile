@@ -25,8 +25,12 @@ class ScytheTurnViewModel : ViewModel() {
         TurnHolder.commitChanges()
     }
 
-    fun isTopRowComplete() : Boolean = TurnHolder.currentTurn.performedTop
-    fun isBottomRowComplete() : Boolean = TurnHolder.currentTurn.performedBottom
+    fun isTopRowComplete() : Boolean {
+        return TurnHolder.currentTurn.performedTop
+    }
+    fun isBottomRowComplete() : Boolean {
+        return TurnHolder.currentTurn.performedBottom
+    }
 
     fun selectSection(selection: Int) {
         TurnHolder.currentTurn.selection = selection

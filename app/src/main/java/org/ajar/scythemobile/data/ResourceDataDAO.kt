@@ -16,6 +16,9 @@ interface ResourceDataDAO {
     @Query("SELECT * FROM ${ResourceData.TABLE_NAME} WHERE ${ResourceData.COLUMN_TYPE} = :type")
     fun getResourcesOfType(type: Int): List<ResourceData>?
 
+    @Query("SELECT * FROM ${ResourceData.TABLE_NAME} WHERE ${ResourceData.COLUMN_TYPE} in (:type) AND ${ResourceData.COLUMN_POSITION} = :loc")
+    fun getChosenResourcesFromLocations(type: List<Int>, loc: Int): List<ResourceData>?
+
     @Query("SELECT * FROM ${ResourceData.TABLE_NAME} WHERE ${ResourceData.COLUMN_TYPE} IN (:type) AND ${ResourceData.COLUMN_OWNER} = :owner")
     fun getOwnedResourcesOfType(owner: Int, type: List<Int>): List<ResourceData>?
 

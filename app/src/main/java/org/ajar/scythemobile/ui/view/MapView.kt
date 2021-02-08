@@ -246,8 +246,6 @@ class MapView(context: Context, attributeSet: AttributeSet? = null) : View(conte
                 else -> it.also { consume = true}
             }
         }
-        Log.w("Consume", "$consume")
-        Log.w("Translate", "$translate vs $lowestScrollX x $lowestScrollY")
         invalidate()
         return consume
     }

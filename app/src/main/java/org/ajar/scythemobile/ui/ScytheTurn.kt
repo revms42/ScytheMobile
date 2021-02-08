@@ -63,9 +63,13 @@ class ScytheTurn : AppCompatActivity() {
         ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
         ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.CHARACTER.ordinal))
         ScytheDatabase.unitDao()?.addUnit(UnitData(2, 0, 15, UnitType.MECH.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(3, 0, -1, UnitType.MINE.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(4, 0, -1, UnitType.ARMORY.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(5, 0, -1, UnitType.MILL.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(6, 0, -1, UnitType.MONUMENT.ordinal))
         playerInstance.factionMat.lockedFactionAbilities.forEach { playerInstance.factionMat.unlockFactionAbility(it) }
         TurnHolder.updatePlayer(playerInstance.playerData)
-        ScytheDatabase.unitDao()?.addUnit(UnitData(3, 0, 21, UnitType.WORKER.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(7, 0, 21, UnitType.WORKER.ordinal))
 //        ScytheDatabase.resourceDao()?.addResource(ResourceData(0, 21, -1, NaturalResourceType.FOOD.id))
 //        ScytheDatabase.resourceDao()?.addResource(ResourceData(1, 21, -1, NaturalResourceType.FOOD.id))
         ScytheDatabase.resourceDao()?.addResource(ResourceData(2, 21, -1, NaturalResourceType.WOOD.id))
@@ -77,8 +81,8 @@ class ScytheTurn : AppCompatActivity() {
 
         val enemyPlayer = PlayerInstance.makePlayer("enemyPlayer", StandardPlayerMat.INDUSTRIAL.id, StandardFactionMat.CRIMEA.id)
         ScytheDatabase.playerDao()?.addPlayer(enemyPlayer.playerData)
-        ScytheDatabase.unitDao()?.addUnit(UnitData(4, 1, 22, UnitType.MECH.ordinal))
-        ScytheDatabase.unitDao()?.addUnit(UnitData(5, 1, 23, UnitType.WORKER.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(8, 1, 22, UnitType.MECH.ordinal))
+        ScytheDatabase.unitDao()?.addUnit(UnitData(9, 1, 23, UnitType.WORKER.ordinal))
         TurnHolder.updatePlayer(enemyPlayer.playerData)
         TurnHolder.commitChanges()
         //TODO: **** --------------------- ****
