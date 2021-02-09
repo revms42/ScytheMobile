@@ -424,7 +424,7 @@
 
     <fragment
         android:id="@+id/nav_resource_payment_choice"
-        android:name="org.ajar.scythemobile.ui.encounter.ResourcePaymentChoiceFragment"
+        android:name="org.ajar.scythemobile.ui.ResourcePaymentChoiceFragment"
         android:label="@string/menu_choice_res_payment"
         tools:layout="@layout/fragment_slideshow">
         <action

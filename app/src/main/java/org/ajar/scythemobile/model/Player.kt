@@ -128,14 +128,8 @@ class PlayerInstance private constructor(
         }
     }
 
-    fun selectMapResourcesOfType(type: List<NaturalResourceType>): List<ResourceData> {
-        return ScytheDatabase.unitDao()?.getUnitsForPlayer(playerId, UnitType.controlUnits.map { it.ordinal })?.filter {
-            it.loc != -1 && ScytheDatabase.unitDao()?.getUnitsAtLocation(it.loc)?.any {
-                unit -> unit.owner != it.owner && UnitType.provokeUnits.contains(UnitType.valueOf(unit.type))
-            } == false
-        }?.mapNotNull { unitData ->
-            ScytheDatabase.resourceDao()?.getChosenResourcesFromLocations(type.map { it.id }, unitData.loc)
-        }?.flatten()?: emptyList()
+    fun controlledResource(type: List<Resource>): List<ResourceData>? {
+        return factionMat.factionMat.controlledResource(this, type)
     }
 
     fun canBuild(requireResources: Boolean): Boolean {

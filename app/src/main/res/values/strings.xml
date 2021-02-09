@@ -350,4 +350,11 @@
     <string name="title_build">Build</string>
     <string name="title_choose_structure_to_build">Select Structure to Build</string>
     <string name="title_choose_build_location">Choose Location To Build</string>
+    <string name="snackbar_finished">Built a %1$s!</string>
+
+    <!-- Pay Resources Strings -->
+    <string name="button_undo_payment">Clear Selection</string>
+    <string name="button_accept_payment">Accept Selection</string>
+    <string name="textview_required">Resources Required: %1$s</string>
+    <string name="textview_selected">Resources Selected: %1$s</string>
 </resources>

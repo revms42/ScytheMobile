@@ -88,15 +88,21 @@ class BuildFragment : ScytheTurnFragment(R.id.nav_build) {
 
     private fun setupChooseBuildSite() {
         if(buildViewModel.selectedHex == null) {
-            buildViewModel.setupSelectBuildSite(requireActivity())!!.show()
+            buildViewModel.setupSelectBuildSite(requireActivity(), ::completeBuild)?.show()
         } else {
             setupChooseStructure()
         }
     }
 
     private fun setupChooseStructure() {
-        buildViewModel.setupSelectStructureObserver(requireActivity())?.show()
-        TODO("Figure out how to do a snackbar here after finish?")
+        buildViewModel.setupSelectStructureObserver(requireActivity(), ::completeBuild)?.show()
+    }
+
+    private fun completeBuild(done: Boolean) {
+        if(done) {
+            showSnackbarMessage(getString(R.string.snackbar_finished, buildViewModel.selectedStructure!!.type.toString()))
+            navigateOut()
+        }
     }
 
     override fun navigateOut() {

@@ -191,7 +191,7 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
 
         override fun canPerform(requireResources: Boolean): Boolean {
             return playerInstance.playerMat.sections.firstOrNull { it.bottomRowAction.canUpgrade } != null &&
-                    if(requireResources) playerInstance.selectMapResourcesOfType(listOf(NaturalResourceType.OIL)).size >= data.oilCost else true
+                    if(requireResources) playerInstance.controlledResource(listOf(NaturalResourceType.OIL))?.size?:0 >= data.oilCost else true
         }
 
         override val recruitResource: Resource = CapitalResourceType.POWER
@@ -221,7 +221,7 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
             get() = data.metalCost > costBottom
 
         override fun canPerform(requireResources: Boolean): Boolean {
-            return getDeployableMechs()?.size?:0 > 0 && if(requireResources) playerInstance.selectMapResourcesOfType(listOf(NaturalResourceType.METAL)).size >= data.metalCost else true
+            return getDeployableMechs()?.size?:0 > 0 && if(requireResources) playerInstance.controlledResource(listOf(NaturalResourceType.METAL))?.size?: 0 >= data.metalCost else true
         }
 
         override val recruitResource: Resource = CapitalResourceType.COINS
@@ -260,7 +260,7 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
 
         override fun canPerform(requireResources: Boolean): Boolean {
             return getBuildableStructures()?.size ?: 0 > 0 &&
-                    if(requireResources) playerInstance.selectMapResourcesOfType(listOf(NaturalResourceType.WOOD)).size >= data.woodCost else true
+                    if(requireResources) playerInstance.controlledResource(listOf(NaturalResourceType.WOOD))?.size?:0 >= data.woodCost else true
         }
 
         override val recruitResource: Resource = CapitalResourceType.POPULARITY
@@ -299,7 +299,7 @@ sealed class BottomRowAction(override val playerInstance: PlayerInstance, val st
 
         override fun canPerform(requireResources: Boolean): Boolean {
             return playerInstance.playerMat.sections.firstOrNull { !it.bottomRowAction.enlisted } != null &&
-                    if(requireResources) playerInstance.selectMapResourcesOfType(listOf(NaturalResourceType.FOOD)).size >= data.foodCost else true
+                    if(requireResources) playerInstance.controlledResource(listOf(NaturalResourceType.FOOD))?.size?:0 >= data.foodCost else true
         }
 
 

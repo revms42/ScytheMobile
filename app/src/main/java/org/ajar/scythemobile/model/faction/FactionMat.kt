@@ -3,11 +3,9 @@ package org.ajar.scythemobile.model.faction
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.collection.valueIterator
-import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.data.*
-import org.ajar.scythemobile.model.PlayerInstance
-import org.ajar.scythemobile.model.StarType
+import org.ajar.scythemobile.model.*
 import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.entity.*
 
@@ -193,7 +191,7 @@ interface FactionMat {
     }
 
     fun placeableTokens(player: PlayerInstance): List<GameUnit>?
-    fun controlledResource(player: PlayerInstance, type: List<Int>): List<ResourceData>?
+    fun controlledResource(player: PlayerInstance, type: List<Resource>): List<ResourceData>?
 
     fun initializePlayer(player: PlayerInstance)
 
@@ -282,9 +280,9 @@ enum class StandardFactionMat(
                 RiverWalk.FARM_TUNDRA, Wayfare(), Speed.singleton, Scout()
         )
 
-        override fun controlledResource(player: PlayerInstance, type: List<Int>): List<ResourceData>? {
+        override fun controlledResource(player: PlayerInstance, type: List<Resource>): List<ResourceData>? {
             val default = super.controlledResource(player, type)?.toMutableList()
-            if(!player.playerData.flagCoercion) {
+            if(!player.playerData.flagCoercion && type.any { it is NaturalResourceType } ) {
                 val card = ScytheDatabase.resourceDao()!!.getOwnedResourcesOfType(player.playerId, listOf(CapitalResourceType.CARDS.id))?.minBy {
                     it.value
                 }
@@ -359,8 +357,34 @@ enum class StandardFactionMat(
     }
 
     override fun placeableTokens(player: PlayerInstance): List<GameUnit>? = null
-    override fun controlledResource(player: PlayerInstance, type: List<Int>): List<ResourceData>? {
-        return ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(player.playerId, type)?: emptyList()
+    override fun controlledResource(player: PlayerInstance, type: List<Resource>): List<ResourceData>? {
+        val natural = ArrayList<NaturalResourceType>()
+        val capital = ArrayList<CapitalResourceType>()
+
+        type.forEach {
+            when(it) {
+                is NaturalResourceType -> natural.add(it)
+                is CapitalResourceType -> capital.add(it)
+            }
+        }
+
+        val naturalRes = if(natural.isNotEmpty()) selectNaturalResourcesOfType(player, natural) else emptyList()
+        val capitalRes = if(capital.isNotEmpty()) selectOwnedResourcesOfType(player, capital) else emptyList()
+        return capitalRes + naturalRes
+    }
+
+    private fun selectNaturalResourcesOfType(player: PlayerInstance, type: List<NaturalResourceType>): List<ResourceData> {
+        return ScytheDatabase.unitDao()?.getUnitsForPlayer(player.playerId, UnitType.controlUnits.map { it.ordinal })?.filter {
+            it.loc != -1 && ScytheDatabase.unitDao()?.getUnitsAtLocation(it.loc)?.any {
+                unit -> unit.owner != it.owner && UnitType.provokeUnits.contains(UnitType.valueOf(unit.type))
+            } == false
+        }?.mapNotNull { unitData ->
+            ScytheDatabase.resourceDao()?.getChosenResourcesFromLocations(type.map { it.id }, unitData.loc)
+        }?.flatten()?: emptyList()
+    }
+
+    private fun selectOwnedResourcesOfType(player: PlayerInstance, type: List<CapitalResourceType>): List<ResourceData> {
+        return ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(player.playerId, type.map { it.id })?: emptyList()
     }
 
     companion object {

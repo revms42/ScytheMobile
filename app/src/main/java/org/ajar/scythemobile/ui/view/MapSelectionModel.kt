@@ -1,8 +1,6 @@
 package org.ajar.scythemobile.ui.view
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import org.ajar.scythemobile.model.Resource
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.model.entity.GameUnit
@@ -49,7 +47,6 @@ sealed class StandardSelectionModel : MapSelectionModel {
         }
 
         private fun getMovableHexes(): List<MapHex> {
-            Log.e("GetMovableHexes", "${selectedUnits.value}")
             return (if (selectedHex.value != null && selectedUnits.value != null)
                 (selectedUnits.value!!.firstOrNull { it.type == UnitType.MECH || it.type == UnitType.CHARACTER }
                         ?: selectedUnits.value!!.first()).let { unit ->
@@ -71,14 +68,16 @@ sealed class StandardSelectionModel : MapSelectionModel {
         }
     }
 
-    class SelectResourceOfTypeModel(private val selectResource: (Resource?) -> Boolean) : StandardSelectionModel() {
+    class SelectResourceOfTypeModel(private val selectResource: (ResourceData) -> Unit, private val canSelect: (ResourceData) -> Boolean) : StandardSelectionModel() {
         override fun canSelect(mapHex: MapHex): Boolean {
-            return ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)?.any { selectResource(Resource.valueOf(it.type)) }?: false &&
+            return ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)?.any { canSelect(it) }?: false &&
                     mapHex.playerInControl == TurnHolder.currentPlayer.playerId
         }
 
         override fun onSelection(mapHex: MapHex) {
-            TODO("NYI")
+            ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)?.firstOrNull { canSelect(it) }?.also {
+                selectResource(it)
+            }
         }
 
     }

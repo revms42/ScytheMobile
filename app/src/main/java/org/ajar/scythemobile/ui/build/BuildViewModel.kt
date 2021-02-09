@@ -32,7 +32,7 @@ class BuildViewModel : MapScreenViewModel() {
     private val selectableStructures: List<GameUnit>
         get() = action.getBuildableStructures()?: emptyList()
     private val selectedStructureLiveData = MutableLiveData<GameUnit?>()
-    private var selectedStructure: GameUnit? = null
+    var selectedStructure: GameUnit? = null
 
     private val selectedHexLiveData = MutableLiveData<MapHex>()
     var selectedHex: MapHex? = null
@@ -45,10 +45,10 @@ class BuildViewModel : MapScreenViewModel() {
         return ScytheDatabase.unitDao()?.getUnitsForPlayer(TurnHolder.currentPlayer.playerId, unitType!!)?.map { unit -> unit.loc }?.filter { it != -1 }?.mapNotNull { GameMap.currentMap.findHexAtIndex(it) }
     }
 
-    fun <T> setupSelectBuildSite(activity: T): AlertDialog? where T: LifecycleOwner, T: Context {
+    fun <T> setupSelectBuildSite(activity: T, done: (Boolean) -> Unit): AlertDialog? where T: LifecycleOwner, T: Context {
         selectedHexLiveData.observe(activity) {
             selectedHex = it
-            setupSelectStructureObserver(activity)?.show()
+            setupSelectStructureObserver(activity, done)?.show()
             selectedHexLiveData.removeObservers(activity)
         }
         return getValidLocations()?.let {
@@ -87,20 +87,19 @@ class BuildViewModel : MapScreenViewModel() {
         }
     }
 
-    fun <T> setupSelectStructureObserver(activity: T): AlertDialog? where T: LifecycleOwner, T: Context {
+    fun <T> setupSelectStructureObserver(activity: T, done:(Boolean) -> Unit): AlertDialog? where T: LifecycleOwner, T: Context {
         selectedStructureLiveData.observe(activity) {
             selectedStructure = it
-            performBuild()
-            selectedStructureLiveData.removeObservers(activity)
+            done(performBuild(activity))
         }
 
         return selectStructure(activity, selectedStructureLiveData)
     }
 
-    private fun performBuild(): Boolean {
+    private fun performBuild(activity: LifecycleOwner): Boolean {
         return if(selectedStructure != null && selectedHex != null) {
-            ScytheAction.BuildStructure(selectedHex!!, selectedStructure!!)
-            return true
+            selectedStructureLiveData.removeObservers(activity)
+            return ScytheAction.BuildStructure(selectedHex!!, selectedStructure!!).perform()
         } else {
             false
         }

@@ -2,7 +2,6 @@ package org.ajar.scythemobile.ui.move
 
 import android.app.AlertDialog
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
 import org.ajar.scythemobile.R
 import org.ajar.scythemobile.model.Resource
@@ -49,7 +48,7 @@ class MoveViewModel : MapScreenViewModel() {
 
     private fun setupUnitObserver(activity: LifecycleOwner) {
         selectedUnits.observe(activity) {
-            selected = it.also { Log.e("ObserveUnits", "$it") }
+            selected = it
         }
     }
 
