@@ -21,6 +21,7 @@ import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
 import org.ajar.scythemobile.data.UnitData
 import org.ajar.scythemobile.model.PlayerInstance
+import org.ajar.scythemobile.model.combat.CombatCardDeck
 import org.ajar.scythemobile.model.entity.UnitType
 import org.ajar.scythemobile.model.faction.RiverWalk
 import org.ajar.scythemobile.model.faction.Speed
@@ -59,7 +60,7 @@ class ScytheTurn : AppCompatActivity() {
         ScytheDatabase.init(applicationContext)
         ScytheDatabase.reset()
         ScytheMobile.loadLocalizedNames(this)
-        val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.NORDIC.id)
+        val playerInstance = PlayerInstance.makePlayer("testPlayer", StandardPlayerMat.MECHANICAL.id, StandardFactionMat.CRIMEA.id)
         ScytheDatabase.playerDao()?.addPlayer(playerInstance.playerData)
         ScytheDatabase.unitDao()?.addUnit(UnitData(1, 0, 21, UnitType.CHARACTER.ordinal))
         ScytheDatabase.unitDao()?.addUnit(UnitData(2, 0, 15, UnitType.MECH.ordinal))
@@ -79,11 +80,12 @@ class ScytheTurn : AppCompatActivity() {
 //        ScytheDatabase.resourceDao()?.addResource(ResourceData(6, 21, -1, NaturalResourceType.OIL.id))
 //        ScytheDatabase.resourceDao()?.addResource(ResourceData(7, 21, -1, NaturalResourceType.OIL.id))
 
-        val enemyPlayer = PlayerInstance.makePlayer("enemyPlayer", StandardPlayerMat.INDUSTRIAL.id, StandardFactionMat.CRIMEA.id)
+        val enemyPlayer = PlayerInstance.makePlayer("enemyPlayer", StandardPlayerMat.INDUSTRIAL.id, StandardFactionMat.NORDIC.id)
         ScytheDatabase.playerDao()?.addPlayer(enemyPlayer.playerData)
         ScytheDatabase.unitDao()?.addUnit(UnitData(8, 1, 22, UnitType.MECH.ordinal))
         ScytheDatabase.unitDao()?.addUnit(UnitData(9, 1, 23, UnitType.WORKER.ordinal))
         TurnHolder.updatePlayer(enemyPlayer.playerData)
+        CombatCardDeck.currentDeck.drawCard(playerInstance)?.resourceData?.id = 10
         TurnHolder.commitChanges()
         //TODO: **** --------------------- ****
 

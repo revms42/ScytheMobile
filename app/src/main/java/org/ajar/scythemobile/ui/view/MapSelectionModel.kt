@@ -1,13 +1,18 @@
 package org.ajar.scythemobile.ui.view
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import org.ajar.scythemobile.data.ResourceData
 import org.ajar.scythemobile.data.ScytheDatabase
+import org.ajar.scythemobile.model.CapitalResourceType
 import org.ajar.scythemobile.model.entity.GameUnit
 import org.ajar.scythemobile.model.entity.UnitType
+import org.ajar.scythemobile.model.faction.DefaultFactionAbility
+import org.ajar.scythemobile.model.faction.FactionMat
 import org.ajar.scythemobile.model.faction.MovementRule
 import org.ajar.scythemobile.model.faction.Speed
 import org.ajar.scythemobile.model.map.GameMap
+import org.ajar.scythemobile.model.map.HomeBase
 import org.ajar.scythemobile.model.map.MapHex
 import org.ajar.scythemobile.turn.TurnHolder
 
@@ -69,17 +74,46 @@ sealed class StandardSelectionModel : MapSelectionModel {
     }
 
     class SelectResourceOfTypeModel(private val selectResource: (ResourceData) -> Unit, private val canSelect: (ResourceData) -> Boolean) : StandardSelectionModel() {
+
+        private val coerce: Boolean
+            get() {
+                return TurnHolder.currentPlayer.factionMat.defaultFactionAbility == DefaultFactionAbility.COERCION && !TurnHolder.currentPlayer.playerData.flagCoercion
+            }
+
         override fun canSelect(mapHex: MapHex): Boolean {
+            val mapResource = canSelectMapResource(mapHex)
+
+            return when {
+                mapResource -> true
+                coerce -> canSelectCoercian(mapHex)
+                else -> false
+            }
+        }
+
+        override fun onSelection(mapHex: MapHex) {
+            val mapResources = ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)
+
+            when {
+                !mapResources.isNullOrEmpty() -> mapResources
+                coerce && mapHex.faction?.faction == TurnHolder.currentPlayer.factionMat.factionMat -> ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(TurnHolder.currentPlayer.playerId, listOf(CapitalResourceType.CARDS.id))
+                else -> emptyList()
+            }?.firstOrNull { canSelect(it) }?.also { selectResource(it) }
+        }
+
+        private fun canSelectMapResource(mapHex: MapHex) : Boolean {
             return ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)?.any { canSelect(it) }?: false &&
                     mapHex.playerInControl == TurnHolder.currentPlayer.playerId
         }
 
-        override fun onSelection(mapHex: MapHex) {
-            ScytheDatabase.resourceDao()?.getResourcesAt(mapHex.loc)?.firstOrNull { canSelect(it) }?.also {
-                selectResource(it)
+        private fun canSelectCoercian(mapHex: MapHex) : Boolean {
+            return if(mapHex.faction?.faction == TurnHolder.currentPlayer.factionMat.factionMat) {
+                ScytheDatabase.resourceDao()?.getOwnedResourcesOfType(TurnHolder.currentPlayer.playerId, listOf(CapitalResourceType.CARDS.id)).also { Log.e("Cards", "$it") }?.any {
+                    canSelect(it)
+                }?: false
+            } else {
+                false
             }
         }
-
     }
 
     class SelectHexToMoveToModel(private val validHexes: List<MapHex>, private val selectedHex: MutableLiveData<MapHex>) : StandardSelectionModel() {

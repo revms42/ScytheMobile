@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = ResourceData.TABLE_NAME)
 data class ResourceData(
-        @PrimaryKey(autoGenerate = false) @ColumnInfo(name = COLUMN_INDEX) var id: Int,
+        @PrimaryKey(autoGenerate = false) @ColumnInfo(name = COLUMN_INDEX) var id: Int, //TODO: This needs to be set to true once we have init ready.
         @ColumnInfo(name = COLUMN_POSITION) override var loc: Int,
         @ColumnInfo(name = COLUMN_OWNER) override var owner: Int,
         @ColumnInfo(name = COLUMN_TYPE) var type: Int,

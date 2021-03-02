@@ -24,7 +24,14 @@ class ResourcePaymentChoiceViewModel : MapScreenViewModel() {
 
     private val resourcesSelected: ArrayList<ResourceData> = ArrayList()
 
-    private var coercion = TurnHolder.currentPlayer.playerData.flagCoercion
+    private var coercion: Boolean
+        set(value) {
+            //TODO: Verify that this is setting the turn-data value of coercion
+            TurnHolder.currentPlayer.playerData.flagCoercion = value
+        }
+        get() {
+            return TurnHolder.currentPlayer.playerData.flagCoercion
+        }
 
     private val resourcesAvailable: List<ResourceData>?
         get() = with(TurnHolder.currentPlayer) { this.factionMat.factionMat.controlledResource(this, cost?: emptyList())?.filter { !resourcesSelected.contains(it) } }
